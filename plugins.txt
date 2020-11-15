@@ -1,43 +1,43 @@
 # This plugin allows configuration of Jenkins based on human-readable declarative configuration files.
 # https://plugins.jenkins.io/configuration-as-code/
-configuration-as-code:latest
+configuration-as-code:1.46
 
 # This plugin integrates Git with Jenkins.
 # https://plugins.jenkins.io/git/
-git:latest
+git:4.4.5
 
 # This plugin provides Matrix Authorization, i.e. giving individual users/groups permission to do individual things
 # https://plugins.jenkins.io/matrix-auth/
-matrix-auth:latest
+matrix-auth:2.6.4
 
 # This plugin makes the account used when launching a job configurable (by default, jobs are launched as SYSTEM)
 # https://plugins.jenkins.io/authorize-project/
-authorize-project:latest
+authorize-project:1.3.0
 
 # A key component of the Pipeline plugin suite, this plugin provides the Jenkins job and build types for Pipeline along with a generic user interface
 # https://plugins.jenkins.io/workflow-job/
-workflow-job:latest
+workflow-job:2.40
 
 # A key component of the Pipeline plugin suite, this provides the standard execution engine for Pipeline steps, based on a custom Groovy interpreter that runs inside the Jenkins master process.
 # https://plugins.jenkins.io/workflow-cps/
-workflow-cps:latest
+workflow-cps:2.85
 
 # Provides a stage-by-stage progress view for Pipeline jobs
 # https://plugins.jenkins.io/pipeline-stage-view/
-pipeline-stage-view:latest
+pipeline-stage-view:2.18
 
 # This plugin adds folder support to jenkins; the folders can be used to group/organize jobs
 # https://plugins.jenkins.io/cloudbees-folder/
-cloudbees-folder:latest
+cloudbees-folder:6.15
 
 # This plugin allows writing jobs in the text-based Job DSL
 # https://plugins.jenkins.io/job-dsl/
-job-dsl:latest
+job-dsl:1.77
 
 # The Pipeline Model Definition Plugin provides a config-like syntax for defining Pipelines - thus Declarative Pipeline
 # https://plugins.jenkins.io/pipeline-model-definition/
-pipeline-model-definition:latest
+pipeline-model-definition:1.7.2
   
 # This is a Jenkins plugin which lets you log in to Jenkins with your Google account. Also allows you to restrict access to accounts in a given Google Apps domain.
 # https://plugins.jenkins.io/google-login/
-google-login:latest
+google-login:1.6
