@@ -2,8 +2,8 @@ FROM jenkins/jenkins:lts
 
 ENV JAVA_OPTS -Djenkins.install.runSetupWizard=false
 
-ADD plugins.yaml /usr/share/jenkins/ref/plugins.yaml
-RUN jenkins-plugin-cli --plugin-file /usr/share/jenkins/ref/plugins.yaml --verbose
+ADD plugins.txt /usr/share/jenkins/ref/plugins.txt
+RUN jenkins-plugin-cli --plugin-file /usr/share/jenkins/ref/plugins.txt --verbose
 
 # Create three folders:
 # /var/jenkins_home/mounts/config - which should contain JCasC configuration files
