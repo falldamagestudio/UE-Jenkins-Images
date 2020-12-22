@@ -18,6 +18,10 @@ kubernetes:1.28.3
 # https://plugins.jenkins.io/workflow-aggregator/
 workflow-aggregator:2.6
 
+# The Kubernetes Credentials Provider is a Jenkins plugin to enable the retreival of Credentials directly from Kubernetes.
+# https://plugins.jenkins.io/kubernetes-credentials-provider/
+kubernetes-credentials-provider:0.15
+
 ###################################################################
 
 # This plugin provides Matrix Authorization, i.e. giving individual users/groups permission to do individual things
