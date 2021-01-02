@@ -22,6 +22,10 @@ workflow-aggregator:2.6
 # https://plugins.jenkins.io/kubernetes-credentials-provider/
 kubernetes-credentials-provider:0.15
 
+# The Job DSL plugin allows jobs to be defined in a programmatic form in a human readable file.
+# https://plugins.jenkins.io/job-dsl/
+job-dsl:1.77
+
 ###################################################################
 
 # This plugin provides Matrix Authorization, i.e. giving individual users/groups permission to do individual things
