@@ -76,6 +76,9 @@ func (r *Remote) Copy(inputPath string, copyTimeoutMin int) error {
 		return err
 	}
 
+/* Disable copy-via-bucket method. This is quicker than copy-via-WinRM,
+   but it requires more up-front infrastructure configuration
+
 	// First try to create a bucket and have the Windows VM download it via a
 	// GS URL. If that fails, use the remote copy method.
 	err = r.copyViaBucket(
@@ -91,6 +94,7 @@ func (r *Remote) Copy(inputPath string, copyTimeoutMin int) error {
 	}
 
 	log.Printf("Failed to copy data via GCE bucket: %v", err)
+*/
 
 	err = c.Copy(inputPath, `C:\workspace`)
 	if err != nil {
