@@ -6,12 +6,10 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"net/http"
 	"os"
 	"strings"
 	"time"
 
-	"cloud.google.com/go/compute/metadata"
 	"github.com/masterzen/winrm"
 	"github.com/packer-community/winrmcp/winrmcp"
 )
@@ -108,10 +106,9 @@ func (r *Remote) copyViaBucket(ctx context.Context, inputPath, outputPath string
 	if r.BucketName == nil || *r.BucketName == "" {
 		// Cloud Build creates a bucket called <PROJECT-ID>_cloudbuild. Put
 		// the object there.
-		client := metadata.NewClient(http.DefaultClient)
-		projectID, err := client.ProjectID()
+		projectID, err := getProject()
 		if err != nil {
-			return fmt.Errorf("metadata.ProjectID: %v", err)
+			return fmt.Errorf("ProjectID: %v", err)
 		}
 		bucket = fmt.Sprintf("%s_cloudbuild", projectID)
 	} else {
