@@ -1,4 +1,4 @@
-name: Build and Push to GCR
+name: Build and Push to GAR
 
 on:
   push:
@@ -6,39 +6,9 @@ on:
       - '**'
 
 jobs:
-  # build-linux:
-  #   name: Setup, Build, and Publish for Linux
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v2
-
-  #     - name: Set up QEMU
-  #       uses: docker/setup-qemu-action@v1
-
-  #     - name: Set up Docker Buildx
-  #       uses: docker/setup-buildx-action@v1
-
-  #     - name: Setup gcloud CLI
-  #       uses: google-github-actions/setup-gcloud@master
-  #       with:
-  #         service_account_key: ${{ secrets.GOOGLE_CLOUD_SERVICE_ACCOUNT_KEY }} 
-
-  #     - name: Configure docker to use gcloud as credential helper
-  #       run: |
-  #         gcloud auth configure-docker ${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev
-
-  #     - name: Build image and push to GCR
-  #       id: docker_build
-  #       uses: docker/build-push-action@v2
-  #       with:
-  #         file: ./ue-jenkins-buildtools-linux.Dockerfile
-  #         push: true
-  #         tags: ${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-buildtools-linux:commit-${{ github.sha }}
-
-  build-windows:
-    name: Setup, Build, and Publish for Windows
-    runs-on: windows-2019
+  build-linux:
+    name: Setup, Build, and Publish for Linux
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -58,10 +28,40 @@ jobs:
         run: |
           gcloud auth configure-docker ${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev
 
-      - name: Build image and push to GCR
+      - name: Build image and push to GAR
         id: docker_build
         uses: docker/build-push-action@v2
         with:
-          file: ./ue-jenkins-buildtools-windows.Dockerfile
+          file: ./linux/ue-jenkins-buildtools-linux.Dockerfile
           push: true
-          tags: ${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-buildtools-windows:commit-${{ github.sha }}
+          tags: ${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-buildtools-linux:commit-${{ github.sha }}
+
+  build-windows:
+    name: Setup, Build, and Publish for Windows
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: "1.14.0"
+
+      - name: Build windows-builder tool
+        run: |
+          (cd windows/builder && go build -o main .)
+
+      - name: Add service account key to builder workspace
+        run: |
+          echo ${{ secrets.GOOGLE_CLOUD_SERVICE_ACCOUNT_KEY }} > windows/builder-workspace/service-account-key.json
+
+      - name: Start Windows VM, Build image and push to GAR via said VM, tear down VM
+        run: |
+          ./windows/builder/main \
+            -labels type=windows-image-builder \
+            -region europe-west1 \
+            -zone europe-west1-b \
+            -machineType n1-standard-2 \
+            -workspace-path windows/builder-workspace \
+            -command "powershell -File Build.ps1 -GceRegion ${{ secrets.ARTIFACT_REGISTRY_LOCATION }} -ImageName ${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-buildtools-windows -ImageTag commit-${{ github.sha }}"
