@@ -6,12 +6,12 @@
 
 Write-Host "Installing Visual Studio Build Tools..."
 
-#Install-VisualStudioBuildTools
+Install-VisualStudioBuildTools
 
 Write-Host "Installing Debugging Tools for Windows..."
 
 # This provides PDBCOPY.EXE which is used when packaging up the Engine
-#Install-DebuggingToolsForWindows
+Install-DebuggingToolsForWindows
 
 Write-Host "Installing XINPUT1_3.DLL..."
 
