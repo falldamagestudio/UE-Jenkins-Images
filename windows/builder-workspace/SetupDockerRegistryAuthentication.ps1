@@ -16,4 +16,10 @@ Invoke-WebRequest -Uri ${DockerCredentialGcrDownloadURL} -OutFile docker-credent
 
 # Use service account file for authentication
 
-Copy-Item -Path .\service-account-key.json -Destination "${env:APPDATA}\gcloud\application_default_credentials.json" -ErrorAction Stop
+$GCloudConfigFolder = "${env:APPDATA}\gcloud"
+
+if (!(Test-Path $GCloudConfigFolder)) {
+	New-Item -Type Directory $GCloudConfigFolder -ErrorAction Stop | Out-Null
+}
+
+Copy-Item -Path .\service-account-key.json -Destination "${GCloudConfigFolder}\application_default_credentials.json" -ErrorAction Stop
