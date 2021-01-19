@@ -24,6 +24,7 @@ var (
 	zone             = flag.String("zone", "us-central1-f", "The zone name to use when creating the Windows server")
 	labels           = flag.String("labels", "", "List of label KEY=VALUE pairs separated by comma to add when creating the Windows server")
 	machineType      = flag.String("machineType", "", "The machine type to use when creating the Windows server")
+	diskType         = flag.String("diskType", "", "The disk to use when creating the Windows server (ref: https://cloud.google.com/compute/docs/disks#disk-types)")
 	commandTimeout   = flag.Int("commandTimeout", 5, "The command run timeout in minutes")
 	copyTimeout      = flag.Int("copyTimeout", 5, "The workspace copy timeout in minutes")
 	serviceAccount   = flag.String("serviceAccount", "default", "The service account to use when creating the Windows server")
@@ -54,6 +55,7 @@ func main() {
 			Zone:           zone,
 			Labels:         labels,
 			MachineType:    machineType,
+			DiskType:       diskType,
 			ServiceAccount: serviceAccount,
 		}
 		s = builder.NewServer(ctx, bs)
