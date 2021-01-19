@@ -4,6 +4,9 @@ param (
 	[Parameter(Mandatory=$true)][string]$ImageTag
 )
 
+. "${PSScriptRoot}\Resize-PartitionToMaxSize.ps1"
+Resize-PartitionToMaxSize -DriveLetter C
+
 & "${PSScriptRoot}\SetupDockerRegistryAuthentication.ps1" -GceRegion ${GceRegion}
 
 & "${PSScriptRoot}\BuildImage.ps1" -ImageName ${ImageName} -ImageTag ${ImageTag}
