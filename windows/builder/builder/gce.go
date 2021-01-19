@@ -160,6 +160,7 @@ func (s *Server) newInstance(bs *BuilderServer) error {
 					DiskName:    fmt.Sprintf("%s-pd", name),
 					SourceImage: prefix + *bs.ImageUrl,
 					DiskType:    prefix + s.projectID + "/zones/" + *bs.Zone + "/diskTypes/" + diskType,
+					DiskSizeGb:  bs.DiskSizeGb,
 				},
 			},
 		},

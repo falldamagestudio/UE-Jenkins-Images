@@ -35,6 +35,7 @@ type BuilderServer struct {
 	Labels         *string
 	MachineType    *string
 	DiskType       *string
+	DiskSizeGb     int64
 	ServiceAccount *string
 }
 
