@@ -59,9 +59,7 @@ jobs:
 
       - name: Add service account key to builder workspace
         run: |
-          cat > windows/builder-workspace/service-account-key.json <<EOL \
-            ${{ secrets.GOOGLE_CLOUD_SERVICE_ACCOUNT_KEY }} \
-            EOL
+          echo '${{ secrets.GOOGLE_CLOUD_SERVICE_ACCOUNT_KEY }}' > windows/builder-workspace/service-account-key.json
 
       - name: Start Windows VM, Build image and push to GAR via said VM, tear down VM
         run: |
