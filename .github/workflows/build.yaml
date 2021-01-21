@@ -67,8 +67,8 @@ jobs:
         run: |
           ./windows/builder/main \
             -labels type=windows-image-builder \
-            -region europe-west1 \
-            -zone europe-west1-b \
+            -region ${{ secrets.GOOGLE_CLOUD_REGION }} \
+            -zone ${{ secrets.GOOGLE_CLOUD_ZONE }} \
             -machineType n1-standard-4 \
             -diskType pd-ssd \
             -diskSizeGb 100 \
