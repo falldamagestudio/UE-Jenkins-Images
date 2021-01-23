@@ -26,6 +26,10 @@ kubernetes-credentials-provider:0.15
 # https://plugins.jenkins.io/job-dsl/
 job-dsl:1.77
 
+# The Timestamper plugin adds timestamps to the console output of Jenkins jobs.
+# https://plugins.jenkins.io/timestamper/
+timestamper:1.11.8
+
 ###################################################################
 
 # This plugin provides Matrix Authorization, i.e. giving individual users/groups permission to do individual things
