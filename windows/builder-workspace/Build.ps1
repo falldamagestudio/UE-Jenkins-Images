@@ -7,6 +7,10 @@ param (
 . "${PSScriptRoot}\Resize-PartitionToMaxSize.ps1"
 Resize-PartitionToMaxSize -DriveLetter C
 
+& "${PSScriptRoot}\InstallTestDependencies.ps1"
+
+& "${PSScriptRoot}\RunTests.ps1"
+
 & "${PSScriptRoot}\SetupDockerRegistryAuthentication.ps1" -GceRegion ${GceRegion}
 
 & "${PSScriptRoot}\BuildImage.ps1" -ImageName ${ImageName} -ImageTag ${ImageTag}
