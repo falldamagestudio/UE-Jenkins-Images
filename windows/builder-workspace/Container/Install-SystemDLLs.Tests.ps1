@@ -2,11 +2,11 @@
 
 BeforeAll {
 
-	. ${PSScriptRoot}\Install-XInputDLL.ps1
+	. ${PSScriptRoot}\Install-SystemDLLs.ps1
 
 }
 
-Describe 'Install-XInputDLL' {
+Describe 'Install-SystemDLLs' {
 
 	It "Reports error if path join fails" {
 
@@ -14,7 +14,7 @@ Describe 'Install-XInputDLL' {
 
 		Mock Copy-Item { }
 
-		{ Install-XInputDLL } |
+		{ Install-SystemDLLs } |
 			Should -Throw "Join-Path Failed"
 
 		Assert-MockCalled -Times 0 Copy-Item
@@ -26,7 +26,7 @@ Describe 'Install-XInputDLL' {
 
 		Mock Copy-Item { throw "Copy-Item failed" }
 
-		{ Install-XInputDLL } |
+		{ Install-SystemDLLs } |
 			Should -Throw "Copy-Item Failed"
 
 		Assert-MockCalled -Times 1 Copy-Item
@@ -38,10 +38,10 @@ Describe 'Install-XInputDLL' {
 
 		Mock Copy-Item { }
 
-		{ Install-XInputDLL } |
+		{ Install-SystemDLLs } |
 			Should -Not -Throw "Copy-Item Failed"
 
-		Assert-MockCalled -Times 1 Copy-Item
+		Assert-MockCalled -Times 4 Copy-Item
 	}
 
 }
