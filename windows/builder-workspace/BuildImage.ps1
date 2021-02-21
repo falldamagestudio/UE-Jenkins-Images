@@ -1,13 +1,13 @@
+param (
+	[Parameter(Mandatory=$true)][string]$ImageName,
+	[Parameter(Mandatory=$true)][string]$ImageTag
+)
+
 class DockerBuildException : Exception {
 	$ExitCode
 
 	DockerBuildException([int] $exitCode) : base("docker build exited with code ${exitCode}") { $this.ExitCode = $exitCode }
 }
-
-param (
-	[Parameter(Mandatory=$true)][string]$ImageName,
-	[Parameter(Mandatory=$true)][string]$ImageTag
-)
 
 # Install DirectX Redistributable
 # This is the only officially supported way to get hold of xinput1_3.dll & d3dcompiler_43.dll

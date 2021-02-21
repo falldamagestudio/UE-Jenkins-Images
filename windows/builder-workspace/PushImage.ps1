@@ -1,13 +1,13 @@
+param (
+	[Parameter(Mandatory=$true)][string]$ImageName,
+	[Parameter(Mandatory=$true)][string]$ImageTag
+)
+
 class DockerPushException : Exception {
 	$ExitCode
 
 	DockerPushException([int] $exitCode) : base("docker push exited with code ${exitCode}") { $this.ExitCode = $exitCode }
 }
-
-param (
-	[Parameter(Mandatory=$true)][string]$ImageName,
-	[Parameter(Mandatory=$true)][string]$ImageTag
-)
 
 # Push built container image to remote registry
 
