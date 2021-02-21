@@ -63,6 +63,10 @@ jobs:
         run: |
           echo '${{ secrets.GOOGLE_CLOUD_BUILD_ARTIFACT_UPLOADER_SERVICE_ACCOUNT_KEY }}' > windows/builder-workspace/service-account-key.json
 
+      - name: Zip up builder workspace
+        run: |
+          (cd windows/builder-workspace && mkdir ../builder-workspace-zipped && zip -r ../builder-workspace-zipped/builder-workspace.zip *)
+
       - name: Start Windows VM, Build image and push to GAR via said VM, tear down VM
         run: |
           ./windows/builder/main \
@@ -72,6 +76,6 @@ jobs:
             -machineType n1-standard-4 \
             -diskType pd-ssd \
             -diskSizeGb 100 \
-            -workspace-path windows/builder-workspace \
+            -workspace-path windows/builder-workspace-zipped \
             -serviceAccount build-artifact-uploader@${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}.iam.gserviceaccount.com \
-            -command "powershell try { .\\Build.ps1 -GceRegion ${{ secrets.ARTIFACT_REGISTRY_LOCATION }} -ImageName ${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-buildtools-windows -ImageTag commit-${{ github.sha }} } catch { Write-Error \$_ }"
+            -command "powershell try { Expand-Archive -Path .\\builder-workspace.zip -DestinationPath .; .\\Build.ps1 -GceRegion ${{ secrets.ARTIFACT_REGISTRY_LOCATION }} -ImageName ${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-buildtools-windows -ImageTag commit-${{ github.sha }} } catch { Write-Error \$_ }"
