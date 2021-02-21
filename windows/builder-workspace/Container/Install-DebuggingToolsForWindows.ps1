@@ -18,7 +18,7 @@ function Install-DebuggingToolsForWindows {
 		$InstallerLocation = (Join-Path -Path $TempFolder -ChildPath $BuildToolsExeName -ErrorAction Stop)
 
 		# Download Windows SDK
-		Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/p/?linkid=2120843" -OutFile $InstallerLocation -ErrorAction Stop
+		Invoke-WebRequest -UseBasicParsing -Uri "https://go.microsoft.com/fwlink/p/?linkid=2120843" -OutFile $InstallerLocation -ErrorAction Stop
 	
 		$Process = Start-Process -FilePath $InstallerLocation -ArgumentList "/norestart","/quiet","/features","OptionId.WindowsDesktopDebuggers" -NoNewWindow -Wait -PassThru
 	

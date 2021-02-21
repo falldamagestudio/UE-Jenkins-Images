@@ -19,7 +19,7 @@ function Install-VisualStudioBuildTools {
 		$InstallerLocation = (Join-Path -Path $TempFolder -ChildPath $BuildToolsExeName -ErrorAction Stop)
 
 		# Download installer
-		Invoke-WebRequest -Uri "https://aka.ms/vs/16/release/vs_buildtools.exe" -OutFile $InstallerLocation -ErrorAction Stop
+		Invoke-WebRequest -UseBasicParsing -Uri "https://aka.ms/vs/16/release/vs_buildtools.exe" -OutFile $InstallerLocation -ErrorAction Stop
 
 		# Invoke installer
 		$WorkloadsAndComponents = @(

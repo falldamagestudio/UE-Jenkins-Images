@@ -7,7 +7,7 @@ $ServiceAccountKeyFile = ".\service-account-key.json"
 
 # Download docker-credential-gcr
 
-Invoke-WebRequest -Uri ${DockerCredentialGcrDownloadURL} -OutFile docker-credential-gcr.tgz -ErrorAction Stop
+Invoke-WebRequest -UseBasicParsing -Uri ${DockerCredentialGcrDownloadURL} -OutFile docker-credential-gcr.tgz -ErrorAction Stop
 & tar -xzvf docker-credential-gcr.tgz
 
 # Configure docker to use docker-credential gcr for authentication
