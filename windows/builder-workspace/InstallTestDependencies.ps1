@@ -1,4 +1,7 @@
 # Install Pester (latest version, v5.0.0 or newer)
+Write-Host "PSVersion:"
+$PSVersionTable.PSVersion | Out-Host
+Find-Module -Name Pester | Out-Host
 Get-Module -Name Pester | Out-Host
 Get-Command -Module pester | Select-Object -Property name, version -First 3 | Out-Host
 Install-Module -Name Pester -Force -SkipPublisherCheck -ErrorAction Stop
