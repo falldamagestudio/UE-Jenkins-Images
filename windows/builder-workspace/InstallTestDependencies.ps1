@@ -1,5 +1,5 @@
 # Install Pester (latest version, v5.0.0 or newer)
-Install-Module -Name Pester --Force -SkipPublisherCheck -MinimumVersion 5.0.0 -ErrorAction Stop -Verbose | Out-Host
+Install-Module -Name Pester -Force -SkipPublisherCheck -MinimumVersion 5.0.0 -ErrorAction Stop -Verbose | Out-Host
 Get-Module -Name Pester | Remove-Module
 Import-Module -Name Pester -MinimumVersion 5.0.0 -ErrorAction Stop -Verbose | Out-Host
 Get-Module -Name Pester -Verbose | Out-Host
