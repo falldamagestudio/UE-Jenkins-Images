@@ -20,7 +20,7 @@ function Install-SystemDLLs {
 
 	$TargetFolder = "C:\Windows\System32"
 
-	for ($DLLName in $DLLNames) {
+	foreach ($DLLName in $DLLNames) {
 
 		$SourceLocation = (Join-Path $PSScriptRoot $DLLName -ErrorAction Stop)
 		$TargetLocation = (Join-Path $TargetFolder $DLLName -ErrorAction Stop)
