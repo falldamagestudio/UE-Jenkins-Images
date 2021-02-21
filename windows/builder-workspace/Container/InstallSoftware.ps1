@@ -4,6 +4,8 @@
 
 . ${PSScriptRoot}\Install-SystemDLLs.ps1
 
+. ${PSScriptRoot}\Install-VC2010RedistributableX64.ps1
+
 Write-Host "Installing Visual Studio Build Tools..."
 
 Install-VisualStudioBuildTools
@@ -21,5 +23,11 @@ Write-Host "Installing additional system DLLs..."
 #  explicitly provided from the host OS side.
 Install-SystemDLLs
 # Install-DirectXRedistributable
+
+Write-Host "Installing VC++ 2010 Redistributable (x64)..."
+
+# This provides MSVCP100.DLL & MSVCR100.DLL which is used by Engine/Binaries/ThirdParty/QualComm/Win64/TextureConverter.dll
+#  which in turn is loaded by UE4Editor-Cmd.exe
+Install-VC2010RedistributableX64
 
 Write-Host "Done."
