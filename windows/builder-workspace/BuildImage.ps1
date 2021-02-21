@@ -1,3 +1,9 @@
+class DockerBuildException : Exception {
+	$ExitCode
+
+	DockerBuildException([int] $exitCode) : base("docker build exited with code ${exitCode}") { $this.ExitCode = $exitCode }
+}
+
 param (
 	[Parameter(Mandatory=$true)][string]$ImageName,
 	[Parameter(Mandatory=$true)][string]$ImageTag
@@ -27,3 +33,7 @@ Copy-Item C:\Windows\System32\glu32.dll Container -ErrorAction Stop
 # Build container image
 
 & docker build -t "${ImageName}:${ImageTag}" -f ue-jenkins-buildtools-windows.Dockerfile .
+$DockerExitCode = $LASTEXITCODE
+if ($DockerExitcode -ne 0) {
+	throw [DockerBuildException]::new($DockerExitCode)
+}
