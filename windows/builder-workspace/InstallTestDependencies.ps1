@@ -7,7 +7,7 @@ Get-Command -Module pester | Select-Object -Property name, version -First 3 | Ou
 Install-Module -Name Pester -Force -SkipPublisherCheck -ErrorAction Stop -Verbose | Out-Host
 Get-Module -Name Pester -Verbose | Out-Host
 Get-Command -Module pester -Verbose | Select-Object -Property name, version -First 3 | Out-Host
-Import-Module Pester -ErrorAction Stop -Verbose | Out-Host
+Import-Module -Name Pester -RequiredVersion 5.1.1 -ErrorAction Stop -Verbose | Out-Host
 Get-Module -Name Pester -Verbose | Out-Host
 Get-Command -Module pester -Verbose | Select-Object -Property name, version -First 3 | Out-Host
 
