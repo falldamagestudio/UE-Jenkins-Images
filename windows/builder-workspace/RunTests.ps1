@@ -1,7 +1,7 @@
 class PesterException : Exception {
-	$ExitCode
+	$NumFailedTests
 
-	PesterException([int] $exitCode) : base("${exitCode} tests failed") { $this.ExitCode = $exitCode }
+	PesterException([int] $numFailedTests) : base("${numFailedTests} tests failed") { $this.NumFailedTests = $numFailedTests }
 }
 
 # Run Pester tests, both for host OS scripts and container scripts
