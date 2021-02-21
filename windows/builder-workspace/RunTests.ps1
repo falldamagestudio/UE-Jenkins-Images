@@ -8,6 +8,9 @@ class PesterException : Exception {
 Invoke-Pester
 
 # Pester will return number of failed tests as its exit code; convert nonzero exit codes into exceptions
-if ($LASTEXITCODE -ne 0) {
-	throw [PesterException]::new($LASTEXITCODE)
+$NumFailedTests = $LASTEXITCODE
+Write-Host $NumFailedTests
+
+if ($NumFailedTests -ne 0) {
+	throw [PesterException]::new($NumFailedTests)
 }
