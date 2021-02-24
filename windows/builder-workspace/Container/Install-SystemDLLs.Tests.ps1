@@ -41,7 +41,7 @@ Describe 'Install-SystemDLLs' {
 		{ Install-SystemDLLs } |
 			Should -Not -Throw "Copy-Item Failed"
 
-		Assert-MockCalled -Times 4 Copy-Item
+		Assert-MockCalled -Times 5 Copy-Item
 	}
 
 }

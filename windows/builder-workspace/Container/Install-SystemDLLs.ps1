@@ -11,6 +11,10 @@ function Install-SystemDLLs {
 		# This is needed when loading UE4Editor-ShaderFormatD3D.dll.
 		"D3DCOMPILER_43.DLL"
 
+		# Similarly, this DLL is part of DirectX, and cannot be installed directly into a Windows Server Core container.
+		# This is part of a dependency chain like so: UE4Editor-OnlineSubsystem*.dll => UE4Editor-OnlineSubsystemUtils.dll => UE4Editor-Voice.dll => DSOUND.dll
+		"DSOUND.DLL"
+
 		# These DLLs are part of core OpenGL. They are present in a standard Windows Server
 		#  installation but not a Windows Server Core container.
 		# These are needed when loading UE4Editor-ShaderFormatOpenGL.dll.

@@ -24,6 +24,10 @@ Install-DirectXRedistributable
 Copy-Item C:\Windows\System32\xinput1_3.dll Container -ErrorAction Stop
 Copy-Item C:\Windows\System32\d3dcompiler_43.dll Container -ErrorAction Stop
 
+# Provide DSOUND.dll from host OS to the container build process
+
+Copy-Item C:\Windows\System32\DSOUND.dll Container -ErrorAction Stop
+
 # Provide opengl32.dll & glu32.dll from host OS to the container build process
 # (these are part of Windows Server, but not Windows Server Core)
 
