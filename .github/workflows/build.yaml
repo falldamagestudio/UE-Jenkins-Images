@@ -63,6 +63,8 @@ jobs:
         run: |
           echo '${{ secrets.GOOGLE_CLOUD_BUILD_ARTIFACT_UPLOADER_SERVICE_ACCOUNT_KEY }}' > windows/builder-workspace/service-account-key.json
 
+      # We zip up the builder-workspace folder, because the cloud image builder will otherwise copy builder-workspace files
+      # one-by-one, spending one second per file
       - name: Zip up builder workspace
         run: |
           (cd windows/builder-workspace && mkdir ../builder-workspace-zipped && zip -r ../builder-workspace-zipped/builder-workspace.zip *)
