@@ -1,10 +1,10 @@
 # This plugin allows configuration of Jenkins based on human-readable declarative configuration files.
 # https://plugins.jenkins.io/configuration-as-code/
-configuration-as-code:1.46
+configuration-as-code:1.47
 
 # This plugin integrates Git with Jenkins.
 # https://plugins.jenkins.io/git/
-git:4.4.5
+git:4.6.0
 
 # This is a Jenkins plugin which lets you log in to Jenkins with your Google account. Also allows you to restrict access to accounts in a given Google Apps domain.
 # https://plugins.jenkins.io/google-login/
@@ -12,7 +12,7 @@ google-login:1.6
 
 # Jenkins plugin to run dynamic agents in a Kubernetes cluster.
 # https://plugins.jenkins.io/kubernetes/
-kubernetes:1.28.3
+kubernetes:1.29.2
 
 # A suite of plugins that lets you orchestrate automation, simple or complex.
 # https://plugins.jenkins.io/workflow-aggregator/
@@ -20,7 +20,7 @@ workflow-aggregator:2.6
 
 # The Kubernetes Credentials Provider is a Jenkins plugin to enable the retreival of Credentials directly from Kubernetes.
 # https://plugins.jenkins.io/kubernetes-credentials-provider/
-kubernetes-credentials-provider:0.15
+kubernetes-credentials-provider:0.16
 
 # The Job DSL plugin allows jobs to be defined in a programmatic form in a human readable file.
 # https://plugins.jenkins.io/job-dsl/
