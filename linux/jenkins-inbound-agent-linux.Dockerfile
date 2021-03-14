@@ -1,4 +1,4 @@
-FROM jenkins/agent:latest@sha256:93386d22c7f729992e3ad78dfe5281346b5b3db136684a51d55083329768fc36
+FROM jenkins/inbound-agent:4.6-1@sha256:19b6cb12bffa7e0d108fd66b14df96c819f729dc4ab7e0a43d53cbe154899b53
 
 # Install Plastic SCM client
 
