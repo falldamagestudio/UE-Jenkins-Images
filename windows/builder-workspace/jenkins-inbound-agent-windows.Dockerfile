@@ -5,7 +5,7 @@ FROM jenkins/inbound-agent:windowsservercore-ltsc2019@sha256:ca525de44ed36fe2769
 # Include all installation scripts
 COPY Container\*.ps1 C:\Workspace\
 
-RUN "powershell try { C:\Workspace\InstallSoftware.ps1 } catch { Write-Error $_ }"
+RUN "powershell try { write-host started; C:\Workspace\InstallSoftware.ps1 } catch { Write-Error $_ }"
 
 RUN "powershell Remove-Item C:\Workspace -Recurse -Force"
 
