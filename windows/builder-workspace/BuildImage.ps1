@@ -11,7 +11,7 @@ class DockerBuildException : Exception {
 
 # Build container image
 
-& docker build -t "${ImageName}:${ImageTag}" -f ue-jenkins-buildtools-windows.Dockerfile .
+& docker build -t "${ImageName}:${ImageTag}" -f jenkins-agent-windows.Dockerfile .
 $DockerExitCode = $LASTEXITCODE
 if ($DockerExitcode -ne 0) {
 	throw [DockerBuildException]::new($DockerExitCode)
