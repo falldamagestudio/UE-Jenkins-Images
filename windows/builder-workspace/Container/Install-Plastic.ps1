@@ -18,7 +18,7 @@ function Install-Plastic {
 		$InstallerLocation = (Join-Path -Path $TempFolder -ChildPath $InstallerExeName -ErrorAction Stop)
 
 		# Download Plastic SCM Client Installer
-		Invoke-WebRequest -UseBasicParsing -Uri "https://www.plasticscm.com/download/9.0.16.5201/plasticscm/windows/client" -OutFile $InstallerLocation -ErrorAction Stop
+		Invoke-WebRequest -UseBasicParsing -Uri "https://www.plasticscm.com/download/downloadinstaller/9.0.16.5201/plasticscm/windows/client?Flags=None" -OutFile $InstallerLocation -ErrorAction Stop
 	
 		$Process = Start-Process -FilePath $InstallerLocation -ArgumentList "--mode","unattended" -NoNewWindow -Wait -PassThru
 	
