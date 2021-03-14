@@ -8,5 +8,3 @@ COPY Container\*.ps1 C:\Workspace\
 RUN powershell try { write-host started; C:\Workspace\InstallSoftware.ps1 } catch { Write-Error $_ }
 
 RUN powershell Remove-Item C:\Workspace -Recurse -Force
-
-ENTRYPOINT ["powershell.exe"]
