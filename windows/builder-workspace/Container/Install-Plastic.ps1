@@ -20,7 +20,7 @@ function Install-Plastic {
 		# Download Plastic SCM Client Installer
 		Invoke-WebRequest -UseBasicParsing -Uri "https://www.plasticscm.com/download/downloadinstaller/9.0.16.5201/plasticscm/windows/client?Flags=None" -OutFile $InstallerLocation -ErrorAction Stop
 	
-		$Process = Start-Process -FilePath $InstallerLocation -ArgumentList "--mode","unattended","--enable-components","default" -NoNewWindow -Wait -PassThru
+		$Process = Start-Process -FilePath $InstallerLocation -ArgumentList "--mode","unattended" -NoNewWindow -Wait -PassThru
 	
 		if ($Process.ExitCode -ne 0) {
 			throw [PlasticInstallerException]::new($Process.ExitCode)
