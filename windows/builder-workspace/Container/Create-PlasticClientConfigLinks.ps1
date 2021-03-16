@@ -30,7 +30,7 @@ function Create-PlasticClientConfigLinks {
     $TargetFolder = "C:\plastic-config"
 
     # Create folder for config files
-    New-Item -ItemType Directory -Path $SourceFolder
+    New-Item -ItemType Directory -Path $SourceFolder | Out-Null
 
     # Symlink critical files from config folder to nonexistent folder
     CreateSymlink -SourceLocation (Join-Path $SourceFolder "client.conf") -TargetLocation (Join-Path $TargetFolder "client.conf")
