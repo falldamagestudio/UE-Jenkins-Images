@@ -29,6 +29,10 @@ function Create-PlasticClientConfigLinks {
     $SourceFolder = "C:\Users\Jenkins\AppData\Local\plastic4"
     $TargetFolder = "C:\plastic-config"
 
+    # Create folder for config files
+    New-Item -ItemType Directory -Path $SourceFolder
+
+    # Symlink critical files from config folder to nonexistent folder
     CreateSymlink -SourceLocation (Join-Path $SourceFolder "client.conf") -TargetLocation (Join-Path $TargetFolder "client.conf")
     CreateSymlink -SourceLocation (Join-Path $SourceFolder "cryptedservers.conf") -TargetLocation (Join-Path $TargetFolder "cryptedservers.conf")
     CreateSymlink -SourceLocation (Join-Path $SourceFolder "cryptedserver.key") -TargetLocation (Join-Path $TargetFolder "cryptedserver.key")
