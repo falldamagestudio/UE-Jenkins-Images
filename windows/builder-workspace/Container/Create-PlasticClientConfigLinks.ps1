@@ -26,7 +26,7 @@ function Create-PlasticClientConfigLinks {
           still allowing cm.exe to write to other files within the config folder
     #>
 
-    $SourceFolder = "C:\Users\Jenkins\AppData\Local\plastic4"
+    $SourceFolder = "${env:LOCALAPPDATA}\plastic4"
     $TargetFolder = "C:\plastic-config"
 
     # Create folder for config files
