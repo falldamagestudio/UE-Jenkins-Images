@@ -1,4 +1,4 @@
-name: Build and publish ue-jenkins-buildtools to GAR
+name: Build and publish ue-jenkins-buildtools
 
 on:
   push:
