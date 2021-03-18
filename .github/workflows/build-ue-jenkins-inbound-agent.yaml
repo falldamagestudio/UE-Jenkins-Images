@@ -1,4 +1,4 @@
-name: Build and Push to GAR
+name: Build and publish ue-jenkins-inbound-agent
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-linux:
-    name: Setup, Build, and Publish for Linux
+    name: Build and publish ue-jenkins-inbound-agent for Linux
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -37,7 +37,7 @@ jobs:
           tags: ${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/jenkins-inbound-agent-linux:commit-${{ github.sha }}
 
   build-windows:
-    name: Setup, Build, and Publish for Windows
+    name: Build and publish ue-jenkins-inbound-agent for Windows
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

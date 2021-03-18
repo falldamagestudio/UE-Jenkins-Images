@@ -1,4 +1,4 @@
-name: Build and Push to GCR
+name: Build and publish ue-jenkins-controller
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Setup, Build, and Publish
+    name: Build and publish ue-jenkins-controller
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
