@@ -34,7 +34,7 @@ jobs:
         with:
           file: ./linux/jenkins-inbound-agent.linux.Dockerfile
           push: true
-          tags: ${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-inbound-agent:commit-${{ github.sha }}-linux
+          tags: ${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-inbound-agent:commit-$(git rev-parse --short ${{ github.sha }})-linux
 
   build-windows:
     name: Build and publish ue-jenkins-inbound-agent for Windows
@@ -83,4 +83,4 @@ jobs:
             -image windows-cloud/global/images/windows-server-2019-dc-for-containers-v20210212 \
             -workspace-path windows/builder-workspace-zipped \
             -serviceAccount build-artifact-uploader@${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}.iam.gserviceaccount.com \
-            -command "powershell try { Expand-Archive -Path .\\builder-workspace.zip -DestinationPath .; .\\Build.ps1 -GceRegion ${{ secrets.ARTIFACT_REGISTRY_LOCATION }} -ImageName ${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-inbound-agent -ImageTag commit-${{ github.sha }}-windows } catch { Write-Error \$_ }"
+            -command "powershell try { Expand-Archive -Path .\\builder-workspace.zip -DestinationPath .; .\\Build.ps1 -GceRegion ${{ secrets.ARTIFACT_REGISTRY_LOCATION }} -ImageName ${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-inbound-agent -ImageTag commit-$(git rev-parse --short ${{ github.sha }})-windows } catch { Write-Error \$_ }"
