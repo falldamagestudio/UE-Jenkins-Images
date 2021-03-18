@@ -36,6 +36,7 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v2
         with:
+          context: ./ue-jenkins-buildtools/linux
           file: ./ue-jenkins-buildtools/linux/ue-jenkins-buildtools.linux.Dockerfile
           push: true
           tags: ${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-buildtools:commit-${{ steps.compute_short_sha.short_sha }}-linux
