@@ -32,9 +32,9 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v2
         with:
-          file: ./linux/ue-jenkins-buildtools-linux.Dockerfile
+          file: ./linux/ue-jenkins-buildtools.linux.Dockerfile
           push: true
-          tags: ${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-buildtools-linux:commit-${{ github.sha }}
+          tags: ${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-buildtools:commit-${{ github.sha }}-linux
 
   build-windows:
     name: Build and publish ue-jenkins-buildtools for Windows
@@ -83,4 +83,4 @@ jobs:
             -image windows-cloud/global/images/windows-server-2019-dc-for-containers-v20210212 \
             -workspace-path windows/builder-workspace-zipped \
             -serviceAccount build-artifact-uploader@${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}.iam.gserviceaccount.com \
-            -command "powershell try { Expand-Archive -Path .\\builder-workspace.zip -DestinationPath .; .\\Build.ps1 -GceRegion ${{ secrets.ARTIFACT_REGISTRY_LOCATION }} -ImageName ${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-buildtools-windows -ImageTag commit-${{ github.sha }} } catch { Write-Error \$_ }"
+            -command "powershell try { Expand-Archive -Path .\\builder-workspace.zip -DestinationPath .; .\\Build.ps1 -GceRegion ${{ secrets.ARTIFACT_REGISTRY_LOCATION }} -ImageName ${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-buildtools -ImageTag commit-${{ github.sha }}-windows } catch { Write-Error \$_ }"
