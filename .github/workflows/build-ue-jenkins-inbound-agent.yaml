@@ -13,6 +13,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Compute short SHA
+        run: echo "::set-output name=short_sha::$(git rev-parse --short ${{ github.sha }})"
+        id: compute_short_sha
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
 
@@ -34,7 +38,7 @@ jobs:
         with:
           file: ./ue-jenkins-inbound-agent/linux/jenkins-inbound-agent.linux.Dockerfile
           push: true
-          tags: ${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-inbound-agent:commit-$(git rev-parse --short ${{ github.sha }})-linux
+          tags: ${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-inbound-agent:commit-${{ steps.compute_short_sha.short_sha }}-linux
 
   build-windows:
     name: Build and publish ue-jenkins-inbound-agent for Windows
@@ -42,6 +46,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
+      - name: Compute short SHA
+        run: echo "::set-output name=short_sha::$(git rev-parse --short ${{ github.sha }})"
+        id: compute_short_sha
 
       - name: Setup Go
         uses: actions/setup-go@v2
@@ -83,4 +91,4 @@ jobs:
             -image windows-cloud/global/images/windows-server-2019-dc-for-containers-v20210212 \
             -workspace-path ue-jenkins-inbound-agent/windows/builder-workspace-zipped \
             -serviceAccount build-artifact-uploader@${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}.iam.gserviceaccount.com \
-            -command "powershell try { Expand-Archive -Path .\\builder-workspace.zip -DestinationPath .; .\\Build.ps1 -GceRegion ${{ secrets.ARTIFACT_REGISTRY_LOCATION }} -ImageName ${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-inbound-agent -ImageTag commit-$(git rev-parse --short ${{ github.sha }})-windows } catch { Write-Error \$_ }"
+            -command "powershell try { Expand-Archive -Path .\\builder-workspace.zip -DestinationPath .; .\\Build.ps1 -GceRegion ${{ secrets.ARTIFACT_REGISTRY_LOCATION }} -ImageName ${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-inbound-agent -ImageTag commit-${{ steps.compute_short_sha.short_sha }}-windows } catch { Write-Error \$_ }"
