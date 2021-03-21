@@ -37,6 +37,5 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./ue-jenkins-controller
-          file: ./ue-jenkins-controller/ue-jenkins-controller.Dockerfile
           push: true
           tags: ${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-controller:commit-${{ steps.compute_short_sha.outputs.short_sha }}

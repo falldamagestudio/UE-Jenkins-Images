@@ -38,7 +38,7 @@ Copy-Item C:\Windows\System32\glu32.dll Container -ErrorAction Stop
 
 # Build container image
 
-& docker build -t "${ImageName}:${ImageTag}" -f ue-jenkins-buildtools.windows.Dockerfile .
+& docker build -t "${ImageName}:${ImageTag}" .
 $DockerExitCode = $LASTEXITCODE
 if ($DockerExitcode -ne 0) {
 	throw [DockerBuildException]::new($DockerExitCode)

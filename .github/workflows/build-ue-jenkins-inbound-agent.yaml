@@ -37,7 +37,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./ue-jenkins-inbound-agent/linux
-          file: ./ue-jenkins-inbound-agent/linux/ue-jenkins-inbound-agent.linux.Dockerfile
           push: true
           tags: ${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-inbound-agent:commit-${{ steps.compute_short_sha.outputs.short_sha }}-linux
 
