@@ -1,6 +1,6 @@
 # escape=`
 
-FROM jenkins/inbound-agent:windowsservercore-ltsc2019@sha256:ca525de44ed36fe27694d91c5cfcaece9f43baefb1c9fc0e15b02722a9680bc7
+FROM jenkins/inbound-agent:4.7-1-jdk11-windowsservercore-ltsc2019@sha256:9059353c2f70278e11d6a3ed7c258b24c299939de54885e6319f229c35cee23f
 
 # Include all installation scripts
 COPY Container\*.ps1 C:\Workspace\

@@ -1,4 +1,4 @@
-FROM jenkins/jenkins:lts@sha256:3647dc7dcf43faf20a612465dc1aed6bf510893ff9724df4050604af80123b85
+FROM jenkins/jenkins:2.285-jdk11@sha256:5a133a674ec0f233ae52c25f6ee6d7edb8d6bf314dc1c85e70e323157a2ad6ce
 
 ENV JAVA_OPTS -Djenkins.install.runSetupWizard=false
 
