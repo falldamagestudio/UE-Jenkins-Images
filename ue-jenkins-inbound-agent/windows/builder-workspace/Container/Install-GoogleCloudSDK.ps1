@@ -8,8 +8,8 @@ function Install-GoogleCloudSDK {
 
 	$TempFolder = "C:\Temp"
 	$ArchiveName = "google-cloud-sdk.zip"
-	$ProgramFilesFolder = "C:\Program Files"
-    $ProgramFolder = "C:\Program Files\google-cloud-sdk"
+	$InstallFolder = "C:\Program Files" # The Google Cloud SDK will install into a folder named 'google-cloud-sdk' within thie folder
+	$BinFolder = "google-cloud-sdk\bin" # Location of binaries folder within Google Cloud SDK package
 
 	# Create temp folder
 	New-Item $TempFolder -ItemType Directory -Force -ErrorAction Stop | Out-Null
@@ -24,15 +24,14 @@ function Install-GoogleCloudSDK {
         # Unpack SDK to installation folder
 		# Note that the Google Cloud SDK is placed within a folder called 'google-cloud-sdk' within the archive,
 		#  so we will not create a folder for the SDK within Program Files ourselves
-        Expand-Archive -Path $ArchiveLocation -DestinationPath $ProgramFilesFolder
+        Expand-Archive -Path $ArchiveLocation -DestinationPath $InstallFolder
 
-		# Run installation script
-		$InstallBatLocation = (Join-Path -Path ${ProgramFolder} -ChildPath "install.bat")
-		$Process = Start-Process -FilePath "cmd.exe" -ArgumentList "/c","""${InstallBatLocation}""","--usage-reporting","false","--path-update","true","--quiet" -Wait -NoNewWindow -PassThru
-
-		if ($Process.ExitCode -ne 0) {
-			throw [GoogleCloudSDKInstallerException]::new($Process.ExitCode)
-		}
+		# Add Google Cloud SDK bin folder to all users' PATH
+		$BinLocation = (Join-Path -Path $InstallFolder -ChildPath $BinFolder)
+		$AllUsersEnvironmentPath = 'Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment'
+		$CurrentPath = (Get-ItemProperty -Path $AllUsersEnvironmentPath).Path
+		$NewPath = "${CurrentPath};${BinLocation}"
+		Set-ItemProperty -Path $AllUsersEnvironmentPath -Name "Path" -Value $NewPath
 
 	} finally {
 

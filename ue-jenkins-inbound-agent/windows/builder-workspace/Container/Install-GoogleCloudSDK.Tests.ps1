@@ -18,9 +18,10 @@ Describe 'Install-GoogleCloudSDK' {
 
         Mock Expand-Archive { throw "expand-archive failed" }
 
-		Mock Join-Path -ParameterFilter { $Path -eq "C:\Program Files\google-cloud-sdk" } { throw "Second Join-Path failed" }
+		Mock Join-Path -ParameterFilter { $Path -eq "C:\Program Files" } { throw "Second Join-Path failed" }
 
-		Mock Start-Process { throw "Start-Process failed" }
+		Mock Get-ItemProperty { throw "Get-ItemProperty failed" }
+		Mock Set-ItemProperty { throw "Set-ItemProperty failed" }
 
 		Mock Join-Path { throw "Join-Path called with wrong arguments" }
 
@@ -33,7 +34,8 @@ Describe 'Install-GoogleCloudSDK' {
 		Assert-MockCalled -Times 0 Join-Path
 		Assert-MockCalled -Times 0 Invoke-WebRequest
 		Assert-MockCalled -Times 0 Expand-Archive
-		Assert-MockCalled -Times 0 Start-Process
+		Assert-MockCalled -Times 0 Get-ItemProperty
+		Assert-MockCalled -Times 0 Set-ItemProperty
 	}
 
 	It "Reports error if first Join-Path fails, and removes temp folder" {
@@ -46,9 +48,10 @@ Describe 'Install-GoogleCloudSDK' {
 
         Mock Expand-Archive { throw "expand-archive failed" }
 
-		Mock Join-Path -ParameterFilter { $Path -eq "C:\Program Files\google-cloud-sdk" } { throw "Second Join-Path failed" }
+		Mock Join-Path -ParameterFilter { $Path -eq "C:\Program Files" } { throw "Second Join-Path failed" }
 
-		Mock Start-Process { throw "Start-Process failed" }
+		Mock Get-ItemProperty { throw "Get-ItemProperty failed" }
+		Mock Set-ItemProperty { throw "Set-ItemProperty failed" }
 
 		Mock Join-Path { throw "Join-Path called with wrong arguments" }
 
@@ -61,7 +64,8 @@ Describe 'Install-GoogleCloudSDK' {
 		Assert-MockCalled -Times 1 Join-Path
 		Assert-MockCalled -Times 0 Invoke-WebRequest
 		Assert-MockCalled -Times 0 Expand-Archive
-		Assert-MockCalled -Times 0 Start-Process
+		Assert-MockCalled -Times 0 Get-ItemProperty
+		Assert-MockCalled -Times 0 Set-ItemProperty
 		Assert-MockCalled -Times 1 Remove-Item
 	}
 
@@ -75,9 +79,10 @@ Describe 'Install-GoogleCloudSDK' {
 
         Mock Expand-Archive { throw "expand-archive failed" }
 
-		Mock Join-Path -ParameterFilter { $Path -eq "C:\Program Files\google-cloud-sdk" } { throw "Second Join-Path failed" }
+		Mock Join-Path -ParameterFilter { $Path -eq "C:\Program Files" } { throw "Second Join-Path failed" }
 
-		Mock Start-Process { throw "Start-Process failed" }
+		Mock Get-ItemProperty { throw "Get-ItemProperty failed" }
+		Mock Set-ItemProperty { throw "Set-ItemProperty failed" }
 
 		Mock Join-Path { throw "Join-Path called with wrong arguments" }
 
@@ -90,7 +95,8 @@ Describe 'Install-GoogleCloudSDK' {
 		Assert-MockCalled -Times 1 Join-Path
 		Assert-MockCalled -Times 1 Invoke-WebRequest
 		Assert-MockCalled -Times 0 Expand-Archive
-		Assert-MockCalled -Times 0 Start-Process
+		Assert-MockCalled -Times 0 Get-ItemProperty
+		Assert-MockCalled -Times 0 Set-ItemProperty
 		Assert-MockCalled -Times 1 Remove-Item
 	}
 
@@ -104,9 +110,10 @@ Describe 'Install-GoogleCloudSDK' {
 
         Mock Expand-Archive { throw "Expand-Archive failed" }
 
-		Mock Join-Path -ParameterFilter { $Path -eq "C:\Program Files\google-cloud-sdk" } { throw "Second Join-Path failed" }
+		Mock Join-Path -ParameterFilter { $Path -eq "C:\Program Files" } { throw "Second Join-Path failed" }
 
-		Mock Start-Process { throw "Start-Process failed" }
+		Mock Get-ItemProperty { throw "Get-ItemProperty failed" }
+		Mock Set-ItemProperty { throw "Set-ItemProperty failed" }
 
 		Mock Join-Path { throw "Join-Path called with wrong arguments" }
 
@@ -119,7 +126,8 @@ Describe 'Install-GoogleCloudSDK' {
 		Assert-MockCalled -Times 1 Join-Path
 		Assert-MockCalled -Times 1 Invoke-WebRequest
 		Assert-MockCalled -Times 1 Expand-Archive
-		Assert-MockCalled -Times 0 Start-Process
+		Assert-MockCalled -Times 0 Get-ItemProperty
+		Assert-MockCalled -Times 0 Set-ItemProperty
 		Assert-MockCalled -Times 1 Remove-Item
 	}
 
@@ -133,9 +141,10 @@ Describe 'Install-GoogleCloudSDK' {
 
         Mock Expand-Archive { }
 
-		Mock Join-Path -ParameterFilter { $Path -eq "C:\Program Files\google-cloud-sdk" } { throw "Second Join-Path failed" }
+		Mock Join-Path -ParameterFilter { $Path -eq "C:\Program Files" } { throw "Second Join-Path failed" }
 
-		Mock Start-Process { throw "Start-Process failed" }
+		Mock Get-ItemProperty { throw "Get-ItemProperty failed" }
+		Mock Set-ItemProperty { throw "Set-ItemProperty failed" }
 
 		Mock Join-Path { throw "Join-Path called with wrong arguments" }
 
@@ -148,11 +157,12 @@ Describe 'Install-GoogleCloudSDK' {
 		Assert-MockCalled -Times 2 Join-Path
 		Assert-MockCalled -Times 1 Invoke-WebRequest
 		Assert-MockCalled -Times 1 Expand-Archive
-		Assert-MockCalled -Times 0 Start-Process
+		Assert-MockCalled -Times 0 Get-ItemProperty
+		Assert-MockCalled -Times 0 Set-ItemProperty
 		Assert-MockCalled -Times 1 Remove-Item
 	}
 
-	It "Reports error if Start-Process returns nonzero, and removes temp folder" {
+	It "Reports error if Get-ItemProperty fails, and removes temp folder" {
 
 		Mock New-Item -ParameterFilter { $Path -eq "C:\Temp" } { }
 
@@ -162,26 +172,28 @@ Describe 'Install-GoogleCloudSDK' {
 
         Mock Expand-Archive { }
 
-		Mock Join-Path -ParameterFilter { $Path -eq "C:\Program Files\google-cloud-sdk" } { return "C:\Program Files\google-cloud-sdk\install.bat" }
+		Mock Join-Path -ParameterFilter { $Path -eq "C:\Program Files" } { return "C:\Program Files\google-cloud-sdk\bin" }
 
-		Mock Start-Process { @{ ExitCode = 1234 } }
+		Mock Get-ItemProperty { throw "Get-ItemProperty failed" }
+		Mock Set-ItemProperty { throw "Set-ItemProperty failed" }
 
 		Mock Join-Path { throw "Join-Path called with wrong arguments" }
 
 		Mock Remove-Item { }
 
 		{ Install-GoogleCloudSDK } |
-			Should -Throw
+			Should -Throw "Get-ItemProperty failed"
 
 		Assert-MockCalled -Times 1 New-Item
 		Assert-MockCalled -Times 2 Join-Path
 		Assert-MockCalled -Times 1 Invoke-WebRequest
 		Assert-MockCalled -Times 1 Expand-Archive
-		Assert-MockCalled -Times 1 Start-Process
+		Assert-MockCalled -Times 1 Get-ItemProperty
+		Assert-MockCalled -Times 0 Set-ItemProperty
 		Assert-MockCalled -Times 1 Remove-Item
 	}
 
-	It "Reports success if Start-Process returns zero, and removes temp folder" {
+	It "Reports error if Set-ItemProperty fails, and removes temp folder" {
 
 		Mock New-Item -ParameterFilter { $Path -eq "C:\Temp" } { }
 
@@ -191,9 +203,41 @@ Describe 'Install-GoogleCloudSDK' {
 
         Mock Expand-Archive { }
 
-		Mock Join-Path -ParameterFilter { $Path -eq "C:\Program Files\google-cloud-sdk" } { return "C:\Program Files\google-cloud-sdk\install.bat" }
+		Mock Join-Path -ParameterFilter { $Path -eq "C:\Program Files" } { return "C:\Program Files\google-cloud-sdk\bin" }
 
-		Mock Start-Process { @{ ExitCode = 0 } }
+		Mock Get-ItemProperty { @{ Path = "C:\FirstFolder;C:\SecondFolder" } }
+		Mock Set-ItemProperty { throw "Set-ItemProperty failed" }
+
+		Mock Join-Path { throw "Join-Path called with wrong arguments" }
+
+		Mock Remove-Item { }
+
+		{ Install-GoogleCloudSDK } |
+			Should -Throw "Set-ItemProperty failed"
+
+		Assert-MockCalled -Times 1 New-Item
+		Assert-MockCalled -Times 2 Join-Path
+		Assert-MockCalled -Times 1 Invoke-WebRequest
+		Assert-MockCalled -Times 1 Expand-Archive
+		Assert-MockCalled -Times 1 Get-ItemProperty
+		Assert-MockCalled -Times 1 Set-ItemProperty
+		Assert-MockCalled -Times 1 Remove-Item
+	}
+
+	It "Reports success if all steps succeed, and removes temp folder" {
+
+		Mock New-Item -ParameterFilter { $Path -eq "C:\Temp" } { }
+
+		Mock Join-Path -ParameterFilter { $Path -eq "C:\Temp" } { return "C:\Temp\google-cloud-sdk.zip" }
+
+		Mock Invoke-WebRequest { }
+
+        Mock Expand-Archive { }
+
+		Mock Join-Path -ParameterFilter { $Path -eq "C:\Program Files" } { return "C:\Program Files\google-cloud-sdk\bin" }
+
+		Mock Get-ItemProperty { @{ Path = "C:\FirstFolder;C:\SecondFolder" } }
+		Mock Set-ItemProperty { }
 
 		Mock Join-Path { throw "Join-Path called with wrong arguments" }
 
@@ -206,7 +250,8 @@ Describe 'Install-GoogleCloudSDK' {
 		Assert-MockCalled -Times 2 Join-Path
 		Assert-MockCalled -Times 1 Invoke-WebRequest
 		Assert-MockCalled -Times 1 Expand-Archive
-		Assert-MockCalled -Times 1 Start-Process
+		Assert-MockCalled -Times 1 Get-ItemProperty
+		Assert-MockCalled -Times 1 Set-ItemProperty
 		Assert-MockCalled -Times 1 Remove-Item
 	}
 }
