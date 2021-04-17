@@ -28,7 +28,7 @@ function Install-GoogleCloudSDK {
 
 		# Run installation script
 		$InstallBatLocation = (Join-Path -Path ${ProgramFolder} -ChildPath "install.bat")
-		$Process = Start-Process -FilePath "cmd.exe" -ArgumentList "/c",$InstallBatLocation,"--usage-reporting","false","--path-update","true","--quiet" -Wait -NoNewWindow -PassThru
+		$Process = Start-Process -FilePath "cmd.exe" -ArgumentList "/c","""${InstallBatLocation}""","--usage-reporting","false","--path-update","true","--quiet" -Wait -NoNewWindow -PassThru
 
 		if ($Process.ExitCode -ne 0) {
 			throw [GoogleCloudSDKInstallerException]::new($Process.ExitCode)
