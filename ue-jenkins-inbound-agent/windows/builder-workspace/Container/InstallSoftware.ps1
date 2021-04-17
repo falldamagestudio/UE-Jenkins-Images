@@ -1,5 +1,5 @@
 . ${PSScriptRoot}\Install-DockerCLI.ps1
-. ${PSScriptRoot}\Install-DockerCredentialGCR.ps1
+. ${PSScriptRoot}\Install-GoogleCloudSDK.ps1
 . ${PSScriptRoot}\Install-Plastic.ps1
 . ${PSScriptRoot}\Create-PlasticClientConfigLinks.ps1
 
@@ -7,9 +7,9 @@ Write-Host "Installing Docker CLI..."
 
 Install-DockerCLI
 
-Write-Host "Installing docker-credential-gcr..."
+Write-Host "Installing Google Cloud SDK..."
 
-Install-DockerCredentialGCR
+Install-GoogleCloudSDK
 
 Write-Host "Installing Plastic SCM..."
 
