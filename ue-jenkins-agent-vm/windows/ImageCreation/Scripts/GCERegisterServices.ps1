@@ -2,6 +2,6 @@
 
 Write-Host "Registering Jenkins Agent script as autostarting..."
 
-Register-AutoStartService -NssmLocation $here\..\..\Runtime\Tools\nssm.exe -ServiceName "Jenkins Agent" -Program "powershell" -Arguments (Resolve-Path ${PSScriptRoot}\..\..\Runtime\Scripts\GCEService.ps1)
+Register-AutoStartService -NssmLocation ${PSScriptRoot}\..\..\Runtime\Tools\nssm.exe -ServiceName "JenkinsAgent" -Program "powershell" -Arguments (Resolve-Path ${PSScriptRoot}\..\..\Runtime\Scripts\GCEService.ps1)
 
 Write-Host "Done."

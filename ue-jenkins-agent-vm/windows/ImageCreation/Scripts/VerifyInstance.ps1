@@ -8,7 +8,7 @@ Describe 'VerifyInstance' {
 	}
 
 	It "Has Jenkins Agent registered as a service" {
-		$Service = Get-Service "Jenkins Agent"
+		$Service = Get-Service "JenkinsAgent"
 		$Service | Should -Not -Be $null
 	}
 }
