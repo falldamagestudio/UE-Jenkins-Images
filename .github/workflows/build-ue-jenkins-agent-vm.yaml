@@ -1,0 +1,33 @@
+name: ue-jenkins-agent-vm
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+
+  build-windows:
+    name: Windows - ue-jenkins-agent-vm
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Compute short SHA
+        run: echo "::set-output name=short_sha::$(git rev-parse --short ${{ github.sha }})"
+        id: compute_short_sha
+
+      - name: Setup gcloud CLI
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          project_id: ${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}
+          service_account_key: ${{ secrets.GOOGLE_CLOUD_IMAGE_BUILDER_INSTANCE_CONTROLLER_SERVICE_ACCOUNT_KEY }}
+          export_default_credentials: true
+
+      - name: "Build image"
+        id: build_image
+        run: |
+          TEMPLATE_FILE=${{ github.workspace }}/ue-jenkins-agent-vm/windows/ue-jenkins-agent-vm-windows.json
+          IMAGE_NAME=ue-jenkins-agent-vm-${{ steps.compute_short_sha.outputs.short_sha }}-windows
+          packer build ${TEMPLATE_FILE} -var project_id=${{ secrets.GOOGLE_CLOUD_PROJECT_ID }} -var zone=${{ secrets.GOOGLE_CLOUD_ZONE }} -var network=image-builder-nework -var subnetwork=image-builder-subnetwork -var image_name=${IMAGE_NAME}
