@@ -29,4 +29,4 @@ jobs:
         id: build_image
         run: |
           IMAGE_NAME=ue-jenkins-agent-vm-${{ steps.compute_short_sha.outputs.short_sha }}-windows
-          cd ue-jenkins-agent-vm/windows && packer build -var project_id=${{ secrets.GOOGLE_CLOUD_PROJECT_ID }} -var zone=${{ secrets.GOOGLE_CLOUD_ZONE }} -var network=image-builder-nework -var subnetwork=image-builder-subnetwork -var image_name=${IMAGE_NAME} ue-jenkins-agent-vm-windows.json
+          cd ue-jenkins-agent-vm/windows && packer build -var project_id=${{ secrets.GOOGLE_CLOUD_PROJECT_ID }} -var zone=${{ secrets.GOOGLE_CLOUD_ZONE }} -var network=image-builder-network -var subnetwork=image-builder-subnetwork -var image_name=${IMAGE_NAME} ue-jenkins-agent-vm-windows.json
