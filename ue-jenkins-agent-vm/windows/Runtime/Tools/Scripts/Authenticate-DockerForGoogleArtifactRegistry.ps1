@@ -1,3 +1,5 @@
+. ${PSScriptRoot}\Start-Process-WithStdio.ps1
+
 class AuthenticateDockerForGoogleArtifactRegistryException : Exception {
 	$ExitCode
 
@@ -16,38 +18,6 @@ function Authenticate-DockerForGoogleArtifactRegistry {
 		[Parameter(Mandatory)] [string] $Region
 	)
 
-	function fStartProcess([string]$sProcess,[string]$sArgs,[string]$sSTDIN)
-	{
-		$oProcessInfo = New-Object System.Diagnostics.ProcessStartInfo
-		$oProcessInfo.FileName = $sProcess
-		$oProcessInfo.RedirectStandardInput = $true
-		$oProcessInfo.UseShellExecute = $false
-		$oProcessInfo.Arguments = $sArgs
-		$oProcess = New-Object System.Diagnostics.Process
-		$oProcess.StartInfo = $oProcessInfo
-		$oProcess.Start() | Out-Null
-		$oProcess.StandardInput.Write($sSTDIN)
-		$oProcess.StandardInput.Close()
-		$oProcess.WaitForExit() | Out-Null
-		return $oProcess.ExitCode
-	}
-
-	function ToArray
-	{
-		begin
-		{
-			$output = @();
-		}
-		process
-		{
-			$output += $_;
-		}
-		end
-		{
-			return ,$output;
-		}
-	}
-
 	$Application = "powershell"
 
 	$ArgumentList = @(
@@ -58,17 +28,9 @@ function Authenticate-DockerForGoogleArtifactRegistry {
 		"${Region}-docker.pkg.dev"
 	)
 
-	$Arguments = $ArgumentList | ForEach-Object { "`"$PSItem`"" } | ToArray -Join " "
-
-	$ExitCode = fStartProcess -sProcess $Application -sArgs $Arguments -sSTDIN $AgentKey
+	$ExitCode,$StdOut,$StdErr = Start-Process-WithStdio -FilePath $Application -ArgumentList $ArgumentList -StdIn $AgentKey
 
     if ($ExitCode -ne 0) {
 		throw [AuthenticateDockerForGoogleArtifactRegistryException]::new($ExitCode)
     }
-
-#    $Process = Start-Process -FilePath "docker" -ArgumentList "login","-u","_json_key","-p",$AgentKey,"https://${Region}-docker.pkg.dev" -NoNewWindow -Wait -PassThru
-
-#    if ($Process.ExitCode -ne 0) {
-#		throw [AuthenticateDockerForGoogleArtifactRegistryException]::new($Process.ExitCode)
-#    }
 }
