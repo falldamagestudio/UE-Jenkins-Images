@@ -26,7 +26,7 @@ Describe 'GCEService' {
 
 		Mock Get-GCESecret -ParameterFilter { $Key -eq "jenkins-url" } { $JenkinsURLRef }
 		Mock Get-GCESecret -ParameterFilter { $Key -eq "agent-key-file" } { $AgentKeyFileRef }
-		Mock Get-GCESecret -ParameterFilter { $Key -eq "${AgentNameRef}-agent-image-url" } { $AgentImageURLRef }
+		Mock Get-GCESecret -ParameterFilter { $Key -eq "agent-image-url-windows" } { $AgentImageURLRef }
 		Mock Get-GCESecret -ParameterFilter { $Key -eq "${AgentNameRef}-secret" } { if ($script:LoopCount -lt 3) { $script:LoopCount++; $null } else { $JenkinsSecretRef } }
 		Mock Get-GCESecret { throw "Invalid invocation of Get-GCESecret" }
 
@@ -43,7 +43,7 @@ Describe 'GCEService' {
 
 		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "jenkins-url" }
 		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "agent-key-file" }
-		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "test-host-agent-image-url" }
+		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "agent-image-url-windows" }
 		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "test-host-secret" }
 
 		Assert-MockCalled -Times 2 Start-Sleep

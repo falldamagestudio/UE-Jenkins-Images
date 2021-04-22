@@ -15,7 +15,7 @@ while ($true) {
 
     $JenkinsURL = Get-GCESecret -Key "jenkins-url"
     $AgentKey = Get-GCESecret -Key "agent-key-file"
-    $AgentImageURL = Get-GCESecret -Key "${AgentName}-agent-image-url"
+    $AgentImageURL = Get-GCESecret -Key "agent-image-url-windows"
     $JenkinsSecret = Get-GCESecret -Key "${AgentName}-secret"
 
     Write-Host "Secret jenkins-url: $(if ($JenkinsURL -ne $null) { "found" } else { "not found" })"
