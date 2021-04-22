@@ -20,7 +20,7 @@ while ($true) {
 
     Write-Host "Secret jenkins-url: $(if ($JenkinsURL -ne $null) { "found" } else { "not found" })"
     Write-Host "Secret agent-key-file: $(if ($AgentKey -ne $null) { "found" } else { "not found" })"
-    Write-Host "Secret ${AgentName}-agent-image-url: $(if ($AgentImageURL -ne $null) { "found" } else { "not found" })"
+    Write-Host "Secret agent-image-url-windows: $(if ($AgentImageURL -ne $null) { "found" } else { "not found" })"
     Write-Host "Secret ${AgentName}-secret: $(if ($JenkinsSecret -ne $null) { "found" } else { "not found" })"
 
     if (($JenkinsURL -ne $null) -and ($AgentImageURL -ne $null) -and ($AgentKey -ne $null) -and ($JenkinsSecret -ne $null)) {
