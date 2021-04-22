@@ -1,4 +1,3 @@
-. ${PSScriptRoot}\..\Tools\Scripts\Get-GCEInstanceMetadata.ps1
 . ${PSScriptRoot}\..\Tools\Scripts\Get-GCESecret.ps1
 . ${PSScriptRoot}\..\Tools\Scripts\Authenticate-DockerForGoogleArtifactRegistry.ps1
 . ${PSScriptRoot}\..\Tools\Scripts\Run-JenkinsAgent.ps1
@@ -11,19 +10,16 @@ $AgentName = $(hostname)
 # Fetch configuration parameters repeatedly, until all are available
 while ($true) {
 
-    Write-Host "Retrieving configuration from instance metadata..."
-
-    $JenkinsURL = Get-GCEInstanceMetadata -Key "jenkins-url"
-    $AgentImageURL = Get-GCEInstanceMetadata -Key "agent-image-url"
-
     Write-Host "Retrieving configuration from Secrets Manager..."
 
+    $JenkinsURL = Get-GCESecret -Key "jenkins-url"
     $AgentKey = Get-GCESecret -Key "agent-key-file"
+    $AgentImageURL = Get-GCESecret -Key "${AgentName}-agent-image-url"
     $JenkinsSecret = Get-GCESecret -Key "${AgentName}-secret"
 
-    Write-Host "Instance metadata jenkins-url: $(if ($JenkinsURL -ne $null) { "found" } else { "not found" })"
-    Write-Host "Instance metadata agent-image-url: $(if ($AgentImageURL -ne $null) { "found" } else { "not found" })"
+    Write-Host "Secret jenkins-url: $(if ($JenkinsURL -ne $null) { "found" } else { "not found" })"
     Write-Host "Secret agent-key-file: $(if ($AgentKey -ne $null) { "found" } else { "not found" })"
+    Write-Host "Secret ${AgentName}-agent-image-url: $(if ($AgentImageURL -ne $null) { "found" } else { "not found" })"
     Write-Host "Secret ${AgentName}-secret: $(if ($JenkinsSecret -ne $null) { "found" } else { "not found" })"
 
     if (($JenkinsURL -ne $null) -and ($AgentImageURL -ne $null) -and ($AgentKey -ne $null) -and ($JenkinsSecret -ne $null)) {

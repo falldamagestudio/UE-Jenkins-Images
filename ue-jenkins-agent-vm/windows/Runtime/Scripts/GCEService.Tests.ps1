@@ -1,7 +1,6 @@
 . ${PSScriptRoot}\..\Tools\Scripts\Ensure-TestToolVersions.ps1
 
 BeforeAll {
-	. ${PSScriptRoot}\..\Tools\Scripts\Get-GCEInstanceMetadata.ps1
 	. ${PSScriptRoot}\..\Tools\Scripts\Get-GCESecret.ps1
 	. ${PSScriptRoot}\..\Tools\Scripts\Authenticate-DockerForGoogleArtifactRegistry.ps1
 	. ${PSScriptRoot}\..\Tools\Scripts\Run-JenkinsAgent.ps1
@@ -24,11 +23,9 @@ Describe 'GCEService' {
 
 		Mock hostname { $AgentNameRef }
 
-		Mock Get-GCEInstanceMetadata -ParameterFilter { $Key -eq "jenkins-url" } { $JenkinsURLRef }
-		Mock Get-GCEInstanceMetadata -ParameterFilter { $Key -eq "agent-image-url" } { $AgentImageURLRef }
-		Mock Get-GCEInstanceMetadata { throw "Invalid invocation of Get-GCEInstanceMetadata" }
-
+		Mock Get-GCESecret -ParameterFilter { $Key -eq "jenkins-url" } { $JenkinsURLRef }
 		Mock Get-GCESecret -ParameterFilter { $Key -eq "agent-key-file" } { $AgentKeyFileRef }
+		Mock Get-GCESecret -ParameterFilter { $Key -eq "${AgentNameRef}-agent-image-url" } { $AgentImageURLRef }
 		Mock Get-GCESecret -ParameterFilter { $Key -eq "${AgentNameRef}-secret" } { if ($script:LoopCount -lt 3) { $script:LoopCount++; $null } else { $JenkinsSecretRef } }
 		Mock Get-GCESecret { throw "Invalid invocation of Get-GCESecret" }
 
@@ -43,9 +40,9 @@ Describe 'GCEService' {
 		{ & ${PSScriptRoot}\GCEService.ps1 } |
 			Should -Not -Throw
 
-		Assert-MockCalled -Times 3 Get-GCEInstanceMetadata -ParameterFilter { $Key -eq "jenkins-url" }
-		Assert-MockCalled -Times 3 Get-GCEInstanceMetadata -ParameterFilter { $Key -eq "agent-image-url" }
+		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "jenkins-url" }
 		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "agent-key-file" }
+		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "test-host-agent-image-url" }
 		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "test-host-secret" }
 
 		Assert-MockCalled -Times 2 Start-Sleep
