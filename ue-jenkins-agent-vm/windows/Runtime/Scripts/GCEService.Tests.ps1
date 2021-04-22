@@ -2,6 +2,7 @@
 
 BeforeAll {
 	. ${PSScriptRoot}\..\Tools\Scripts\Get-GCESecret.ps1
+	. ${PSScriptRoot}\..\Tools\Scripts\Get-GCEInstanceHostname.ps1
 	. ${PSScriptRoot}\..\Tools\Scripts\Authenticate-DockerForGoogleArtifactRegistry.ps1
 	. ${PSScriptRoot}\..\Tools\Scripts\Run-JenkinsAgent.ps1
 }
@@ -21,7 +22,7 @@ Describe 'GCEService' {
 
 		Mock Write-Host { }
 
-		Mock hostname { $AgentNameRef }
+		Mock Get-GCEInstanceHostname { "${AgentNameRef}.c.testproject.internal" }
 
 		Mock Get-GCESecret -ParameterFilter { $Key -eq "jenkins-url" } { $JenkinsURLRef }
 		Mock Get-GCESecret -ParameterFilter { $Key -eq "agent-key-file" } { $AgentKeyFileRef }

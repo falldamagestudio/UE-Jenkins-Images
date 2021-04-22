@@ -2,36 +2,31 @@
 
 BeforeAll {
 
-	. ${PSScriptRoot}\Get-GCEInstanceMetadata.ps1
+	. ${PSScriptRoot}\Get-GCEInstanceHostname.ps1
 
 }
 
-Describe 'Get-GCEInstanceMetadata' {
+Describe 'Get-GCEInstanceHostname' {
 
-	It "Returns the value of an existing instance tag appropriately" {
+	It "Returns null there is an error during name fetch" {
 		
-		$RawResponse = [System.Byte[]]::new(3)
-		$RawResponse[0] = [byte][char]'a'
-		$RawResponse[1] = [byte][char]'b'
-		$RawResponse[2] = [byte][char]'c'
+		Mock Invoke-RestMethod { throw "error while fetching hostname" }
 
-		Mock Invoke-WebRequest { return @{ Content = $RawResponse } }
+		$Value = Get-GCEInstanceHostname
 
-		$Value = Get-GCEInstanceMetadata -Key "testkey"
-
-		Assert-MockCalled Invoke-WebRequest -ParameterFilter { $Uri -eq "http://metadata.google.internal/computeMetadata/v1/instance/attributes/testkey" }
-
-		$Value | Should -Be "abc"
-	}
-
-	It "Returns null if the instance tag doesn't exist" {
-		
-		Mock Invoke-WebRequest { return $null }
-
-		$Value = Get-GCEInstanceMetadata -Key "testkey"
-
-		Assert-MockCalled Invoke-WebRequest -ParameterFilter { $Uri -eq "http://metadata.google.internal/computeMetadata/v1/instance/attributes/testkey" }
+		Assert-MockCalled Invoke-RestMethod -ParameterFilter { $Uri -eq "http://metadata.google.internal/computeMetadata/v1/instance/hostname" }
 
 		$Value | Should -Be $null
+	}
+
+	It "Returns the hostname when successful" {
+		
+		Mock Invoke-RestMethod { return "test-host.c.testproject.internal" }
+
+		$Value = Get-GCEInstanceHostname
+
+		Assert-MockCalled Invoke-RestMethod -ParameterFilter { $Uri -eq "http://metadata.google.internal/computeMetadata/v1/instance/hostname" }
+
+		$Value | Should -Be "test-host.c.testproject.internal"
 	}
 }

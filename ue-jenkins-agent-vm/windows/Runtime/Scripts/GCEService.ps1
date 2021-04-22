@@ -1,11 +1,12 @@
 . ${PSScriptRoot}\..\Tools\Scripts\Get-GCESecret.ps1
+. ${PSScriptRoot}\..\Tools\Scripts\Get-GCEInstanceHostname.ps1
 . ${PSScriptRoot}\..\Tools\Scripts\Authenticate-DockerForGoogleArtifactRegistry.ps1
 . ${PSScriptRoot}\..\Tools\Scripts\Run-JenkinsAgent.ps1
 
 $JenkinsAgentFolder = "C:\J"
 $JenkinsWorkspaceFolder = "C:\W"
 
-$AgentName = $(hostname)
+$AgentName = (Get-GCEInstanceHostname).Split(".")[0]
 
 # Fetch configuration parameters repeatedly, until all are available
 while ($true) {
