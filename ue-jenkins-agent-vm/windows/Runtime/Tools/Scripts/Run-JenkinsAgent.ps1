@@ -25,9 +25,15 @@ function Run-JenkinsAgent {
 		"run"
 		"--rm"
 		"--name","jenkins-agent"
+		# Share Jenkins agent work folder with containers
 		"--mount","type=bind,source=${JenkinsAgentFolder},destination=${JenkinsAgentFolder}"
+		# Share Jenkins workspace folder with containers
 		"--mount","type=bind,source=${JenkinsWorkspaceFolder},destination=${JenkinsWorkspaceFolder}"
+		# Share Application Default Credentials with applications inside containers
+		"--mount","type=bind,source=${env:APPDATA}\gcloud,destination=C:\Users\jenkins\AppData\Roaming\gcloud"
+		# Share docker auth for Google Artifact Registry with docker CLI users inside containers
 		"--mount","type=bind,source=${env:USERPROFILE}\.docker,destination=C:\users\jenkins\.docker"
+		# Enable docker CLI users inside containers to communicate with Docker daemon
 		"-v","\\.\pipe\docker_engine:\\.\pipe\docker_engine"
 		$AgentImageUrl
 		"-Url",$JenkinsUrl
