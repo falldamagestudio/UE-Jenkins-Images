@@ -1,3 +1,4 @@
+. ${PSScriptRoot}\..\Tools\Scripts\Resize-PartitionToMaxSize.ps1
 . ${PSScriptRoot}\..\Tools\Scripts\Get-GCESecret.ps1
 . ${PSScriptRoot}\..\Tools\Scripts\Get-GCEInstanceHostname.ps1
 . ${PSScriptRoot}\..\Tools\Scripts\Authenticate-DockerForGoogleArtifactRegistry.ps1
@@ -5,6 +6,8 @@
 
 $JenkinsAgentFolder = "C:\J"
 $JenkinsWorkspaceFolder = "C:\W"
+
+Resize-PartitionToMaxSize -DriveLetter "C"
 
 $AgentName = (Get-GCEInstanceHostname).Split(".")[0]
 

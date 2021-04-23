@@ -1,6 +1,7 @@
 . ${PSScriptRoot}\..\Tools\Scripts\Ensure-TestToolVersions.ps1
 
 BeforeAll {
+	. ${PSScriptRoot}\..\Tools\Scripts\Resize-PartitionToMaxSize.ps1
 	. ${PSScriptRoot}\..\Tools\Scripts\Get-GCESecret.ps1
 	. ${PSScriptRoot}\..\Tools\Scripts\Get-GCEInstanceHostname.ps1
 	. ${PSScriptRoot}\..\Tools\Scripts\Authenticate-DockerForGoogleArtifactRegistry.ps1
@@ -21,6 +22,8 @@ Describe 'GCEService' {
 		$script:LoopCount = 0
 
 		Mock Write-Host { }
+
+		Mock Resize-PartitionToMaxSize { }
 
 		Mock Get-GCEInstanceHostname { "${AgentNameRef}.c.testproject.internal" }
 
