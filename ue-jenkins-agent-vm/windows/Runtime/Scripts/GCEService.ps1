@@ -1,3 +1,6 @@
+# Log all output to file (in addition to console output, when run manually )
+# This enables post-mortem inspection of the script's activities via log files
+# It also allows GCE's logging agent to pick up the activity and forward it to Google's Cloud Logging
 Start-Transcript -LiteralPath "$(Resolve-Path "${PSScriptRoot}\..\Logs")\GCEService-$(Get-Date -Format "yyyyMMdd-HHmmss").txt"
 
 try {
@@ -12,7 +15,14 @@ try {
     $JenkinsAgentFolder = "C:\J"
     $JenkinsWorkspaceFolder = "C:\W"
 
-    Resize-PartitionToMaxSize -DriveLetter "C"
+    Write-Host "Ensuring that the boot partition uses the entire boot disk..."
+
+    # If the instance has been created with a boot disk that is larger than the original machine image,
+    #  then the boot partition remains the original size; we must manually expand it
+    #
+    # This should ideally be done on instance start (as opposed to on service start) as this adds another
+    #  ~5 seconds to each service start. We are doing it here to keep things simple.
+     Resize-PartitionToMaxSize -DriveLetter "C"
 
     $AgentName = (Get-GCEInstanceHostname).Split(".")[0]
 
