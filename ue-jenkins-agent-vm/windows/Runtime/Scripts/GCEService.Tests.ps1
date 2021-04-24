@@ -22,6 +22,11 @@ Describe 'GCEService' {
 
 		$script:LoopCount = 0
 
+		Mock Start-Transcript { }
+		Mock Resolve-Path { "invalid path" }
+		Mock Get-Date { "invalid date" }
+		Mock Stop-Transcript { }
+
 		Mock Write-Host { }
 
 		Mock Resize-PartitionToMaxSize { }
