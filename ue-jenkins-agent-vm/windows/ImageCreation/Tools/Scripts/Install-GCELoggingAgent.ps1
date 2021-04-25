@@ -33,6 +33,8 @@ function Install-GCELoggingAgent {
 
 		$ExitCode = Invoke-External -LiteralPath $InstallerLocation "/S"
 
+		Write-Host "ExitCode: ${ExitCode}"
+
 		# Installation is asynchronous; the agent has not yet completed installation when the installer exits.
 
 		if ($ExitCode -ne 0) {

@@ -17,5 +17,8 @@ function Invoke-External {
 
   & $LiteralPath $PassThruArgs
 
-  return $LASTEXITCODE
+  $ExitCode = $LASTEXITCODE
+  Write-Host "ExitCode: ${ExitCode}"
+
+  return $ExitCode
 }
