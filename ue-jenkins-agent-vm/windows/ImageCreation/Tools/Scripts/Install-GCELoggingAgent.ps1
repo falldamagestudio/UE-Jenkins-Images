@@ -1,5 +1,11 @@
 . ${PSScriptRoot}\Invoke-External.ps1
 
+class GCELoggingAgentInstallerException : Exception {
+	$ExitCode
+
+	GCELoggingAgentInstallerException([int] $exitCode) : base("GCE Logging Agent installer exited with code ${exitCode}") { $this.ExitCode = $exitCode }
+}
+
 function Install-GCELoggingAgent {
 
 	<#
@@ -25,12 +31,12 @@ function Install-GCELoggingAgent {
 
 		Invoke-WebRequest -UseBasicParsing -Uri $LoggingAgentDownloadURI -OutFile $InstallerLocation -ErrorAction Stop
 
-		$Exitcode = Invoke-External -LiteralPath $InstallerLocation "/S"
+		$ExitCode = Invoke-External -LiteralPath $InstallerLocation "/S"
 
 		# Installation is asynchronous; the agent has not yet completed installation when the installer exits.
 
 		if ($ExitCode -ne 0) {
-			throw
+			throw [GCELoggingAgentInstallerException]::new($ExitCode)
 		}
 
 	} finally {

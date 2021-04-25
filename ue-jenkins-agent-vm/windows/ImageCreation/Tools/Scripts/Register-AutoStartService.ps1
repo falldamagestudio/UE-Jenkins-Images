@@ -1,5 +1,11 @@
 . ${PSScriptRoot}\Invoke-External.ps1
 
+class NssmException : Exception {
+	$ExitCode
+
+	NssmException([int] $exitCode) : base("nssm exited with code ${exitCode}") { $this.ExitCode = $exitCode }
+}
+
 function Register-AutoStartService {
 
 	<#
@@ -27,6 +33,6 @@ function Register-AutoStartService {
 	$ExitCode = Invoke-External -LiteralPath $NssmLocation @$NssmArguments
 
 	if ($ExitCode -ne 0) {
-		throw "nssm.exe exited with exit code $ExitCode"
+		throw [NssmException]::new($ExitCode)
 	}
 }
