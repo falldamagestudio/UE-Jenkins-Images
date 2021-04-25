@@ -1,4 +1,4 @@
-. ${PSScriptRoot}\Start-Process-WithStdio.ps1
+. ${PSScriptRoot}\Invoke-External-WithStdio.ps1
 
 class AuthenticateDockerForGoogleArtifactRegistryException : Exception {
 	$ExitCode
@@ -28,7 +28,7 @@ function Authenticate-DockerForGoogleArtifactRegistry {
 		"${Region}-docker.pkg.dev"
 	)
 
-	$ExitCode,$StdOut,$StdErr = Start-Process-WithStdio -FilePath $Application -ArgumentList $ArgumentList -StdIn $AgentKey
+	$ExitCode,$StdOut,$StdErr = Invoke-External-WithStdio -LiteralPath $Application -StdIn $AgentKey @$ArgumentList 
 
     if ($ExitCode -ne 0) {
 		throw [AuthenticateDockerForGoogleArtifactRegistryException]::new($ExitCode)

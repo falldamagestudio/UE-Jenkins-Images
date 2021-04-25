@@ -1,17 +1,17 @@
-function Start-Process-WithStdio {
+function Invoke-External-WithStdio {
 
 	<#
 		.SYNOPSIS
-		Start-Process with support for redirecting stdin/stdout/stderr to variables.
-        Note that this does not perform 'shell execute', the FilePath should point to
+		Invoke-External with support for redirecting stdin/stdout/stderr to variables.
+        Note that this does not perform 'shell execute', the LiteralPath should point to
          a real executable; if you want to run a script or similar, then
-         call this with FilePath=powershell and Arguments=<your script> + actual args.
+         call this with LiteralPath=powershell and PassThruArgs=<your script> + actual args.
 	#>
 
 	param (
-		[Parameter(Mandatory)] [string] $FilePath,
-		[Parameter(Mandatory)] [string[]] $ArgumentList,
-		[Parameter(Mandatory=$false)] [string] $StdIn=$null
+		[Parameter(Mandatory)] [string] $LiteralPath,
+		[Parameter(Mandatory=$false)] [string] $StdIn=$null,
+        [Parameter(ValueFromRemainingArguments=$true)] $PassThruArgs
 	)
 
 	function ToArray
@@ -30,10 +30,10 @@ function Start-Process-WithStdio {
 		}
 	}
 
-	$Arguments = $ArgumentList | ForEach-Object { "`"$PSItem`"" } | ToArray -Join " "
+	$Arguments = $PassThruArgs | ForEach-Object { "`"$PSItem`"" } | ToArray -Join " "
 
     $ProcessInfo = New-Object System.Diagnostics.ProcessStartInfo
-    $ProcessInfo.FileName = $FilePath
+    $ProcessInfo.FileName = $LiteralPath
     $ProcessInfo.RedirectStandardInput = ($StdIn -ne $null)
     $ProcessInfo.RedirectStandardOutput = $true
     $ProcessInfo.RedirectStandardError = $true

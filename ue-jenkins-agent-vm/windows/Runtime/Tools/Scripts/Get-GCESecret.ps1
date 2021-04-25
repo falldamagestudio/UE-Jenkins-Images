@@ -1,4 +1,4 @@
-. ${PSScriptRoot}\Start-Process-WithStdio.ps1
+. ${PSScriptRoot}\Invoke-External-WithStdio.ps1
 
 function Get-GCESecret {
 
@@ -22,7 +22,7 @@ function Get-GCESecret {
 		"--secret=${Key}"
 	)
 
-	$ExitCode, $StdOut, $StdErr = Start-Process-WithStdio -FilePath $Application -ArgumentList $ArgumentList -StdIn $AgentKey
+	$ExitCode, $StdOut, $StdErr = Invoke-External-WithStdio -LiteralPath $Application -StdIn $AgentKey @$ArgumentList
 
 	if ($ExitCode -eq 0) {
         return $StdOut
