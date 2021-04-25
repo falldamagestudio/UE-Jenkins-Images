@@ -1,3 +1,5 @@
+. ${PSScriptRoot}\Invoke-External.ps1
+
 function Install-GCELoggingAgent {
 
 	<#
@@ -23,11 +25,11 @@ function Install-GCELoggingAgent {
 
 		Invoke-WebRequest -UseBasicParsing -Uri $LoggingAgentDownloadURI -OutFile $InstallerLocation -ErrorAction Stop
 
-		$Process = Start-Process -FilePath $InstallerLocation -ArgumentList "/S" -NoNewWindow -Wait -PassThru -ErrorAction Stop
+		$Exitcode = Invoke-External -LiteralPath $InstallerLocation "/S"
 
 		# Installation is asynchronous; the agent has not yet completed installation when the installer exits.
 
-		if ($Process.ExitCode -ne 0) {
+		if ($ExitCode -ne 0) {
 			throw
 		}
 

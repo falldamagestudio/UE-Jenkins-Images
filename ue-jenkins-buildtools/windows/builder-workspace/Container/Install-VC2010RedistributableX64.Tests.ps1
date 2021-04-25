@@ -3,6 +3,7 @@
 BeforeAll {
 
 	. ${PSScriptRoot}\Install-VC2010RedistributableX64.ps1
+	. ${PSScriptRoot}\Invoke-External.ps1
 
 }
 
@@ -56,7 +57,7 @@ Describe 'Install-VC2010RedistributableX64' {
 		Assert-MockCalled -Times 1 Remove-Item
 	}
 
-	It "Reports success if Start-Process returns zero, and removes temp folder" {
+	It "Reports success if Invoke-External returns zero, and removes temp folder" {
 
 		Mock New-Item { }
 
@@ -64,7 +65,7 @@ Describe 'Install-VC2010RedistributableX64' {
 
 		Mock Invoke-WebRequest { }
 
-		Mock Start-Process { @{ ExitCode = 0 } }
+		Mock Invoke-External { 0 }
 
 		Mock Remove-Item { }
 
@@ -74,7 +75,7 @@ Describe 'Install-VC2010RedistributableX64' {
 		Assert-MockCalled -Times 1 Remove-Item
 	}
 
-	It "Reports error if Start-Process returns another exit code, and removes temp folder" {
+	It "Reports error if Invoke-External returns another exit code, and removes temp folder" {
 
 		Mock New-Item { }
 
@@ -82,7 +83,7 @@ Describe 'Install-VC2010RedistributableX64' {
 
 		Mock Invoke-WebRequest { }
 
-		Mock Start-Process { @{ ExitCode = 1234 } }
+		Mock Invoke-External { 1234 }
 
 		Mock Remove-Item { }
 

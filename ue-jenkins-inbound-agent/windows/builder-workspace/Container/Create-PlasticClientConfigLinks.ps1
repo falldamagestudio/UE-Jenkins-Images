@@ -1,21 +1,4 @@
-class CreateSymlinkException : Exception {
-	$SourceLocation
-    $TargetLocation
-
-	CreateSymlinkException([string] $sourceLocation, [string] $targetLocation) : base("Unable to create symlink from ${sourceLocation} to ${targetLocation}") { $this.SourceLocation = $sourceLocation; $this.targetLocation = $targetLocation }
-}
-
-function CreateSymlink {
-    param (
-		[Parameter(Mandatory=$true)][string]$SourceLocation,
-		[Parameter(Mandatory=$true)][string]$TargetLocation
-    )
-
-    $Process = Start-Process -FilePath "cmd" -ArgumentList "/c","mklink",$SourceLocation,$TargetLocation -NoNewWindow -Wait -PassThru
-    if ($Process.ExitCode -ne 0) {
-        throw [CreateSymlinkException]::new($SourceLocation, $TargetLocation)
-    }
-}
+. ${PSScriptRoot}\Invoke-External.ps1
 
 function Create-PlasticClientConfigLinks {
 
@@ -25,6 +8,25 @@ function Create-PlasticClientConfigLinks {
         This allows the volume mount to provide those files via a read-only file system, while
           still allowing cm.exe to write to other files within the config folder
     #>
+
+    class CreateSymlinkException : Exception {
+        $SourceLocation
+        $TargetLocation
+
+        CreateSymlinkException([string] $sourceLocation, [string] $targetLocation) : base("Unable to create symlink from ${sourceLocation} to ${targetLocation}") { $this.SourceLocation = $sourceLocation; $this.targetLocation = $targetLocation }
+    }
+
+    function CreateSymlink {
+        param (
+            [Parameter(Mandatory=$true)][string]$SourceLocation,
+            [Parameter(Mandatory=$true)][string]$TargetLocation
+        )
+
+        $ExitCode = Invoke-External -LiteralPath "cmd" "/c" "mklink" $SourceLocation $TargetLocation
+        if ($ExitCode -ne 0) {
+            throw [CreateSymlinkException]::new($SourceLocation, $TargetLocation)
+        }
+    }
 
     $SourceFolder = "${env:LOCALAPPDATA}\plastic4"
     $TargetFolder = "C:\plastic-config"

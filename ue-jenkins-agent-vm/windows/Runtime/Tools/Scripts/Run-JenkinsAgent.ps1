@@ -1,3 +1,5 @@
+. ${PSScriptRoot}\Invoke-External.ps1
+
 class RunJenkinsAgentException : Exception {
 	$Operation
 	$ExitCode
@@ -46,18 +48,22 @@ function Run-JenkinsAgent {
 	try {
 
 		# Fetch Docker agent image
-		$Process = Start-Process -FilePath "docker" -ArgumentList "pull",$AgentImageUrl -NoNewWindow -Wait -PassThru -ErrorAction Stop
-		if ($Process.ExitCode -ne 0) {
-			throw [RunJenkinsAgentException]::new("run", $Process.ExitCode)
+		$ExitCode = Invoke-External -LiteralPath "docker" "pull" $AgentImageUrl
+		if ($ExitCode -ne 0) {
+			throw [RunJenkinsAgentException]::new("run", $ExitCode)
 		}
 
 		# Start Docker agent
-		$Process = Start-Process -FilePath "docker" -ArgumentList $Arguments -NoNewWindow -Wait -PassThru -ErrorAction Stop
-		if ($Process.ExitCode -ne 0) {
-			throw [RunJenkinsAgentException]::new("run", $Process.ExitCode)
+		$ExitCode = Invoke-External -LiteralPath "docker" @$Arguments
+		if ($ExitCode -ne 0) {
+			throw [RunJenkinsAgentException]::new("run", $ExitCode)
 		}
 
 	} finally {
-		Start-Process -FilePath "docker" -ArgumentList "stop","jenkins-agent" -NoNewWindow -Wait -ErrorAction SilentlyContinue
+		try {
+			Invoke-External -LiteralPath "docker" "stop" "jenkins-agent"
+		} catch {
+			# Ignore errors here, it is a cleanup path anyway
+		}
 	}
 }

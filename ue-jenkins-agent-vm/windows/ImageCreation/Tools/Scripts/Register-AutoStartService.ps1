@@ -1,3 +1,5 @@
+. ${PSScriptRoot}\Invoke-External.ps1
+
 function Register-AutoStartService {
 
 	<#
@@ -22,5 +24,9 @@ function Register-AutoStartService {
 		$NssmArguments += $Arguments
 	}
 
-	Start-Process -FilePath $NssmLocation -ArgumentList $NssmArguments -Wait -NoNewWindow
+	$ExitCode = Invoke-External -LiteralPath $NssmLocation @$NssmArguments
+
+	if ($ExitCode -ne 0) {
+		throw "nssm.exe exited with exit code $ExitCode"
+	}
 }

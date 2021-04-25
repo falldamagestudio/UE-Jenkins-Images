@@ -1,3 +1,5 @@
+. ${PSScriptRoot}\Invoke-External.ps1
+
 class PlasticInstallerException : Exception {
 	$ExitCode
 
@@ -27,17 +29,17 @@ function Install-Plastic {
 		Invoke-WebRequest -UseBasicParsing -Uri "https://www.plasticscm.com/download/downloadinstaller/9.0.16.5201/plasticscm/windows/cloudedition" -OutFile $InstallerLocation -ErrorAction Stop
 
 		# Run installer
-		$Process = Start-Process -FilePath $InstallerLocation -ArgumentList "--mode","unattended" -NoNewWindow -Wait -PassThru
+		$ExitCode = Invoke-External -LiteralPath $InstallerLocation "--mode" "unattended"
 	
-		if ($Process.ExitCode -ne 0) {
-			throw [PlasticInstallerException]::new($Process.ExitCode)
+		if ($ExitCode -ne 0) {
+			throw [PlasticInstallerException]::new($ExitCode)
 		}
 
 		# Configure server
-		$Process2 = Start-Process -FilePath "C:\Program Files\PlasticSCM5\server\plasticd.exe" -ArgumentList "configure","--language=en","--workingmode=NameWorkingMode","--port=8084" -NoNewWindow -Wait -PassThru
+		$ExitCode2 = Invoke-External -LiteralPath "C:\Program Files\PlasticSCM5\server\plasticd.exe" "configure" "--language=en" "--workingmode=NameWorkingMode" "--port=8084"
 
-		if ($Process2.ExitCode -ne 0) {
-			throw [PlasticConfigureServerException]::new($Process2.ExitCode)
+		if ($ExitCode2 -ne 0) {
+			throw [PlasticConfigureServerException]::new($ExitCode2)
 		}
 
 	} finally {

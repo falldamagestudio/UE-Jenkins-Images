@@ -1,3 +1,5 @@
+. ${PSScriptRoot}\Invoke-External.ps1
+
 class VC2010RedistributableX64InstallerException : Exception {
 	$ExitCode
 
@@ -20,10 +22,10 @@ function Install-VC2010RedistributableX64 {
 		# Download Microsoft Visual C++ 2010 Redistributable Package (x64) Installer
 		Invoke-WebRequest -UseBasicParsing -Uri "https://download.microsoft.com/download/3/2/2/3224B87F-CFA0-4E70-BDA3-3DE650EFEBA5/vcredist_x64.exe" -OutFile $InstallerLocation -ErrorAction Stop
 	
-		$Process = Start-Process -FilePath $InstallerLocation -ArgumentList "/q" -NoNewWindow -Wait -PassThru
+		$ExitCode = Invoke-External -LiteralPath $InstallerLocation "/q"
 	
-		if ($Process.ExitCode -ne 0) {
-			throw [VC2010RedistributableX64InstallerException]::new($Process.ExitCode)
+		if ($ExitCode -ne 0) {
+			throw [VC2010RedistributableX64InstallerException]::new($ExitCode)
 		}
 
 	} finally {

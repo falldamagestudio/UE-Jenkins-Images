@@ -1,3 +1,5 @@
+. ${PSScriptRoot}\Invoke-External.ps1
+
 class DebuggingToolsForWindowsInstallerException : Exception {
 	$ExitCode
 
@@ -20,10 +22,10 @@ function Install-DebuggingToolsForWindows {
 		# Download Windows SDK
 		Invoke-WebRequest -UseBasicParsing -Uri "https://go.microsoft.com/fwlink/p/?linkid=2120843" -OutFile $InstallerLocation -ErrorAction Stop
 	
-		$Process = Start-Process -FilePath $InstallerLocation -ArgumentList "/norestart","/quiet","/features","OptionId.WindowsDesktopDebuggers" -NoNewWindow -Wait -PassThru
+		$ExitCode = Invoke-External -LiteralPath $InstallerLocation "/norestart" "/quiet" "/features" "OptionId.WindowsDesktopDebuggers"
 	
-		if ($Process.ExitCode -ne 0) {
-			throw [DebuggingToolsForWindowsInstallerException]::new($Process.ExitCode)
+		if ($ExitCode -ne 0) {
+			throw [DebuggingToolsForWindowsInstallerException]::new($ExitCode)
 		}
 
 	} finally {
