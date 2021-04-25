@@ -3,7 +3,6 @@
 BeforeAll {
 
 	. ${PSScriptRoot}\Install-DebuggingToolsForWindows.ps1
-	. ${PSScriptRoot}\Invoke-External.ps1
 
 }
 
@@ -57,7 +56,7 @@ Describe 'Install-DebuggingToolsForWindows' {
 		Assert-MockCalled -Times 1 Remove-Item
 	}
 
-	It "Reports success if Invoke-External returns zero, and removes temp folder" {
+	It "Reports success if Start-Process returns zero, and removes temp folder" {
 
 		Mock New-Item { }
 
@@ -65,7 +64,7 @@ Describe 'Install-DebuggingToolsForWindows' {
 
 		Mock Invoke-WebRequest { }
 
-		Mock Invoke-External { 0 }
+		Mock Start-Process { @{ ExitCode = 0 } }
 
 		Mock Remove-Item { }
 
@@ -75,7 +74,7 @@ Describe 'Install-DebuggingToolsForWindows' {
 		Assert-MockCalled -Times 1 Remove-Item
 	}
 
-	It "Reports error if Invoke-External returns another exit code, and removes temp folder" {
+	It "Reports error if Start-Process returns another exit code, and removes temp folder" {
 
 		Mock New-Item { }
 
@@ -83,7 +82,7 @@ Describe 'Install-DebuggingToolsForWindows' {
 
 		Mock Invoke-WebRequest { }
 
-		Mock Invoke-External { 1234 }
+		Mock Start-Process { @{ ExitCode = 1234 } }
 
 		Mock Remove-Item { }
 
