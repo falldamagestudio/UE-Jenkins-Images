@@ -30,7 +30,7 @@ function Register-AutoStartService {
 		$NssmArguments += $Arguments
 	}
 
-	$ExitCode = Invoke-External -LiteralPath $NssmLocation @$NssmArguments
+	$ExitCode = Invoke-External -LiteralPath $NssmLocation $NssmArguments
 
 	if ($ExitCode -ne 0) {
 		throw [NssmException]::new($ExitCode)

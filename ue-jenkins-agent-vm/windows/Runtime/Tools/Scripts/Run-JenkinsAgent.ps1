@@ -54,7 +54,7 @@ function Run-JenkinsAgent {
 		}
 
 		# Start Docker agent
-		$ExitCode = Invoke-External -LiteralPath "docker" @$Arguments
+		$ExitCode = Invoke-External -LiteralPath "docker" $Arguments
 		if ($ExitCode -ne 0) {
 			throw [RunJenkinsAgentException]::new("run", $ExitCode)
 		}
