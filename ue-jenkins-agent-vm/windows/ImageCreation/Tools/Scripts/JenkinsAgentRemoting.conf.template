@@ -1,0 +1,23 @@
+<source>
+  @type tail
+
+  <parse>
+    @type multiline
+    format_firstline /^\w+ \d+, \d+ \d+:\d+:\d+ [AP]M \S+ \w+/
+    format1 /^(?<timestamp>\w+ \d+, \d+ \d+:\d+:\d+ [AP]M) (?<class>\S*+) (?<method>\S+)\s*(?<severity>\w+): (?<message>[\S\s]*)/
+  </parse>
+
+  # Paths with wildcards need to use forward slashes rather than backslashes on Windows, according to https://docs.fluentd.org/input/tail#wildcard-pattern-in-path-does-not-work-on-windows-why
+  # If the Jenkins Agent directory is C:\J, then this should result in a line like:
+  # path 'C:/J/remoting/remoting.log.0'
+  path '[JENKINS_AGENT_FOLDER_WITH_FORWARD_SLASHES]/remoting/logs/remoting.log.0'
+
+  # This assumes that the Stackdriver Logging Agent has been installed to its default location
+  # If the Stackdriver Logging agent has been installed into its default location, then this should result in a line like:
+  # pos_file 'C:\Program Files (x86)\Stackdriver\LoggingAgent\Main\pos\jenkins-agent-remoting.pos'
+  pos_file '[STACKDRIVER_LOGGING_AGENT_INSTALL_FOLDER]\Main\pos\jenkins-agent-remoting.pos'
+
+  read_from_head true
+
+  tag jenkins-agent-remoting
+</source>

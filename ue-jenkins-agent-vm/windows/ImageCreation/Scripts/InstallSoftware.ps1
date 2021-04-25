@@ -2,6 +2,10 @@
 . ${PSScriptRoot}\..\Tools\Scripts\Add-WindowsDefenderExclusionRule.ps1
 
 . ${PSScriptRoot}\..\Tools\Scripts\Install-GCELoggingAgent.ps1
+. ${PSScriptRoot}\..\Tools\Scripts\Install-GCELoggingAgentSource-JenkinsAgentRemoting.ps1
+
+$JenkinsAgentFolder = "C:\J"
+$JenkinsWorkspaceFolder = "C:\W"
 
 Write-Host "Enabling Win32 Long Paths..."
 
@@ -9,17 +13,21 @@ Enable-Win32LongPaths
 
 Write-Host "Creating folders for Jenkins..."
 
-New-Item -ItemType Directory -Path C:\J -ErrorAction Stop | Out-Null
-New-Item -ItemType Directory -Path C:\W -ErrorAction Stop | Out-Null
+New-Item -ItemType Directory -Path $JenkinsAgentFolder -ErrorAction Stop | Out-Null
+New-Item -ItemType Directory -Path $JenkinsWorkspaceFolder -ErrorAction Stop | Out-Null
 
 Write-Host "Adding Windows Defender exclusion rule for Jenkins-related folders..."
 
-Add-WindowsDefenderExclusionRule -Folder C:\J -ErrorAction Stop
-Add-WindowsDefenderExclusionRule -Folder C:\W -ErrorAction Stop
+Add-WindowsDefenderExclusionRule -Folder $JenkinsAgentFolder -ErrorAction Stop
+Add-WindowsDefenderExclusionRule -Folder $JenkinsWorkspaceFolder -ErrorAction Stop
 
 Write-Host "Installing GCE Logging Agent..."
 
 # This will provide the basic forwarding of logs to GCP Logging, and send various Windows Event log activity there
 Install-GCELoggingAgent
+
+Write-Host "Installing forwarding of Jenkins Agent remoting logs to GCP Logging..."
+
+Install-GCELoggingAgentSource-JenkinsAgentRemoting -JenkinsAgentFolder $JenkinsAgentFolder
 
 Write-Host "Done."
