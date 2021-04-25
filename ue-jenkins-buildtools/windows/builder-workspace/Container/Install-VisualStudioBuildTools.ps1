@@ -1,5 +1,3 @@
-. ${PSScriptRoot}\Invoke-External.ps1
-
 class VSBuildToolsInstallerException : Exception {
 	$ExitCode
 
@@ -40,14 +38,14 @@ function Install-VisualStudioBuildTools {
 			$Args += $WorkloadOrComponent
 		}
 
-		$ExitCode = Invoke-External -LiteralPath $InstallerLocation @$Args
+		$Process = Start-Process -FilePath $InstallerLocation -ArgumentList $Args -NoNewWindow -Wait -PassThru
 
 		# Particular exit codes are successful:
 		# 0    == Operation completed successfully
 		# 3010 == Operation completed successfully, but install requires reboot before it can be used
 		# All other exit codes should result in an exception
-		if (($ExitCode -ne 0) -and ($ExitCode -ne 3010)) {
-			throw [VSBuildToolsInstallerException]::new($ExitCode)
+		if (($Process.ExitCode -ne 0) -and ($Process.ExitCode -ne 3010)) {
+			throw [VSBuildToolsInstallerException]::new($Process.ExitCode)
 		}
 
 	} finally {

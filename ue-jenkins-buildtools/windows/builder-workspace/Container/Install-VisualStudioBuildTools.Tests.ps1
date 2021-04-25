@@ -3,7 +3,7 @@
 BeforeAll {
 
 	. ${PSScriptRoot}\Install-VisualStudioBuildTools.ps1
-	. ${PSScriptRoot}\Invoke-External.ps1
+
 }
 
 Describe 'Install-VisualStudioBuildTools' {
@@ -56,7 +56,7 @@ Describe 'Install-VisualStudioBuildTools' {
 		Assert-MockCalled -Times 1 Remove-Item
 	}
 
-	It "Reports success if Invoke-External returns <ExitCode>, and removes temp folder" -ForEach @(
+	It "Reports success if Start-Process returns <ExitCode>, and removes temp folder" -ForEach @(
 		@{ ExitCode = 0 }
 		@{ ExitCode = 3010 }
 	) {
@@ -67,7 +67,7 @@ Describe 'Install-VisualStudioBuildTools' {
 
 		Mock Invoke-WebRequest { }
 
-		Mock Invoke-External { $ExitCode }
+		Mock Start-Process { @{ ExitCode = $ExitCode } }
 
 		Mock Remove-Item { }
 
@@ -77,7 +77,7 @@ Describe 'Install-VisualStudioBuildTools' {
 		Assert-MockCalled -Times 1 Remove-Item
 	}
 
-	It "Reports error if Invoke-External returns another exit code, and removes temp folder" {
+	It "Reports error if Start-Process returns another exit code, and removes temp folder" {
 
 		Mock New-Item { }
 
@@ -85,7 +85,7 @@ Describe 'Install-VisualStudioBuildTools' {
 
 		Mock Invoke-WebRequest { }
 
-		Mock Invoke-External { 1234 }
+		Mock Start-Process { @{ ExitCode = 1234 } }
 
 		Mock Remove-Item { }
 
