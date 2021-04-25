@@ -135,6 +135,5 @@ Describe 'Install-GCELoggingAgentSource-JenkinsAgentRemoting' {
 
 		$OutFileResults | Should -Contain "  path 'C:/J/remoting/logs/remoting.log.0'"
 		$OutFileResults | Should -Contain "  pos_file 'C:\Program Files (x86)\Stackdriver Logging\Main\pos\jenkins-agent-remoting.pos'"
-#		$OutFileResults | Should -Match ".*C:\\Program\ Files\ \(x86\)\\Stackdriver\ Logging\\Main\\pos\\jenkins-agent-remoting\.pos.*"
 	}
 }
