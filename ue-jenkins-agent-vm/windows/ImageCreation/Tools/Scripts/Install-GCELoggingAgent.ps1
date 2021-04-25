@@ -31,14 +31,12 @@ function Install-GCELoggingAgent {
 
 		Invoke-WebRequest -UseBasicParsing -Uri $LoggingAgentDownloadURI -OutFile $InstallerLocation -ErrorAction Stop
 
-		$ExitCode = Invoke-External -LiteralPath $InstallerLocation "/S"
-
-		Write-Host "ExitCode: ${ExitCode}"
+		$Process = Start-Process -FilePath $InstallerLocation -ArgumentList "/S" -NoNewWindow -Wait -PassThru
 
 		# Installation is asynchronous; the agent has not yet completed installation when the installer exits.
 
-		if ($ExitCode -ne 0) {
-			throw [GCELoggingAgentInstallerException]::new($ExitCode)
+		if ($Process.ExitCode -ne 0) {
+			throw [GCELoggingAgentInstallerException]::new($Process.ExitCode)
 		}
 
 	} finally {

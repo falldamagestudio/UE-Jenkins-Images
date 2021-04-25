@@ -2,7 +2,6 @@
 
 BeforeAll {
 
-	. ${PSScriptRoot}\Invoke-External.ps1
 	. ${PSScriptRoot}\Install-GCELoggingAgent.ps1
 
 }
@@ -18,7 +17,7 @@ Describe 'Install-GCELoggingAgent' {
 
 		Mock Invoke-WebRequest { throw "Invoke-WebRequest should not be called" }
 
-		Mock Invoke-External { throw "Invoke-External should not be called" }
+		Mock Start-Process { throw "Start-Process should not be called" }
 
 		Mock Remove-Item { throw "Remove-Item should not be called" }
 
@@ -28,7 +27,7 @@ Describe 'Install-GCELoggingAgent' {
 		Assert-MockCalled -Times 1 New-Item -ParameterFilter { $Path -eq "C:\Temp" }
 		Assert-MockCalled -Times 0 Join-Path
 		Assert-MockCalled -Times 0 Invoke-WebRequest
-		Assert-MockCalled -Times 0 Invoke-External
+		Assert-MockCalled -Times 0 Start-Process
 		Assert-MockCalled -Times 0 Remove-Item
 	}
 
@@ -41,7 +40,7 @@ Describe 'Install-GCELoggingAgent' {
 
 		Mock Invoke-WebRequest { throw "Invoke-WebRequest should not be called" }
 
-		Mock Invoke-External { throw "Invoke-External should not be called" }
+		Mock Start-Process { throw "Start-Process should not be called" }
 
 		Mock Remove-Item -ParameterFilter { $Path -eq "C:\Temp" } { }
 		Mock Remove-Item { throw "Invalid invocation of Remove-Item" }
@@ -52,7 +51,7 @@ Describe 'Install-GCELoggingAgent' {
 		Assert-MockCalled -Times 1 New-Item -ParameterFilter { $Path -eq "C:\Temp" }
 		Assert-MockCalled -Times 1 Join-Path
 		Assert-MockCalled -Times 0 Invoke-WebRequest
-		Assert-MockCalled -Times 0 Invoke-External
+		Assert-MockCalled -Times 0 Start-Process
 		Assert-MockCalled -Times 1 Remove-Item -ParameterFilter { $Path -eq "C:\Temp" }
 	}
 
@@ -66,7 +65,7 @@ Describe 'Install-GCELoggingAgent' {
 		Mock Invoke-WebRequest -ParameterFilter { $OutFile -eq "C:\Temp\LoggingAgent.exe" } { throw "Invoke-WebRequest failed" }
 		Mock Invoke-WebRequest { throw "Invalid invocation of Invoke-WebRequest" }
 
-		Mock Invoke-External { throw "Invoke-External should not be called" }
+		Mock Start-Process { throw "Start-Process should not be called" }
 
 		Mock Remove-Item -ParameterFilter { $Path -eq "C:\Temp" } { }
 		Mock Remove-Item { throw "Invalid invocation of Remove-Item" }
@@ -77,11 +76,11 @@ Describe 'Install-GCELoggingAgent' {
 		Assert-MockCalled -Times 1 New-Item -ParameterFilter { $Path -eq "C:\Temp" }
 		Assert-MockCalled -Times 1 Join-Path
 		Assert-MockCalled -Times 1 Invoke-WebRequest -ParameterFilter { $OutFile -eq "C:\Temp\LoggingAgent.exe" }
-		Assert-MockCalled -Times 0 Invoke-External
+		Assert-MockCalled -Times 0 Start-Process
 		Assert-MockCalled -Times 1 Remove-Item -ParameterFilter { $Path -eq "C:\Temp" }
 	}
 
-	It "Throws an error if Invoke-External fails, and removes tmep folder" {
+	It "Throws an error if Start-Process fails, and removes tmep folder" {
 
 		Mock New-Item -ParameterFilter { $Path -eq "C:\Temp" } { }
 		Mock New-Item { throw "Invalid invocation of New-Item" }
@@ -91,8 +90,8 @@ Describe 'Install-GCELoggingAgent' {
 		Mock Invoke-WebRequest -ParameterFilter { $OutFile -eq "C:\Temp\LoggingAgent.exe" } { }
 		Mock Invoke-WebRequest { throw "Invalid invocation of Invoke-WebRequest" }
 
-		Mock Invoke-External -ParameterFilter { $LiteralPath -eq "C:\Temp\LoggingAgent.exe" } { throw "Invoke-External failed" }
-		Mock Invoke-External { throw "Invalid invocation of Invoke-External" }
+		Mock Start-Process -ParameterFilter { $FilePath -eq "C:\Temp\LoggingAgent.exe" } { throw "Start-Process failed" }
+		Mock Start-Process { throw "Invalid invocation of Start-Process" }
 
 		Mock Remove-Item -ParameterFilter { $Path -eq "C:\Temp" } { }
 		Mock Remove-Item { throw "Invalid invocation of Remove-Item" }
@@ -103,11 +102,11 @@ Describe 'Install-GCELoggingAgent' {
 		Assert-MockCalled -Times 1 New-Item -ParameterFilter { $Path -eq "C:\Temp" }
 		Assert-MockCalled -Times 1 Join-Path
 		Assert-MockCalled -Times 1 Invoke-WebRequest -ParameterFilter { $OutFile -eq "C:\Temp\LoggingAgent.exe" }
-		Assert-MockCalled -Times 1 Invoke-External -ParameterFilter { $LiteralPath -eq "C:\Temp\LoggingAgent.exe" }
+		Assert-MockCalled -Times 1 Start-Process -ParameterFilter { $FilePath -eq "C:\Temp\LoggingAgent.exe" }
 		Assert-MockCalled -Times 1 Remove-Item -ParameterFilter { $Path -eq "C:\Temp" }
 	}
 
-	It "Throws an error if Invoke-External returns nonzero, and removes tmep folder" {
+	It "Throws an error if Start-Process returns nonzero, and removes tmep folder" {
 
 		Mock New-Item -ParameterFilter { $Path -eq "C:\Temp" } { }
 		Mock New-Item { throw "Invalid invocation of New-Item" }
@@ -117,8 +116,8 @@ Describe 'Install-GCELoggingAgent' {
 		Mock Invoke-WebRequest -ParameterFilter { $OutFile -eq "C:\Temp\LoggingAgent.exe" } { }
 		Mock Invoke-WebRequest { throw "Invalid invocation of Invoke-WebRequest" }
 
-		Mock Invoke-External -ParameterFilter { $LiteralPath -eq "C:\Temp\LoggingAgent.exe" } { return 1234 }
-		Mock Invoke-External { throw "Invalid invocation of Invoke-External" }
+		Mock Start-Process -ParameterFilter { $FilePath -eq "C:\Temp\LoggingAgent.exe" } { @{ ExitCode = 1234 } }
+		Mock Start-Process { throw "Invalid invocation of Start-Process" }
 
 		Mock Remove-Item -ParameterFilter { $Path -eq "C:\Temp" } { }
 		Mock Remove-Item { throw "Invalid invocation of Remove-Item" }
@@ -129,11 +128,11 @@ Describe 'Install-GCELoggingAgent' {
 		Assert-MockCalled -Times 1 New-Item -ParameterFilter { $Path -eq "C:\Temp" }
 		Assert-MockCalled -Times 1 Join-Path
 		Assert-MockCalled -Times 1 Invoke-WebRequest -ParameterFilter { $OutFile -eq "C:\Temp\LoggingAgent.exe" }
-		Assert-MockCalled -Times 1 Invoke-External -ParameterFilter { $LiteralPath -eq "C:\Temp\LoggingAgent.exe" }
+		Assert-MockCalled -Times 1 Start-Process -ParameterFilter { $FilePath -eq "C:\Temp\LoggingAgent.exe" }
 		Assert-MockCalled -Times 1 Remove-Item -ParameterFilter { $Path -eq "C:\Temp" }
 	}
 
-	It "Succeeds if Invoke-External returns zero, and removes tmep folder" {
+	It "Succeeds if Start-Process returns zero, and removes tmep folder" {
 
 		Mock New-Item -ParameterFilter { $Path -eq "C:\Temp" } { }
 		Mock New-Item { throw "Invalid invocation of New-Item" }
@@ -143,8 +142,8 @@ Describe 'Install-GCELoggingAgent' {
 		Mock Invoke-WebRequest -ParameterFilter { $OutFile -eq "C:\Temp\LoggingAgent.exe" } { }
 		Mock Invoke-WebRequest { throw "Invalid invocation of Invoke-WebRequest" }
 
-		Mock Invoke-External -ParameterFilter { $LiteralPath -eq "C:\Temp\LoggingAgent.exe" } { return 0 }
-		Mock Invoke-External { throw "Invalid invocation of Invoke-External" }
+		Mock Start-Process -ParameterFilter { $FilePath -eq "C:\Temp\LoggingAgent.exe" } { @{ ExitCode = 0 } }
+		Mock Start-Process { throw "Invalid invocation of Start-Process" }
 
 		Mock Remove-Item -ParameterFilter { $Path -eq "C:\Temp" } { }
 		Mock Remove-Item { throw "Invalid invocation of Remove-Item" }
@@ -155,7 +154,7 @@ Describe 'Install-GCELoggingAgent' {
 		Assert-MockCalled -Times 1 New-Item -ParameterFilter { $Path -eq "C:\Temp" }
 		Assert-MockCalled -Times 1 Join-Path
 		Assert-MockCalled -Times 1 Invoke-WebRequest -ParameterFilter { $OutFile -eq "C:\Temp\LoggingAgent.exe" }
-		Assert-MockCalled -Times 1 Invoke-External -ParameterFilter { $LiteralPath -eq "C:\Temp\LoggingAgent.exe" }
+		Assert-MockCalled -Times 1 Start-Process -ParameterFilter { $FilePath -eq "C:\Temp\LoggingAgent.exe" }
 		Assert-MockCalled -Times 1 Remove-Item -ParameterFilter { $Path -eq "C:\Temp" }
 	}
 }
