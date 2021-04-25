@@ -1,5 +1,3 @@
-. ${PSScriptRoot}\Invoke-External.ps1
-
 class NssmException : Exception {
 	$ExitCode
 
@@ -30,9 +28,9 @@ function Register-AutoStartService {
 		$NssmArguments += $Arguments
 	}
 
-	$ExitCode = Invoke-External -LiteralPath $NssmLocation $NssmArguments
+	$Process = Start-Process -FilePath $NssmLocation -ArgumentList $NssmArguments -NoNewWindow -Wait -PassThru
 
-	if ($ExitCode -ne 0) {
-		throw [NssmException]::new($ExitCode)
+	if ($Process.ExitCode -ne 0) {
+		throw [NssmException]::new($Process.ExitCode)
 	}
 }

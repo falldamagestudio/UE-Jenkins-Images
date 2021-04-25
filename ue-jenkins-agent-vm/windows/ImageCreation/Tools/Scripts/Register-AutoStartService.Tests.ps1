@@ -2,7 +2,6 @@
 
 BeforeAll {
 
-	. ${PSScriptRoot}\Invoke-External.ps1
 	. ${PSScriptRoot}\Register-AutoStartService.ps1
 
 }
@@ -15,12 +14,12 @@ Describe 'Register-AutoStartService' {
 		$ServiceName = "MyService"
 		$Program = "C:\MyProgram.exe"
 
-		Mock Invoke-External -ParameterFilter { ($LiteralPath -eq $NssmLocation) } { 0 }
-		Mock Invoke-External { throw "Invalid invocation of Invoke-External" }
+		Mock Start-Process -ParameterFilter { ($FilePath -eq $NssmLocation) } { @{ ExitCode = 0 } }
+		Mock Start-Process { throw "Invalid invocation of Start-Process" }
 
 		Register-AutoStartService -NssmLocation $NssmLocation -ServiceName $ServiceName -Program $Program
 
-		Assert-MockCalled Invoke-External -ParameterFilter { ($LiteralPath -eq $NssmLocation) -and (($PassThruArgs)[0] -eq "@install MyService C:\MyProgram.exe") }
+		Assert-MockCalled Start-Process -ParameterFilter { ($FilePath -eq $NssmLocation) }
 	}
 
 	It "Installs autostart service with arguments" {
@@ -31,11 +30,11 @@ Describe 'Register-AutoStartService' {
 		$Arg1 = "a"
 		$Arg2 = "b"
 
-		Mock Invoke-External -ParameterFilter { ($LiteralPath -eq $NssmLocation) } { 0 }
-		Mock Invoke-External { throw "Invalid invocation of Invoke-External" }
+		Mock Start-Process -ParameterFilter { ($FilePath -eq $NssmLocation) } { @{ ExitCode = 0 } }
+		Mock Start-Process { throw "Invalid invocation of Start-Process" }
 
 		Register-AutoStartService -NssmLocation $NssmLocation -ServiceName $ServiceName -Program $Program -Arguments $Arg1,$Arg2
 
-		Assert-MockCalled Invoke-External -ParameterFilter { ($LiteralPath -eq $NssmLocation) -and (($PassThruArgs)[0] -eq "@install MyService C:\MyProgram.exe a b") }
+		Assert-MockCalled Start-Process -ParameterFilter { ($FilePath -eq $NssmLocation) }
 	}
 }
