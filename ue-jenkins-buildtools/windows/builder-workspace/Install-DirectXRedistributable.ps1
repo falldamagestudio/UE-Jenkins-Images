@@ -1,5 +1,3 @@
-. ${PSScriptRoot}\Invoke-External.ps1
-
 class DirectXRedistributableInstallerException : Exception {
 	$ExitCode
 
@@ -22,10 +20,10 @@ function Install-DirectXRedistributable {
 		# Download DirectX End-User Runtime Web Installer
 		Invoke-WebRequest -UseBasicParsing -Uri "https://download.microsoft.com/download/1/7/1/1718CCC4-6315-4D8E-9543-8E28A4E18C4C/dxwebsetup.exe" -OutFile $InstallerLocation -ErrorAction Stop
 	
-		$ExitCode = Invoke-External -LiteralPath $InstallerLocation "/q"
+		$Process = Start-Process -FilePath $InstallerLocation -ArgumentList "/q" -NoNewWindow -Wait -PassThru
 	
-		if ($ExitCode -ne 0) {
-			throw [DirectXRedistributableInstallerException]::new($ExitCode)
+		if ($Process.ExitCode -ne 0) {
+			throw [DirectXRedistributableInstallerException]::new($Process.ExitCode)
 		}
 
 	} finally {
