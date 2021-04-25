@@ -1,0 +1,19 @@
+<source>
+  @type tail
+
+  format none
+
+  # Paths with wildcards need to use forward slashes rather than backslashes on Windows, according to https://docs.fluentd.org/input/tail#wildcard-pattern-in-path-does-not-work-on-windows-why
+  # If the Service Wrapper directory is C:\Runtime\Logs, then this should result in a line like:
+  # path 'C:/Runtime/Logs/*.txt'
+  path '[SERVICE_WRAPPER_LOGS_FOLDER_WITH_FORWARD_SLASHES]/*.txt'
+
+  # This assumes that the Stackdriver Logging Agent has been installed to its default location
+  # If the Stackdriver Logging agent has been installed into its default location, then this should result in a line like:
+  # pos_file 'C:\Program Files (x86)\Stackdriver\LoggingAgent\Main\pos\service-wrapper.pos'
+  pos_file '[STACKDRIVER_LOGGING_AGENT_INSTALL_FOLDER]\Main\pos\service-wrapper.pos'
+
+  read_from_head true
+
+  tag service-wrapper
+</source>

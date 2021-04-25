@@ -2,8 +2,10 @@
 . ${PSScriptRoot}\..\Tools\Scripts\Add-WindowsDefenderExclusionRule.ps1
 
 . ${PSScriptRoot}\..\Tools\Scripts\Install-GCELoggingAgent.ps1
+. ${PSScriptRoot}\..\Tools\Scripts\Install-GCELoggingAgentSource-ServiceWrapper.ps1
 . ${PSScriptRoot}\..\Tools\Scripts\Install-GCELoggingAgentSource-JenkinsAgentRemoting.ps1
 
+$ServiceWrapperLogsFolder = "C:\Runtime\Logs"
 $JenkinsAgentFolder = "C:\J"
 $JenkinsWorkspaceFolder = "C:\W"
 
@@ -25,6 +27,10 @@ Write-Host "Installing GCE Logging Agent..."
 
 # This will provide the basic forwarding of logs to GCP Logging, and send various Windows Event log activity there
 Install-GCELoggingAgent
+
+Write-Host "Installing forwarding of service wrapper logs to GCP Logging..."
+
+Install-GCELoggingAgentSource-ServiceWrapper -ServiceWrapperLogsFolder $ServiceWrapperLogsFolder
 
 Write-Host "Installing forwarding of Jenkins Agent remoting logs to GCP Logging..."
 
