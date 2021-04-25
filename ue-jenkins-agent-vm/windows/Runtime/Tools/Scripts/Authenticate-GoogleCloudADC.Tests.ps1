@@ -2,30 +2,18 @@
 
 BeforeAll {
 
-	. ${PSScriptRoot}\Authenticate-DockerForGoogleArtifactRegistry.ps1
-	. ${PSScriptRoot}\Invoke-External-WithStdio.ps1
+	. ${PSScriptRoot}\Authenticate-GoogleCloudADC.ps1
 
 }
 
-Describe 'Authenticate-DockerForGoogleArtifactRegistry' {
+Describe 'Authenticate-GoogleCloudADC' {
 
-	It "Throws an exception if docker cannot be found or returns an error" {
+	It "succeeds beautifully" {
 
-		Mock Invoke-External-WithStdio { return 1234, "", "" }
+		Mock Out-File { }
 
-		{ Authenticate-DockerForGoogleArtifactRegistry -AgentKey "5678" -Region "europe-west1" } |
-			Should -Throw
+		Authenticate-GoogleCloudADC -AgentKey "5678"
 
-		Assert-MockCalled -Times 1 Invoke-External-WithStdio -ParameterFilter { $LiteralPath -eq "powershell" }
-	}
-
-	It "succeeds if Docker returns a zero error code" {
-
-		Mock Invoke-External-WithStdio { return 0, "", "" }
-
-		{ Authenticate-DockerForGoogleArtifactRegistry -AgentKey "5678" -Region "europe-west1" } |
-			Should -Not -Throw
-
-		Assert-MockCalled -Times 1 Invoke-External-WithStdio -ParameterFilter { $LiteralPath -eq "powershell" }
+		Assert-MockCalled -Times 1 Out-File
 	}
 }
