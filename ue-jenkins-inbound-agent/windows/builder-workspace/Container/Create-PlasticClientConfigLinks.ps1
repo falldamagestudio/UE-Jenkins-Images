@@ -12,8 +12,9 @@ function Create-PlasticClientConfigLinks {
     class CreateSymlinkException : Exception {
         $SourceLocation
         $TargetLocation
+        $ExitCode
 
-        CreateSymlinkException([string] $sourceLocation, [string] $targetLocation) : base("Unable to create symlink from ${sourceLocation} to ${targetLocation}") { $this.SourceLocation = $sourceLocation; $this.targetLocation = $targetLocation }
+        CreateSymlinkException([string] $sourceLocation, [string] $targetLocation, [int] $exitCode) : base("Unable to create symlink from ${sourceLocation} to ${targetLocation}, command terminated with exit code ${ExitCode}") { $this.SourceLocation = $sourceLocation; $this.targetLocation = $targetLocation; $this.ExitCode = $exitCode }
     }
 
     function CreateSymlink {
@@ -22,12 +23,9 @@ function Create-PlasticClientConfigLinks {
             [Parameter(Mandatory=$true)][string]$TargetLocation
         )
 
-        Write-Host "Creating symlink from ${SourceLocation} to ${TargetLocation}"
         $ExitCode = Invoke-External -LiteralPath "cmd" -ArgumentList @("/c", "mklink", $SourceLocation, $TargetLocation)
-        Write-Host "Exit code: ${ExitCode}, type $($ExitCode.GetType())"
         if ($ExitCode -ne 0) {
-            Write-Host "Exit code test failed."
-            throw [CreateSymlinkException]::new($SourceLocation, $TargetLocation)
+            throw [CreateSymlinkException]::new($SourceLocation, $TargetLocation, $ExitCode)
         }
     }
 
@@ -36,11 +34,6 @@ function Create-PlasticClientConfigLinks {
 
     # Create folder for config files
     New-Item -ItemType Directory -Path $SourceFolder | Out-Null
-
-    Get-ChildItem "C:\Users\jenkins\AppData\Local" -ErrorAction SilentlyContinue
-    Get-ChildItem "C:\Users\jenkins\AppData\Local\plastic4" -ErrorAction SilentlyContinue
-    Get-ChildItem $SourceFolder -ErrorAction SilentlyContinue
-    Get-ChildItem $TargetFolder -ErrorAction SilentlyContinue
 
     # Symlink critical files from config folder to nonexistent folder
     CreateSymlink -SourceLocation (Join-Path $SourceFolder "client.conf") -TargetLocation (Join-Path $TargetFolder "client.conf")

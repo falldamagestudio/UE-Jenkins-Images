@@ -40,9 +40,6 @@ function Install-Plastic {
 			throw [PlasticConfigureServerException]::new($Process2.ExitCode)
 		}
 
-		Get-ChildItem "C:\Users\jenkins\AppData\Local" -ErrorAction SilentlyContinue
-		Get-ChildItem "C:\Users\jenkins\AppData\Local\plastic4" -ErrorAction SilentlyContinue
-
 	} finally {
 
 		# Remove temp folder
