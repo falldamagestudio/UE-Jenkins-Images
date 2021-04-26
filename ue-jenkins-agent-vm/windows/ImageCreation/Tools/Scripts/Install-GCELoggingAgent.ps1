@@ -1,5 +1,3 @@
-. ${PSScriptRoot}\Invoke-External.ps1
-
 class GCELoggingAgentInstallerException : Exception {
 	$ExitCode
 

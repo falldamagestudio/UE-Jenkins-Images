@@ -12,10 +12,10 @@ function Invoke-External {
 
     param (
         [Parameter(Mandatory=$true)] [string] $LiteralPath,
-        [Parameter(ValueFromRemainingArguments=$true)] [string[]] $PassThruArgs
+        [Parameter(Mandatory=$false)] [string[]] $ArgumentList
     )
 
-  & $LiteralPath $PassThruArgs
+  & $LiteralPath $ArgumentList
 
   return $LASTEXITCODE
 }

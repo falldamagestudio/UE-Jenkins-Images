@@ -48,20 +48,20 @@ function Run-JenkinsAgent {
 	try {
 
 		# Fetch Docker agent image
-		$ExitCode = Invoke-External -LiteralPath "docker" "pull" $AgentImageUrl
+		$ExitCode = Invoke-External -LiteralPath "docker" -ArgumentList @("pull", $AgentImageUrl)
 		if ($ExitCode -ne 0) {
 			throw [RunJenkinsAgentException]::new("run", $ExitCode)
 		}
 
 		# Start Docker agent
-		$ExitCode = Invoke-External -LiteralPath "docker" $Arguments
+		$ExitCode = Invoke-External -LiteralPath "docker" -ArgumentList $Arguments
 		if ($ExitCode -ne 0) {
 			throw [RunJenkinsAgentException]::new("run", $ExitCode)
 		}
 
 	} finally {
 		try {
-			Invoke-External -LiteralPath "docker" "stop" "jenkins-agent"
+			Invoke-External -LiteralPath "docker" -ArgumentList @("stop", "jenkins-agent")
 		} catch {
 			# Ignore errors here, it is a cleanup path anyway
 		}

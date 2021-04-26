@@ -22,7 +22,7 @@ function Create-PlasticClientConfigLinks {
             [Parameter(Mandatory=$true)][string]$TargetLocation
         )
 
-        $ExitCode = Invoke-External -LiteralPath "cmd" "/c" "mklink" $SourceLocation $TargetLocation
+        $ExitCode = Invoke-External -LiteralPath "cmd" -ArgumentList @("/c", "mklink", $SourceLocation, $TargetLocation)
         if ($ExitCode -ne 0) {
             throw [CreateSymlinkException]::new($SourceLocation, $TargetLocation)
         }

@@ -33,7 +33,7 @@ Describe 'Register-AutoStartService' {
 		Mock Start-Process -ParameterFilter { ($FilePath -eq $NssmLocation) } { @{ ExitCode = 0 } }
 		Mock Start-Process { throw "Invalid invocation of Start-Process" }
 
-		Register-AutoStartService -NssmLocation $NssmLocation -ServiceName $ServiceName -Program $Program -Arguments $Arg1,$Arg2
+		Register-AutoStartService -NssmLocation $NssmLocation -ServiceName $ServiceName -Program $Program -ArgumentList @($Arg1, $Arg2)
 
 		Assert-MockCalled Start-Process -ParameterFilter { ($FilePath -eq $NssmLocation) }
 	}

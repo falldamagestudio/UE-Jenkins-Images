@@ -15,7 +15,7 @@ function Register-AutoStartService {
 		[Parameter(Mandatory)] [string] $NssmLocation,
 		[Parameter(Mandatory)] [string] $ServiceName,
 		[Parameter(Mandatory)] [string] $Program,
-		[Parameter(ValueFromRemainingArguments)] [string[]] $Arguments
+		[Parameter(Mandatory=$false)] [string[]] $ArgumentList
 	)
 
 	$NssmArguments = @(
@@ -25,7 +25,7 @@ function Register-AutoStartService {
 	) 
 
 	if ($Arguments -ne $null) {
-		$NssmArguments += $Arguments
+		$NssmArguments += $ArgumentList
 	}
 
 	$Process = Start-Process -FilePath $NssmLocation -ArgumentList $NssmArguments -NoNewWindow -Wait -PassThru
