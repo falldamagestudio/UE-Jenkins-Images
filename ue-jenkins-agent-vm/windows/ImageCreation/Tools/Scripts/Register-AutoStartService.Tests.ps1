@@ -19,7 +19,7 @@ Describe 'Register-AutoStartService' {
 
 		Register-AutoStartService -NssmLocation $NssmLocation -ServiceName $ServiceName -Program $Program
 
-		Assert-MockCalled Start-Process -ParameterFilter { ($FilePath -eq $NssmLocation) }
+		Assert-MockCalled Start-Process -ParameterFilter { ($FilePath -eq $NssmLocation) -and ($ArgumentList.Count -eq 3) -and ($ArgumentList[1] -eq $ServiceName)-and ($ArgumentList[2] -eq $Program) }
 	}
 
 	It "Installs autostart service with arguments" {
@@ -35,6 +35,6 @@ Describe 'Register-AutoStartService' {
 
 		Register-AutoStartService -NssmLocation $NssmLocation -ServiceName $ServiceName -Program $Program -ArgumentList @($Arg1, $Arg2)
 
-		Assert-MockCalled Start-Process -ParameterFilter { ($FilePath -eq $NssmLocation) }
+		Assert-MockCalled Start-Process -ParameterFilter { ($FilePath -eq $NssmLocation) -and ($ArgumentList[0] -eq "install") -and ($ArgumentList.Count -eq 5) -and ($ArgumentList[1] -eq $ServiceName)-and ($ArgumentList[2] -eq $Program) -and ($ArgumentList[3] -eq $Arg1) -and ($ArgumentList[4] -eq $Arg2) }
 	}
 }

@@ -24,7 +24,7 @@ function Register-AutoStartService {
 		$Program
 	) 
 
-	if ($Arguments -ne $null) {
+	if ($ArgumentList -ne $null) {
 		$NssmArguments += $ArgumentList
 	}
 
