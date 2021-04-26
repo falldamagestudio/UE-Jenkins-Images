@@ -15,7 +15,16 @@ function Invoke-External {
         [Parameter(Mandatory=$false)] [string[]] $ArgumentList
     )
 
-  & $LiteralPath $ArgumentList
+  # Invoke command, and pipe the command's stdout to the host output. Without the piping, the stdout output will be caught and returned as function pipeline output instead.
+  # Any writes to the command's stderr will be displayed as such, for the first message:
+  #  <commandname> : <message>
+  #      + CategoryInfo          : NotSpecified: (<message>  :String) [], RemoteException
+  #      + FullyQualifiedErrorId : NativeCommandError 
+  # ... and further stderr prints will be just the messages themselves, but still colored in red.
+  #
+  # Stdout and stderr will be interleaved in the correct order.
+
+  & $LiteralPath $ArgumentList | Out-Host
 
   return $LASTEXITCODE
 }
