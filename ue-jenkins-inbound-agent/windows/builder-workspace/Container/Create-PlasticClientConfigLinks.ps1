@@ -24,6 +24,7 @@ function Create-PlasticClientConfigLinks {
 
         $ExitCode = Invoke-External -LiteralPath "cmd" -ArgumentList @("/c", "mklink", $SourceLocation, $TargetLocation)
         if ($ExitCode -ne 0) {
+            Write-Host $ExitCode
             throw [CreateSymlinkException]::new($SourceLocation, $TargetLocation)
         }
     }
@@ -33,6 +34,11 @@ function Create-PlasticClientConfigLinks {
 
     # Create folder for config files
     New-Item -ItemType Directory -Path $SourceFolder | Out-Null
+
+    Get-ChildItem "C:\Users\jenkins\AppData\Local" -ErrorAction SilentlyContinue
+    Get-ChildItem "C:\Users\jenkins\AppData\Local\plastic4" -ErrorAction SilentlyContinue
+    Get-ChildItem $SourceFolder -ErrorAction SilentlyContinue
+    Get-ChildItem $TargetFolder -ErrorAction SilentlyContinue
 
     # Symlink critical files from config folder to nonexistent folder
     CreateSymlink -SourceLocation (Join-Path $SourceFolder "client.conf") -TargetLocation (Join-Path $TargetFolder "client.conf")
