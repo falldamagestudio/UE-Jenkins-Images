@@ -22,9 +22,11 @@ function Create-PlasticClientConfigLinks {
             [Parameter(Mandatory=$true)][string]$TargetLocation
         )
 
+        Write-Host "Creating symlink from ${SourceLocation} to ${TargetLocation}"
         $ExitCode = Invoke-External -LiteralPath "cmd" -ArgumentList @("/c", "mklink", $SourceLocation, $TargetLocation)
+        Write-Host "Exit code: ${ExitCode}, type $($ExitCode.GetType())"
         if ($ExitCode -ne 0) {
-            Write-Host $ExitCode
+            Write-Host "Exit code test failed."
             throw [CreateSymlinkException]::new($SourceLocation, $TargetLocation)
         }
     }
