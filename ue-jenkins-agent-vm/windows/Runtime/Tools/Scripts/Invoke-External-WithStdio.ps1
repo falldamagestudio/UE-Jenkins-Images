@@ -11,8 +11,24 @@ function Invoke-External-WithStdio {
 	param (
 		[Parameter(Mandatory)] [string] $LiteralPath,
 		[Parameter(Mandatory=$false)] [string] $StdIn=$null,
-        [Parameter(Mandatory=$false)] [string[]] $ArgumentList
+        [Parameter(Mandatory=$false)] [string[]] $ArgumentList=$null
 	)
+
+	function ToArray
+	{
+		begin
+		{
+			$output = @();
+		}
+		process
+		{
+			$output += $_;
+		}
+		end
+		{
+			return ,$output;
+		}
+	}
 
 	$Arguments = $null
 	if ($ArgumentList -ne $null) {
