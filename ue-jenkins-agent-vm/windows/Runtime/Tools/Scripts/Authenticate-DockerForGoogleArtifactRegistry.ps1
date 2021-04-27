@@ -28,7 +28,7 @@ function Authenticate-DockerForGoogleArtifactRegistry {
 		"${Region}-docker.pkg.dev"
 	)
 
-	$ExitCode,$StdOut,$StdErr = Invoke-External-WithStdio -LiteralPath $Application -StdIn $AgentKey @$ArgumentList 
+	$ExitCode,$StdOut,$StdErr = Invoke-External-WithStdio -LiteralPath $Application -StdIn $AgentKey -ArgumentList $ArgumentList 
 
     if ($ExitCode -ne 0) {
 		throw [AuthenticateDockerForGoogleArtifactRegistryException]::new($ExitCode)
