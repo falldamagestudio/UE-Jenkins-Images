@@ -1,4 +1,4 @@
-. ${PSScriptRoot}\Invoke-External.ps1
+. ${PSScriptRoot}\Invoke-External-PrintStdout.ps1
 
 function Create-PlasticClientConfigLinks {
 
@@ -23,7 +23,7 @@ function Create-PlasticClientConfigLinks {
             [Parameter(Mandatory=$true)][string]$TargetLocation
         )
 
-        $ExitCode = Invoke-External -LiteralPath "cmd" -ArgumentList @("/c", "mklink", $SourceLocation, $TargetLocation)
+        $ExitCode = Invoke-External-PrintStdout -LiteralPath "cmd" -ArgumentList @("/c", "mklink", $SourceLocation, $TargetLocation)
         if ($ExitCode -ne 0) {
             throw [CreateSymlinkException]::new($SourceLocation, $TargetLocation, $ExitCode)
         }

@@ -22,7 +22,7 @@ function Get-GCESecret {
 		"--secret=${Key}"
 	)
 
-	$ExitCode, $StdOut, $StdErr = Invoke-External-WithStdio -LiteralPath $Application -StdIn $AgentKey @$ArgumentList
+	$ExitCode, $StdOut, $StdErr = Invoke-External-WithStdio -LiteralPath $Application -StdIn $AgentKey -ArgumentList $ArgumentList
 
 	if ($ExitCode -eq 0) {
         return $StdOut
