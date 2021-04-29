@@ -9,5 +9,5 @@ function Authenticate-GoogleCloudADC {
 		[Parameter(Mandatory)] [string] $AgentKey
 	)
 
-	$AgentKey | Out-File -FilePath "${env:APPDATA}\gcloud\application_default_credentials.json" -ErrorAction Stop
+	$AgentKey | Out-File -Encoding ASCII -FilePath "${env:APPDATA}\gcloud\application_default_credentials.json" -ErrorAction Stop
 }
