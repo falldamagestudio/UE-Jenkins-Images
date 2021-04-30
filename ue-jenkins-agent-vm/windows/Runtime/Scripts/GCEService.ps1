@@ -8,7 +8,6 @@ try {
     . ${PSScriptRoot}\..\Tools\Scripts\Resize-PartitionToMaxSize.ps1
     . ${PSScriptRoot}\..\Tools\Scripts\Get-GCESecret.ps1
     . ${PSScriptRoot}\..\Tools\Scripts\Get-GCEInstanceHostname.ps1
-    . ${PSScriptRoot}\..\Tools\Scripts\Authenticate-GoogleCloudADC.ps1
     . ${PSScriptRoot}\..\Tools\Scripts\Authenticate-DockerForGoogleArtifactRegistry.ps1
     . ${PSScriptRoot}\..\Tools\Scripts\Run-JenkinsAgent.ps1
 
@@ -52,10 +51,6 @@ try {
     # Extract region from docker image URL
     # Example: europe-west1-docker.pkg.dev/<projectname>/<reponame>/<imagename>:<tag> => europe-west1
     $Region = ($AgentImageURL -Split "-docker.pkg.dev")[0]
-
-    Write-Host "Configuring Application Default Credentials..."
-
-    Authenticate-GoogleCloudADC -AgentKey $AgentKey
 
     Write-Host "Authenticating Docker for Google Artifact Registry..."
 

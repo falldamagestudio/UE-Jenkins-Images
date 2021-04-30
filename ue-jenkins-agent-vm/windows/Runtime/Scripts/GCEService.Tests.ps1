@@ -4,7 +4,6 @@ BeforeAll {
 	. ${PSScriptRoot}\..\Tools\Scripts\Resize-PartitionToMaxSize.ps1
 	. ${PSScriptRoot}\..\Tools\Scripts\Get-GCESecret.ps1
 	. ${PSScriptRoot}\..\Tools\Scripts\Get-GCEInstanceHostname.ps1
-	. ${PSScriptRoot}\..\Tools\Scripts\Authenticate-GoogleCloudADC.ps1
 	. ${PSScriptRoot}\..\Tools\Scripts\Authenticate-DockerForGoogleArtifactRegistry.ps1
 	. ${PSScriptRoot}\..\Tools\Scripts\Run-JenkinsAgent.ps1
 }
@@ -39,9 +38,6 @@ Describe 'GCEService' {
 		Mock Get-GCESecret -ParameterFilter { $Key -eq "${AgentNameRef}-secret" } { if ($script:LoopCount -lt 3) { $script:LoopCount++; $null } else { $JenkinsSecretRef } }
 		Mock Get-GCESecret { throw "Invalid invocation of Get-GCESecret" }
 
-		Mock Authenticate-GoogleCloudADC -ParameterFilter { $AgentKey -eq $AgentKeyFileRef } {}
-		Mock Authenticate-GoogleCloudADC { throw "Invalid invocation of Authenticate-GoogleCloudADC" }
-
 		Mock Authenticate-DockerForGoogleArtifactRegistry -ParameterFilter { ($AgentKey -eq $AgentKeyFileRef) -and ($Region -eq $RegionRef) } {}
 		Mock Authenticate-DockerForGoogleArtifactRegistry { throw "Invalid invocation of Authenticate-DockerForGoogleArtifactRegistry" }
 
@@ -60,7 +56,6 @@ Describe 'GCEService' {
 
 		Assert-MockCalled -Times 2 Start-Sleep
 
-		Assert-MockCalled -Times 1 Authenticate-GoogleCloudADC
 		Assert-MockCalled -Times 1 Authenticate-DockerForGoogleArtifactRegistry
 
 		Assert-MockCalled -Times 1 Run-JenkinsAgent
