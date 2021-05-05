@@ -244,6 +244,7 @@ write_files:
         -v /var/run/docker.sock:/var/run/docker.sock \
         "${AGENT_IMAGE_URL_LINUX}" \
         -url "${JENKINS_URL}" \
+        -workDir /home/jenkins/agent \
         -webSocket \
         "${AGENT_SECRET}" \
         "${AGENT_NAME}"
