@@ -128,6 +128,8 @@ write_files:
     content: |
       [Unit]
       Description=Jenkins Agent
+      Requires=docker.service
+      After=docker.service
 
       [Service]
       User=jenkins
