@@ -19,6 +19,7 @@ RUN \
 		ca-certificates \
 		curl \
 		git \
+		jq \
 		python3 \
 		python3-dev \
 		python3-pip \
