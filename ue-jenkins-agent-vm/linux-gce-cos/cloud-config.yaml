@@ -98,6 +98,15 @@ write_files:
         chmod ugo+rwx "${WORKSPACE_DIR}"
       fi
 
+      # Ensure the Plastic SCM config folder exists
+      # This folder will also be mounted into containers later on
+
+      PLASTIC_CONFIG_DIR="${MOUNT_DIR}/.plastic4"
+      if [ ! -d "${PLASTIC_CONFIG_DIR}" ]; then
+        mkdir "${PLASTIC_CONFIG_DIR}"
+        chmod ugo+rwx "${PLASTIC_CONFIG_DIR}"
+      fi
+
   - path: /run/configure-services.sh
     permissions: 0744
     owner: root
@@ -155,9 +164,9 @@ write_files:
         echo "${HOSTNAME}"
       }
 
-      # Retrieve a secret from GCP Secret Manager
+      # Retrieve a secret from GCP Secret Manager (base64-encoded)
       # If the secret is not known, returns ""
-      get_gce_secret () {
+      get_gce_secret_base64 () {
 
         local SECRET_NAME=$1
 
@@ -178,7 +187,7 @@ write_files:
         local SECRET_RESPONSE=$(curl https://secretmanager.googleapis.com/v1/projects/${PROJECT}/secrets/${SECRET_NAME}/versions/latest:access -H "Authorization: Bearer ${ACCESS_TOKEN}")
 
         if [ $(echo ${SECRET_RESPONSE} | awk -F "\"" '{print $2}') != 'error' ]; then
-          local SECRET=$(echo ${SECRET_RESPONSE} | awk -F "\"" '{print $10}' | base64 --decode)
+          local SECRET=$(echo ${SECRET_RESPONSE} | awk -F "\"" '{print $10}')
           echo $SECRET
         fi
       }
@@ -192,23 +201,30 @@ write_files:
       while :
       do
         echo "Retrieving configuration from Secrets Manager..."
-        ACCESS_KEY="$(get_gce_secret "agent-key-file")"
-        JENKINS_URL="$(get_gce_secret "jenkins-url")"
-        AGENT_IMAGE_URL_LINUX="$(get_gce_secret "agent-image-url-linux")"
-        AGENT_SECRET="$(get_gce_secret "${AGENT_NAME}-secret")"
+        ACCESS_KEY="$(get_gce_secret_base64 "agent-key-file" | base64 --decode)"
+        JENKINS_URL="$(get_gce_secret_base64 "jenkins-url" | base64 --decode)"
+        AGENT_IMAGE_URL_LINUX="$(get_gce_secret_base64 "agent-image-url-linux" | base64 --decode)"
+        AGENT_SECRET="$(get_gce_secret_base64 "${AGENT_NAME}-secret" | base64 --decode)"
+        PLASTIC_CONFIG_BASE64="$(get_gce_secret_base64 "plastic-config-tgz")"
 
         echo "Secret agent-key-file: $([[ "${AGENT_KEY_FILE}" != "" ]] && echo "found" || echo "not found")"
         echo "Secret jenkins-url: $([[ "${JENKINS_URL}" != "" ]] && echo "found" || echo "not found")"
         echo "Secret agent-image-url-linux: $([[ "${AGENT_IMAGE_URL_LINUX}" != "" ]] && echo "found" || echo "not found")"
         echo "Secret ${AGENT_NAME}-secret: $([[ "${AGENT_SECRET}" != "" ]] && echo "found" || echo "not found")"
+        echo "Secret plastic-config: $([[ "${PLASTIC_CONFIG_BASE64}" != "" ]] && echo "found" || echo "not found")"
 
         if [ "${ACCESS_KEY}" != "" ] && [ "${JENKINS_URL}" != "" ] && [ "${AGENT_IMAGE_URL_LINUX}" != "" ] && [ "${AGENT_SECRET}" != "" ]; then
           break
         fi
 
-        echo "Some parameters are missing. Sleeping, then retrying..."
+        echo "Some required secrets are missing. Sleeping, then retrying..."
         sleep 10
       done
+
+      if [ "${PLASTIC_CONFIG_BASE64}" != "" ]; then
+        echo "Deploying Plastic SCM client configuration..."
+        echo "${PLASTIC_CONFIG_BASE64}" | base64 --decode | tar -zxv --directory=/mnt/disks/persistent-disk/.plastic4
+      fi
 
       echo "Authenticating Docker for Google Artifact Registry..."
 
@@ -247,6 +263,7 @@ write_files:
         --mount type=bind,source=/home/jenkins/.docker/config.json,destination=/home/jenkins/.docker/config.json \
         --mount type=bind,source=/mnt/disks/persistent-disk/workspace,destination=/home/jenkins/workspace \
         --mount type=bind,source=/mnt/disks/persistent-disk/agent,destination=/home/jenkins/agent \
+        --mount type=bind,source=/mnt/disks/persistent-disk/.plastic4,destination=/home/jenkins/.plastic4 \
         -v /var/run/docker.sock:/var/run/docker.sock \
         "${AGENT_IMAGE_URL_LINUX}" \
         -url "${JENKINS_URL}" \
