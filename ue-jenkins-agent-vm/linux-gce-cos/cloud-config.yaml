@@ -133,6 +133,10 @@ write_files:
 
       [Service]
       User=jenkins
+
+      Restart=on-failure
+      RestartSec=5s
+
       ExecStart=/run/jenkins-agent.start.sh
       ExecStop=/run/jenkins-agent.stop.sh
 
