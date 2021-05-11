@@ -25,42 +25,6 @@
 
 # Reference: https://cloudinit.readthedocs.io/en/latest/topics/modules.html#write-files
 write_files:
-  # Add 'dockerns-remap' to the docker daemon file:
-  #   namespace remapping will be active for all containers that are started by the 'jenkins' user
-  # The remaining arguments are the defaults for Docker when installed on COS
-  - path: /etc/docker/daemon.json
-    permissions: 0644
-    owner: root
-    content: |
-      {
-              "userns-remap": "jenkins:jenkins",
-              "live-restore": true,
-              "storage-driver": "overlay2",
-              "mtu": 1460
-      }    
-
-  # Add userns-remap translation:
-  # All uids within containers will be translated by +100000; that is,
-  #   the user 'jenkins' will have uid = 1000 within the containers, but uid = 101000
-  #   within the host OS
-  # Reference: https://docs.docker.com/engine/security/userns-remap/
-  - path: /etc/subuid
-    permissions: 0644
-    owner: root
-    content: |
-      jenkins:100000:65536
-
-  # Add userns-remap translation:
-  # All gids within containers will be translated by +100000; that is,
-  #   the group 'jenkins' will have gid = 1000 within the containers, but gid = 101000
-  #   within the host OS
-  # Reference: https://docs.docker.com/engine/security/userns-remap/
-  - path: /etc/subgid
-    permissions: 0644
-    owner: root
-    content: |
-      jenkins:100000:65536
-
   - path: /run/mount-and-prepare-persistent-disk.sh
     permissions: 0744
     owner: root
@@ -124,7 +88,8 @@ write_files:
 
   - path: /etc/systemd/system/jenkins-agent.service
     permissions: 0744
-    owner: jenkins
+    # The user 'chronos' has uid=1000 within the host VM, and this corresponds to the 'jenkins' user within the contaienr
+    owner: chronos
     content: |
       [Unit]
       Description=Jenkins Agent
@@ -132,13 +97,14 @@ write_files:
       After=docker.service
 
       [Service]
-      User=jenkins
+      User=chronos
       ExecStart=/run/jenkins-agent.start.sh
       ExecStop=/run/jenkins-agent.stop.sh
 
   - path: /run/jenkins-agent.start.sh
     permissions: 0744
-    owner: jenkins
+    # The user 'chronos' has uid=1000 within the host VM, and this corresponds to the 'jenkins' user within the contaienr
+    owner: chronos
     content: |
       #!/bin/bash
 
@@ -240,7 +206,7 @@ write_files:
         --detach \
         --rm \
         --name=jenkins-agent \
-        --mount type=bind,source=/home/jenkins/.docker/config.json,destination=/home/jenkins/.docker/config.json \
+        --mount type=bind,source=/home/chronos/user/.docker/config.json,destination=/home/jenkins/.docker/config.json \
         --mount type=bind,source=/mnt/disks/persistent-disk/workspace,destination=/home/jenkins/workspace \
         --mount type=bind,source=/mnt/disks/persistent-disk/agent,destination=/home/jenkins/agent \
         -v /var/run/docker.sock:/var/run/docker.sock \
@@ -259,32 +225,14 @@ write_files:
 
   - path: /run/jenkins-agent.stop.sh
     permissions: 0744
-    owner: jenkins
+    # The user 'chronos' has uid=1000 within the host VM, and this corresponds to the 'jenkins' user within the contaienr
+    owner: chronos
     content: |
       #!/bin/bash
 
       docker stop jenkins-agent
 
-# Reference: https://cloudinit.readthedocs.io/en/latest/topics/modules.html#bootcmd
-bootcmd:
-
-  # These commands cannot be moved into a stand-alone script file, because the 'bootcmd' module
-  #   runs before the 'write_files' module runs. These commands are necessary preparations for
-  #   running the 'write_files' module.
-
-  # Create group for jenkins
-  # This group mirrors the group of the jenkins-agent container after 'nsremap' gid remapping
-  # We are not using the 'groups' feature of cloud-init because it does not allow us to
-  #   specify the gid
-  - sudo groupadd --gid 101000 jenkins
-
-  # Create user for jenkins
-  # This user mirrors the user of the jenkins-agent container after 'nsremap' uid remapping
-  # We are not using the 'users' feature of cloud-init because it executes after the 'write_files'
-  #   module has run, and the jenkins user needs to exist before we can write files with
-  #   jenkins as owner
-  - sudo useradd --comment "Jenkins user" --uid 101000 --gid jenkins --create-home jenkins
-
+# Reference: https://cloudinit.readthedocs.io/en/latest/topics/modules.html#runcmd
 runcmd:
   - /run/mount-and-prepare-persistent-disk.sh
   - /run/configure-services.sh
