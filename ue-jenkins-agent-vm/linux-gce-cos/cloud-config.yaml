@@ -98,6 +98,10 @@ write_files:
 
       [Service]
       User=chronos
+
+      Restart=on-failure
+      RestartSec=5s
+
       ExecStart=/run/jenkins-agent.start.sh
       ExecStop=/run/jenkins-agent.stop.sh
 

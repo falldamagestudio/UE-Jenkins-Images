@@ -20,6 +20,7 @@ RUN \
 		curl \
 		git \
 		jq \
+		mono-runtime \
 		python3 \
 		python3-dev \
 		python3-pip \
