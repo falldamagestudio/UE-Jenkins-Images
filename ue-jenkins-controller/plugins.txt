@@ -29,37 +29,3 @@ job-dsl:1.77
 # The Timestamper plugin adds timestamps to the console output of Jenkins jobs.
 # https://plugins.jenkins.io/timestamper/
 timestamper:1.13
-
-###################################################################
-
-# This plugin provides Matrix Authorization, i.e. giving individual users/groups permission to do individual things
-# https://plugins.jenkins.io/matrix-auth/
-# matrix-auth:2.6.4
-
-# This plugin makes the account used when launching a job configurable (by default, jobs are launched as SYSTEM)
-# https://plugins.jenkins.io/authorize-project/
-# authorize-project:1.3.0
-
-# A key component of the Pipeline plugin suite, this plugin provides the Jenkins job and build types for Pipeline along with a generic user interface
-# https://plugins.jenkins.io/workflow-job/
-# workflow-job:2.40
-
-# A key component of the Pipeline plugin suite, this provides the standard execution engine for Pipeline steps, based on a custom Groovy interpreter that runs inside the Jenkins master process.
-# https://plugins.jenkins.io/workflow-cps/
-# workflow-cps:2.85
-
-# Provides a stage-by-stage progress view for Pipeline jobs
-# https://plugins.jenkins.io/pipeline-stage-view/
-# pipeline-stage-view:2.18
-
-# This plugin adds folder support to jenkins; the folders can be used to group/organize jobs
-# https://plugins.jenkins.io/cloudbees-folder/
-# cloudbees-folder:6.15
-
-# This plugin allows writing jobs in the text-based Job DSL
-# https://plugins.jenkins.io/job-dsl/
-# job-dsl:1.77
-
-# The Pipeline Model Definition Plugin provides a config-like syntax for defining Pipelines - thus Declarative Pipeline
-# https://plugins.jenkins.io/pipeline-model-definition/
-# pipeline-model-definition:1.7.2
