@@ -45,6 +45,7 @@ pipeline-stage-step:2.5
 pipeline-stage-tags-metadata:1.8.4
 pipeline-stage-view:2.19
 plain-credentials:1.7
+plasticscm-plugin:3.5
 plugin-util-api:2.2.0
 popper-api:1.16.1-2
 scm-api:2.6.4

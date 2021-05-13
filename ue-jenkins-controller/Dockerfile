@@ -4,3 +4,16 @@ ENV JAVA_OPTS -Djenkins.install.runSetupWizard=false
 
 ADD plugins-with-dependencies.txt /usr/share/jenkins/ref/plugins-with-dependencies.txt
 RUN jenkins-plugin-cli --plugin-file /usr/share/jenkins/ref/plugins-with-dependencies.txt --latest false --verbose
+
+USER root
+
+# Install Plastic SCM client
+
+RUN apt-get update \
+    && apt-get install -y apt-transport-https wget \
+    && echo "deb https://www.plasticscm.com/plasticrepo/stable/debian/ ./" | tee /etc/apt/sources.list.d/plasticscm-stable.list \
+    && wget https://www.plasticscm.com/plasticrepo/stable/debian/Release.key -O - | apt-key add - \
+    && apt-get update \
+    && apt-get install -y plasticscm-client-core
+
+USER jenkins

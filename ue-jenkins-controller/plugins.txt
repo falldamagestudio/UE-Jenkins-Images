@@ -29,3 +29,7 @@ job-dsl:1.77
 # The Timestamper plugin adds timestamps to the console output of Jenkins jobs.
 # https://plugins.jenkins.io/timestamper/
 timestamper:1.13
+
+# Retrieve and manage your Plastic SCM sources from Jenkins.
+# https://plugins.jenkins.io/plasticscm-plugin/
+plasticscm-plugin:3.5
