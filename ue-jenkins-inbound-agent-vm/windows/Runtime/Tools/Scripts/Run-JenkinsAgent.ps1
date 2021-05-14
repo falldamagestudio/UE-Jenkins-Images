@@ -51,7 +51,7 @@ function Run-JenkinsAgent {
 		# Fetch Docker agent image
 		$ExitCode = Invoke-External-PrintStdout -LiteralPath "docker" -ArgumentList @("pull", $AgentImageUrl)
 		if ($ExitCode -ne 0) {
-			throw [RunJenkinsAgentException]::new("run", $ExitCode)
+			throw [RunJenkinsAgentException]::new("pull", $ExitCode)
 		}
 
 		# Start Docker agent
