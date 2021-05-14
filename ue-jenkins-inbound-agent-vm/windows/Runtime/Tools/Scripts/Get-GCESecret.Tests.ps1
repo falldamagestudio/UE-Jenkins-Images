@@ -3,7 +3,6 @@
 BeforeAll {
 
 	. ${PSScriptRoot}\Get-GCESecret.ps1
-	. ${PSScriptRoot}\Invoke-External-WithStdio.ps1
 
 }
 

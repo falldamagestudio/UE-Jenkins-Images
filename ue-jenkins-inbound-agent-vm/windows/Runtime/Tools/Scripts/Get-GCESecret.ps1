@@ -1,5 +1,3 @@
-. ${PSScriptRoot}\Invoke-External-WithStdio.ps1
-
 function Get-GCESecret {
 
 	<#
