@@ -13,6 +13,7 @@ try {
 
     $JenkinsAgentFolder = "C:\J"
     $JenkinsWorkspaceFolder = "C:\W"
+    $PlasticConfigFolder = "C:\PlasticConfig"
 
     Write-Host "Ensuring that the boot partition uses the entire boot disk..."
 
@@ -34,17 +35,31 @@ try {
         $AgentKey = Get-GCESecret -Key "agent-key-file"
         $AgentImageURL = Get-GCESecret -Key "agent-image-url-windows"
         $JenkinsSecret = Get-GCESecret -Key "${AgentName}-secret"
+        $PlasticConfigZip = Get-GCESecret -Key "plastic-config-zip" -Binary $true
 
         Write-Host "Secret jenkins-url: $(if ($JenkinsURL -ne $null) { "found" } else { "not found" })"
         Write-Host "Secret agent-key-file: $(if ($AgentKey -ne $null) { "found" } else { "not found" })"
         Write-Host "Secret agent-image-url-windows: $(if ($AgentImageURL -ne $null) { "found" } else { "not found" })"
         Write-Host "Secret ${AgentName}-secret: $(if ($JenkinsSecret -ne $null) { "found" } else { "not found" })"
+        Write-Host "Secret plastic-config-zip: $(if ($PlasticConfigZip -ne $null) { "found" } else { "not found" })"
 
         if (($JenkinsURL -ne $null) -and ($AgentImageURL -ne $null) -and ($AgentKey -ne $null) -and ($JenkinsSecret -ne $null)) {
             break
         } else {
-            Write-Host "Some parameters are missing. Sleeping, then retrying..."
+            Write-Host "Some required secrets are missing. Sleeping, then retrying..."
             Start-Sleep 10
+        }
+    }
+
+    if ($PlasticConfigZip) {
+        Write-Host "Deploying Plastic SCM client configuration..."
+
+        $PlasticConfigZipLocation = "${PSScriptRoot}\plastic-config.zip"
+        try {
+            [IO.File]::WriteAllBytes($PlasticConfigZipLocation, $PlasticConfigZip)
+            Expand-Archive -LiteralPath $PlasticConfigZipLocation -DestinationPath "C:\PlasticConfig" -Force -ErrorAction Stop
+        } finally {
+            Remove-Item $PlasticConfigZipLocation -ErrorAction SilentlyContinue
         }
     }
 
@@ -61,6 +76,7 @@ try {
     $ServiceParams = @{
         JenkinsAgentFolder = $JenkinsAgentFolder
         JenkinsWorkspaceFolder = $JenkinsWorkspaceFolder
+        PlasticConfigFolder = $PlasticConfigFolder
         JenkinsURL = $JenkinsURL
         JenkinsSecret = $JenkinsSecret
         AgentImageURL = $AgentImageURL

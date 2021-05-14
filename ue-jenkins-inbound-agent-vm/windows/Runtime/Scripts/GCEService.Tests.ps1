@@ -18,6 +18,7 @@ Describe 'GCEService' {
 		$AgentImageURLRef = "${RegionRef}-docker.pkg.dev/someproject/somerepo/inbound-agent:latest"
 		$AgentKeyFileRef = "1234"
 		$JenkinsSecretRef = "5678"
+		$PlasticConfigZipRef = @(72, 101, 108, 108, 111) # "Hello"
 
 		$script:LoopCount = 0
 
@@ -36,7 +37,10 @@ Describe 'GCEService' {
 		Mock Get-GCESecret -ParameterFilter { $Key -eq "agent-key-file" } { $AgentKeyFileRef }
 		Mock Get-GCESecret -ParameterFilter { $Key -eq "agent-image-url-windows" } { $AgentImageURLRef }
 		Mock Get-GCESecret -ParameterFilter { $Key -eq "${AgentNameRef}-secret" } { if ($script:LoopCount -lt 3) { $script:LoopCount++; $null } else { $JenkinsSecretRef } }
+		Mock Get-GCESecret -ParameterFilter { $Key -eq "plastic-config-zip" } { $PlasticConfigZipRef }
 		Mock Get-GCESecret { throw "Invalid invocation of Get-GCESecret" }
+
+		Mock Expand-Archive { }
 
 		Mock Authenticate-DockerForGoogleArtifactRegistry -ParameterFilter { ($AgentKey -eq $AgentKeyFileRef) -and ($Region -eq $RegionRef) } {}
 		Mock Authenticate-DockerForGoogleArtifactRegistry { throw "Invalid invocation of Authenticate-DockerForGoogleArtifactRegistry" }
@@ -53,8 +57,11 @@ Describe 'GCEService' {
 		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "agent-key-file" }
 		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "agent-image-url-windows" }
 		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "test-host-secret" }
+		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "plastic-config-zip" }
 
 		Assert-MockCalled -Times 2 Start-Sleep
+
+		Assert-MockCalled -Times 1 Expand-Archive
 
 		Assert-MockCalled -Times 1 Authenticate-DockerForGoogleArtifactRegistry
 

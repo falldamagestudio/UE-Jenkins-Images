@@ -9,6 +9,8 @@ $ServiceWrapperLogsFolder = "C:\Runtime\Logs"
 $JenkinsAgentFolder = "C:\J"
 $JenkinsWorkspaceFolder = "C:\W"
 
+$PlasticConfigFolder = "C:\PlasticConfig"
+
 Write-Host "Enabling Win32 Long Paths..."
 
 Enable-Win32LongPaths
@@ -17,6 +19,10 @@ Write-Host "Creating folders for Jenkins..."
 
 New-Item -ItemType Directory -Path $JenkinsAgentFolder -ErrorAction Stop | Out-Null
 New-Item -ItemType Directory -Path $JenkinsWorkspaceFolder -ErrorAction Stop | Out-Null
+
+Write-Host "Creating config folder for Plastic SCM..."
+
+New-Item -ItemType Directory -Path $PlasticConfigFolder -ErrorAction Stop | Out-Null
 
 Write-Host "Adding Windows Defender exclusion rule for Jenkins-related folders..."
 
