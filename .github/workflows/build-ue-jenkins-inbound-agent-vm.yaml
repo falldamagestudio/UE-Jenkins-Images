@@ -1,4 +1,4 @@
-name: ue-jenkins-agent-vm
+name: ue-jenkins-inbound-agent-vm
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 jobs:
 
   build-windows:
-    name: Windows - ue-jenkins-agent-vm
+    name: Windows - ue-jenkins-inbound-agent-vm
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -28,5 +28,5 @@ jobs:
       - name: "Build image"
         id: build_image
         run: |
-          IMAGE_NAME=ue-jenkins-agent-vm-${{ steps.compute_short_sha.outputs.short_sha }}-windows
-          cd ue-jenkins-agent-vm/windows && packer build -var project_id=${{ secrets.GOOGLE_CLOUD_PROJECT_ID }} -var zone=${{ secrets.GOOGLE_CLOUD_ZONE }} -var network=image-builder-network -var subnetwork=image-builder-subnetwork -var image_name=${IMAGE_NAME} ue-jenkins-agent-vm-windows.json
+          IMAGE_NAME=ue-jenkins-inbound-agent-vm-${{ steps.compute_short_sha.outputs.short_sha }}-windows
+          cd ue-jenkins-inbound-agent-vm/windows && packer build -var project_id=${{ secrets.GOOGLE_CLOUD_PROJECT_ID }} -var zone=${{ secrets.GOOGLE_CLOUD_ZONE }} -var network=image-builder-network -var subnetwork=image-builder-subnetwork -var image_name=${IMAGE_NAME} ue-jenkins-inbound-agent-vm-windows.json
