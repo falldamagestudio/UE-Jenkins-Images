@@ -37,10 +37,10 @@ USER root
 
 # Install agent wrapper script
 
-COPY swarm-client /usr/local/bin/swarm-agent
-RUN chmod +x /usr/local/bin/swarm-agent
+COPY swarm-agent.sh /usr/local/bin/swarm-agent.sh
+RUN chmod +x /usr/local/bin/swarm-agent.sh
 
-ENTRYPOINT ["/usr/local/bin/swarm-agent"]
+ENTRYPOINT ["/usr/local/bin/swarm-agent.sh"]
 
 # Install Docker CLI
 
