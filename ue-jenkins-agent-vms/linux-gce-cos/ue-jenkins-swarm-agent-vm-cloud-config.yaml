@@ -169,17 +169,19 @@ write_files:
         echo "Retrieving configuration from Secrets Manager..."
         ACCESS_KEY="$(get_gce_secret_base64 "agent-key-file" | base64 --decode)"
         JENKINS_URL="$(get_gce_secret_base64 "jenkins-url" | base64 --decode)"
-        AGENT_IMAGE_URL_LINUX="$(get_gce_secret_base64 "agent-image-url-linux" | base64 --decode)"
-        AGENT_SECRET="$(get_gce_secret_base64 "${AGENT_NAME}-secret" | base64 --decode)"
+        AGENT_IMAGE_URL_LINUX="$(get_gce_secret_base64 "swarm-agent-image-url-linux" | base64 --decode)"
+        AGENT_USERNAME="$(get_gce_secret_base64 "swarm-agent-username" | base64 --decode)"
+        AGENT_API_TOKEN="$(get_gce_secret_base64 "swarm-agent-api-token" | base64 --decode)"
         PLASTIC_CONFIG_BASE64="$(get_gce_secret_base64 "plastic-config-tgz")"
 
         echo "Secret agent-key-file: $([[ "${AGENT_KEY_FILE}" != "" ]] && echo "found" || echo "not found")"
         echo "Secret jenkins-url: $([[ "${JENKINS_URL}" != "" ]] && echo "found" || echo "not found")"
-        echo "Secret agent-image-url-linux: $([[ "${AGENT_IMAGE_URL_LINUX}" != "" ]] && echo "found" || echo "not found")"
-        echo "Secret ${AGENT_NAME}-secret: $([[ "${AGENT_SECRET}" != "" ]] && echo "found" || echo "not found")"
-        echo "Secret plastic-config: $([[ "${PLASTIC_CONFIG_BASE64}" != "" ]] && echo "found" || echo "not found")"
+        echo "Secret swarm-agent-image-url-linux: $([[ "${AGENT_IMAGE_URL_LINUX}" != "" ]] && echo "found" || echo "not found")"
+        echo "Secret swarm-agent-username: $([[ "${AGENT_USERNAME}" != "" ]] && echo "found" || echo "not found")"
+        echo "Secret swarm-agent-api-token: $([[ "${AGENT_API_TOKEN}" != "" ]] && echo "found" || echo "not found")"
+        echo "Secret plastic-config-tgz: $([[ "${PLASTIC_CONFIG_BASE64}" != "" ]] && echo "found" || echo "not found")"
 
-        if [ "${ACCESS_KEY}" != "" ] && [ "${JENKINS_URL}" != "" ] && [ "${AGENT_IMAGE_URL_LINUX}" != "" ] && [ "${AGENT_SECRET}" != "" ]; then
+        if [ "${ACCESS_KEY}" != "" ] && [ "${JENKINS_URL}" != "" ] && [ "${AGENT_IMAGE_URL_LINUX}" != "" ] && [ "${AGENT_USERNAME}" != "" ] && [ "${AGENT_API_TOKEN}" != "" ]; then
           break
         fi
 
@@ -232,11 +234,13 @@ write_files:
         --mount type=bind,source=/mnt/disks/persistent-disk/.plastic4,destination=/home/jenkins/.plastic4 \
         -v /var/run/docker.sock:/var/run/docker.sock \
         "${AGENT_IMAGE_URL_LINUX}" \
-        -url "${JENKINS_URL}" \
-        -workDir /home/jenkins/agent \
         -webSocket \
-        "${AGENT_SECRET}" \
-        "${AGENT_NAME}"
+        -master "${JENKINS_URL}" \
+        -workDir /home/jenkins/agent \
+        -username "${AGENT_USERNAME}" \
+        -password "${AGENT_API_TOKEN}" \
+        -disableClientsUniqueId \
+        -name "${AGENT_NAME}"
 
       echo "Jenkins Agent is now running."
 
