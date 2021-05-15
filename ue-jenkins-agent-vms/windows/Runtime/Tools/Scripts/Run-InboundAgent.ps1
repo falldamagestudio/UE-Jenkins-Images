@@ -1,17 +1,17 @@
 . ${PSScriptRoot}\Invoke-External-PrintStdout.ps1
 
-class RunJenkinsAgentException : Exception {
+class RunInboundAgentException : Exception {
 	$Operation
 	$ExitCode
 
-	RunJenkinsAgentException([string] $operation, [int] $exitCode) : base("docker ${operation} exited with code ${exitCode}") { $this.Operation = $operation; $this.ExitCode = $exitCode }
+	RunInboundAgentException([string] $operation, [int] $exitCode) : base("docker ${operation} exited with code ${exitCode}") { $this.Operation = $operation; $this.ExitCode = $exitCode }
 }
 
-function Run-JenkinsAgent {
+function Run-InboundAgent {
 
 	<#
 		.SYNOPSIS
-		Runs Jenkins Agent in a Docker container
+		Runs Jenkins Inbound Agent in a Docker container
 	#>
 
 	param (
@@ -51,13 +51,13 @@ function Run-JenkinsAgent {
 		# Fetch Docker agent image
 		$ExitCode = Invoke-External-PrintStdout -LiteralPath "docker" -ArgumentList @("pull", $AgentImageUrl)
 		if ($ExitCode -ne 0) {
-			throw [RunJenkinsAgentException]::new("pull", $ExitCode)
+			throw [RunInboundAgentException]::new("pull", $ExitCode)
 		}
 
 		# Start Docker agent
 		$ExitCode = Invoke-External-PrintStdout -LiteralPath "docker" -ArgumentList $Arguments
 		if ($ExitCode -ne 0) {
-			throw [RunJenkinsAgentException]::new("run", $ExitCode)
+			throw [RunInboundAgentException]::new("run", $ExitCode)
 		}
 
 	} finally {

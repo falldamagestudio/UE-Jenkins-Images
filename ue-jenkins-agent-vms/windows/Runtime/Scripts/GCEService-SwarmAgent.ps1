@@ -1,7 +1,7 @@
 # Log all output to file (in addition to console output, when run manually )
 # This enables post-mortem inspection of the script's activities via log files
 # It also allows GCE's logging agent to pick up the activity and forward it to Google's Cloud Logging
-Start-Transcript -LiteralPath "$(Resolve-Path "${PSScriptRoot}\..\Logs")\GCEService-$(Get-Date -Format "yyyyMMdd-HHmmss").txt"
+Start-Transcript -LiteralPath "$(Resolve-Path "${PSScriptRoot}\..\Logs")\GCEService-SwarmAgent-$(Get-Date -Format "yyyyMMdd-HHmmss").txt"
 
 try {
 
@@ -9,7 +9,7 @@ try {
     . ${PSScriptRoot}\..\Tools\Scripts\Get-GCESecret.ps1
     . ${PSScriptRoot}\..\Tools\Scripts\Get-GCEInstanceHostname.ps1
     . ${PSScriptRoot}\..\Tools\Scripts\Authenticate-DockerForGoogleArtifactRegistry.ps1
-    . ${PSScriptRoot}\..\Tools\Scripts\Run-JenkinsAgent.ps1
+    . ${PSScriptRoot}\..\Tools\Scripts\Run-SwarmAgent.ps1
 
     $JenkinsAgentFolder = "C:\J"
     $JenkinsWorkspaceFolder = "C:\W"
@@ -33,17 +33,19 @@ try {
 
         $JenkinsURL = Get-GCESecret -Key "jenkins-url"
         $AgentKey = Get-GCESecret -Key "agent-key-file"
-        $AgentImageURL = Get-GCESecret -Key "agent-image-url-windows"
-        $JenkinsSecret = Get-GCESecret -Key "${AgentName}-secret"
+        $AgentImageURL = Get-GCESecret -Key "swarm-agent-image-url-windows"
+        $AgentUsername = Get-GCESecret -Key "swarm-agent-username"
+        $AgentAPIToken = Get-GCESecret -Key "swarm-agent-api-token"
         $PlasticConfigZip = Get-GCESecret -Key "plastic-config-zip" -Binary $true
 
         Write-Host "Secret jenkins-url: $(if ($JenkinsURL -ne $null) { "found" } else { "not found" })"
         Write-Host "Secret agent-key-file: $(if ($AgentKey -ne $null) { "found" } else { "not found" })"
         Write-Host "Secret agent-image-url-windows: $(if ($AgentImageURL -ne $null) { "found" } else { "not found" })"
-        Write-Host "Secret ${AgentName}-secret: $(if ($JenkinsSecret -ne $null) { "found" } else { "not found" })"
+        Write-Host "Secret swarm-agent-username: $(if ($AgentUsername -ne $null) { "found" } else { "not found" })"
+        Write-Host "Secret swarm-agent-api-token: $(if ($AgentAPIToken -ne $null) { "found" } else { "not found" })"
         Write-Host "Secret plastic-config-zip: $(if ($PlasticConfigZip -ne $null) { "found" } else { "not found" })"
 
-        if (($JenkinsURL -ne $null) -and ($AgentImageURL -ne $null) -and ($AgentKey -ne $null) -and ($JenkinsSecret -ne $null)) {
+        if (($JenkinsURL -ne $null) -and ($AgentImageURL -ne $null) -and ($AgentKey -ne $null) -and ($AgentUsername -ne $null) -and ($AgentAPIToken -ne $null)) {
             break
         } else {
             Write-Host "Some required secrets are missing. Sleeping, then retrying..."
@@ -78,12 +80,13 @@ try {
         JenkinsWorkspaceFolder = $JenkinsWorkspaceFolder
         PlasticConfigFolder = $PlasticConfigFolder
         JenkinsURL = $JenkinsURL
-        JenkinsSecret = $JenkinsSecret
+        AgentUsername = $AgentUsername
+        AgentAPIToken = $AgentAPIToken
         AgentImageURL = $AgentImageURL
         AgentName = $AgentName
     }
 
-    Run-JenkinsAgent @ServiceParams
+    Run-SwarmAgent @ServiceParams
 
     Write-Host "Done."
 

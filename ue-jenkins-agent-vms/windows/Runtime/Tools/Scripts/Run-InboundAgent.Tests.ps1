@@ -3,17 +3,17 @@
 BeforeAll {
 
 	. ${PSScriptRoot}\Invoke-External-PrintStdout.ps1
-	. ${PSScriptRoot}\Run-JenkinsAgent.ps1
+	. ${PSScriptRoot}\Run-InboundAgent.ps1
 
 }
 
-Describe 'Run-JenkinsAgent' {
+Describe 'Run-InboundAgent' {
 
 	It "Throws an exception if docker cannot be found" {
 
 		Mock Invoke-External-PrintStdout { throw "Cannot find docker" }
 
-		{ Run-JenkinsAgent -JenkinsAgentFolder "C:\JenkinsAgent" -JenkinsWorkspaceFolder "C:\JenkinsWorkspace" -PlasticConfigFolder "C:\PlasticConfig" -JenkinsURL "http://jenkins" -JenkinsSecret "1234" -AgentImageURL "agent-image" -AgentName "agent" } |
+		{ Run-InboundAgent -JenkinsAgentFolder "C:\JenkinsAgent" -JenkinsWorkspaceFolder "C:\JenkinsWorkspace" -PlasticConfigFolder "C:\PlasticConfig" -JenkinsURL "http://jenkins" -JenkinsSecret "1234" -AgentImageURL "agent-image" -AgentName "agent" } |
 			Should -Throw
 
 		Assert-MockCalled -Times 1 Invoke-External-PrintStdout -ParameterFilter { $LiteralPath -eq "docker" }
@@ -23,7 +23,7 @@ Describe 'Run-JenkinsAgent' {
 
 		Mock Invoke-External-PrintStdout { 125 }
 
-		{ Run-JenkinsAgent -JenkinsAgentFolder "C:\JenkinsAgent" -JenkinsWorkspaceFolder "C:\JenkinsWorkspace" -PlasticConfigFolder "C:\PlasticConfig" -JenkinsURL "http://jenkins" -JenkinsSecret "1234" -AgentImageURL "agent-image" -AgentName "agent" } |
+		{ Run-InboundAgent -JenkinsAgentFolder "C:\JenkinsAgent" -JenkinsWorkspaceFolder "C:\JenkinsWorkspace" -PlasticConfigFolder "C:\PlasticConfig" -JenkinsURL "http://jenkins" -JenkinsSecret "1234" -AgentImageURL "agent-image" -AgentName "agent" } |
 			Should -Throw
 
 		Assert-MockCalled -Times 1 Invoke-External-PrintStdout -ParameterFilter { $LiteralPath -eq "docker" }
@@ -33,7 +33,7 @@ Describe 'Run-JenkinsAgent' {
 
 		Mock Invoke-External-PrintStdout { 0 }
 
-		{ Run-JenkinsAgent -JenkinsAgentFolder "C:\JenkinsAgent" -JenkinsWorkspaceFolder "C:\JenkinsWorkspace" -PlasticConfigFolder "C:\PlasticConfig" -JenkinsURL "http://jenkins" -JenkinsSecret "1234" -AgentImageURL "agent-image" -AgentName "agent" } |
+		{ Run-InboundAgent -JenkinsAgentFolder "C:\JenkinsAgent" -JenkinsWorkspaceFolder "C:\JenkinsWorkspace" -PlasticConfigFolder "C:\PlasticConfig" -JenkinsURL "http://jenkins" -JenkinsSecret "1234" -AgentImageURL "agent-image" -AgentName "agent" } |
 			Should -Not -Throw
 
 		Assert-MockCalled -Times 3 Invoke-External-PrintStdout -ParameterFilter { $LiteralPath -eq "docker" }

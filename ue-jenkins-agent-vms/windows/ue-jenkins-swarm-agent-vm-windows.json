@@ -38,7 +38,7 @@
     },
     {
       "type": "powershell",
-      "inline": "try { C:\\ImageCreation\\Scripts\\GCERegisterService-InboundAgent.ps1 } catch { Write-Error $_; exit 1 }"
+      "inline": "try { C:\\ImageCreation\\Scripts\\GCERegisterService-SwarmAgent.ps1 } catch { Write-Error $_; exit 1 }"
     },
     {
       "type": "powershell",
