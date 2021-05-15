@@ -1,5 +1,6 @@
 param (
 	[Parameter(Mandatory=$true)][string]$GceRegion,
+	[Parameter(Mandatory=$true)][string]$Dockerfile,
 	[Parameter(Mandatory=$true)][string]$ImageName,
 	[Parameter(Mandatory=$true)][string]$ImageTag
 )
@@ -23,7 +24,7 @@ Write-Host "Setting up Docker authentication..."
 
 Write-Host "Building image..."
 
-& "${PSScriptRoot}\BuildImage.ps1" -ImageName ${ImageName} -ImageTag ${ImageTag}
+& "${PSScriptRoot}\BuildImage.ps1" -Dockerfile $Dockerfile -ImageName ${ImageName} -ImageTag ${ImageTag}
 
 Write-Host "Pushing image to registry..."
 

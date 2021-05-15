@@ -1,4 +1,5 @@
 param (
+	[Parameter(Mandatory=$true)][string]$Dockerfile,
 	[Parameter(Mandatory=$true)][string]$ImageName,
 	[Parameter(Mandatory=$true)][string]$ImageTag
 )
@@ -11,7 +12,7 @@ class DockerBuildException : Exception {
 
 # Build container image
 
-& docker build -t "${ImageName}:${ImageTag}" .
+& docker build -f $Dockerfile -t "${ImageName}:${ImageTag}" .
 $DockerExitCode = $LASTEXITCODE
 if ($DockerExitcode -ne 0) {
 	throw [DockerBuildException]::new($DockerExitCode)
