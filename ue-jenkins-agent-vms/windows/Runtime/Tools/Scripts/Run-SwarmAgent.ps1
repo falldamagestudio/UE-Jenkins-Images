@@ -40,13 +40,13 @@ function Run-SwarmAgent {
 		# Enable docker CLI users inside containers to communicate with Docker daemon
 		"-v","\\.\pipe\docker_engine:\\.\pipe\docker_engine"
 		$AgentImageUrl
-		"-WebSocket"
-		"-Master",$JenkinsUrl
-		"-WorkDir",$JenkinsAgentFolder
-		"-Username",$AgentUsername
-		"-Password",$AgentAPIToken
+		"-webSocket"
+		"-master",$JenkinsUrl
+		"-workDir",$JenkinsAgentFolder
+		"-username",$AgentUsername
+		"-password",$AgentAPIToken
 		"-disableClientsUniqueId"
-		"-Name",$AgentName
+		"-name",$AgentName
 
 	)
 
