@@ -22,6 +22,8 @@ function Run-SwarmAgent {
 		[Parameter(Mandatory)] [string] $AgentUsername,
 		[Parameter(Mandatory)] [string] $AgentAPIToken,
 		[Parameter(Mandatory)] [string] $AgentImageURL,
+		[Parameter(Mandatory)] [int] $NumExecutors,
+		[Parameter(Mandatory)] [string[]] $Labels,
 		[Parameter(Mandatory)] [string] $AgentName
 	)
 
@@ -40,7 +42,12 @@ function Run-SwarmAgent {
 		# Enable docker CLI users inside containers to communicate with Docker daemon
 		"-v","\\.\pipe\docker_engine:\\.\pipe\docker_engine"
 		$AgentImageUrl
+		# Use Websocket protocol
 		"-webSocket"
+		"-executors","${NumExecutors}"
+		"-labels",$Labels -join ' '
+		# Only build jobs with label expressions matching this node
+		"-mode","exclusive"
 		"-master",$JenkinsUrl
 		"-workDir",$JenkinsAgentFolder
 		"-username",$AgentUsername

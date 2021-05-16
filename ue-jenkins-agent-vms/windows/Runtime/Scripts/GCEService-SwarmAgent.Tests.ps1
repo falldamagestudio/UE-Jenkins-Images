@@ -19,6 +19,8 @@ Describe 'GCEService-SwarmAgent' {
 		$AgentKeyFileRef = "1234"
 		$AgentUsernameRef = "admin@example.com"
 		$AgentAPITokenRef = "5678"
+		$NumExecutorsRef = 1
+		$LabelsRef = @( $AgentNameRef )
 		$PlasticConfigZipRef = @(72, 101, 108, 108, 111) # "Hello"
 
 		$script:LoopCount = 0
@@ -47,7 +49,8 @@ Describe 'GCEService-SwarmAgent' {
 		Mock Authenticate-DockerForGoogleArtifactRegistry -ParameterFilter { ($AgentKey -eq $AgentKeyFileRef) -and ($Region -eq $RegionRef) } {}
 		Mock Authenticate-DockerForGoogleArtifactRegistry { throw "Invalid invocation of Authenticate-DockerForGoogleArtifactRegistry" }
 
-		Mock Run-SwarmAgent -ParameterFilter { ($JenkinsURL -eq $JenkinsURLRef) -and ($AgentUsername -eq $AgentUsernameRef) -and ($AgentAPIToken -eq $AgentAPITokenRef) -and ($AgentImageURL -eq $AgentImageURLRef) -and ($AgentName -eq $AgentNameRef) } { }
+		# TODO: validate $Labels
+		Mock Run-SwarmAgent -ParameterFilter { ($JenkinsURL -eq $JenkinsURLRef) -and ($AgentUsername -eq $AgentUsernameRef) -and ($AgentAPIToken -eq $AgentAPITokenRef) -and ($AgentImageURL -eq $AgentImageURLRef) -and ($NumExecutors -eq $NumExecutorsRef) -and ($AgentName -eq $AgentNameRef) } { }
 		Mock Run-SwarmAgent { throw "Invalid invocation of Run-SwarmAgent" }
 
 		Mock Start-Sleep { }

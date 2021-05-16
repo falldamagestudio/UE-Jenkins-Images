@@ -83,6 +83,8 @@ try {
         AgentUsername = $AgentUsername
         AgentAPIToken = $AgentAPIToken
         AgentImageURL = $AgentImageURL
+        NumExecutors = 1
+        Labels = @( $AgentName )
         AgentName = $AgentName
     }
 
