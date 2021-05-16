@@ -13,11 +13,12 @@ function Invoke-External-PrintStdout {
     This runs a console command. It will not work well with non-console applications.
     Standard Input is fed in from the Stdin parameter.
     Standard Output and Standard Error are both written to the console.
-    The first error message will be formatted like so:
+    Error messages will sometimes be formatted as this, and printed in red, first message being expanded:
       <commandname> : <message>
         + CategoryInfo          : NotSpecified: (<message>  :String) [], RemoteException
         + FullyQualifiedErrorId : NativeCommandError 
-      ... but further stderr prints will be just the messages themselves, but still colored in red.
+      ... but further stderr prints will be just the messages themselves...
+      ... and sometimes the error messages will be printed just as the message itself.
     Stdout and stderr will be interleaved in the order that the application prints to them.
 	#>
 
@@ -27,7 +28,7 @@ function Invoke-External-PrintStdout {
         [Parameter(Mandatory=$false)] [string[]] $ArgumentList
     )
 
-  $Stdin | & $LiteralPath $ArgumentList | Out-Host
+  $Stdin | & $LiteralPath $ArgumentList 2>&1 | Out-Host
 
   return $LASTEXITCODE
 }
