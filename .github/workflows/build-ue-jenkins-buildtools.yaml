@@ -63,23 +63,23 @@ jobs:
           service_account_key: ${{ secrets.GOOGLE_CLOUD_IMAGE_BUILDER_INSTANCE_CONTROLLER_SERVICE_ACCOUNT_KEY }}
           export_default_credentials: true
 
-      - name: Build windows-builder tool
+      - name: Build windows-docker-image-builder tool
         run: |
-          (cd ue-jenkins-buildtools/windows/builder && go build -o main .)
+          (cd windows-docker-image-builder && go build -o main .)
 
       - name: Add service account key to builder workspace
         run: |
-          echo '${{ secrets.GOOGLE_CLOUD_BUILD_ARTIFACT_UPLOADER_SERVICE_ACCOUNT_KEY }}' > ue-jenkins-buildtools/windows/builder-workspace/service-account-key.json
+          echo '${{ secrets.GOOGLE_CLOUD_BUILD_ARTIFACT_UPLOADER_SERVICE_ACCOUNT_KEY }}' > ue-jenkins-buildtools/windows/service-account-key.json
 
       # We zip up the builder-workspace folder, because the cloud image builder will otherwise copy builder-workspace files
       # one-by-one, spending one second per file
       - name: Zip up builder workspace
         run: |
-          (cd ue-jenkins-buildtools/windows/builder-workspace && mkdir ../builder-workspace-zipped && zip -r ../builder-workspace-zipped/builder-workspace.zip *)
+          (cd ue-jenkins-buildtools/windows && mkdir ../windows-builder-workspace-zipped && zip -r ../windows-builder-workspace-zipped/builder-workspace.zip *)
 
       - name: Start Windows VM, Build image and push to GAR via said VM, tear down VM
         run: |
-          ./ue-jenkins-buildtools/windows/builder/main \
+          ./windows-docker-image-builder/main \
             -labels type=windows-image-builder \
             -region ${{ secrets.GOOGLE_CLOUD_REGION }} \
             -zone ${{ secrets.GOOGLE_CLOUD_ZONE }} \
@@ -89,6 +89,10 @@ jobs:
             -diskType pd-ssd \
             -diskSizeGb 100 \
             -image windows-cloud/global/images/windows-server-2019-dc-for-containers-v20210212 \
-            -workspace-path ue-jenkins-buildtools/windows/builder-workspace-zipped \
+            -workspace-path ue-jenkins-buildtools/windows-builder-workspace-zipped \
             -serviceAccount build-artifact-uploader@${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}.iam.gserviceaccount.com \
             -command "powershell try { Expand-Archive -Path .\\builder-workspace.zip -DestinationPath .; .\\Build.ps1 -GceRegion ${{ secrets.ARTIFACT_REGISTRY_LOCATION }} -ImageName ${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-buildtools -ImageTag commit-${{ steps.compute_short_sha.outputs.short_sha }}-windows } catch { Write-Error \$_ }"
+
+      - name: Remove builder workspace
+        run: |
+          rm -rf ue-jenkins-buildtools/windows-builder-workspace-zipped
