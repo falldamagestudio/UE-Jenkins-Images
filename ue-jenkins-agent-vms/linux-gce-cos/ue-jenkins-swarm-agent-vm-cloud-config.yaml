@@ -11,8 +11,8 @@
 #   within other containers (thereby allowing for 'build tools containers')
 
 # Debugging tips:
-# - View /var/log/clout-init-output.log to see stdout/stderr info from the various step
-# - View /var/log/clout-init.log to see cloud-init's internal logs
+# - View /var/log/cloud-init-output.log to see stdout/stderr info from the various step
+# - View /var/log/cloud-init.log to see cloud-init's internal logs
 # - Use 'sudo systemctl status jenkins-agent.service' to see current status for the jenkins-agent service
 # - Use 'sudo journalctl -u jenkins-agent.service' to see detailed logs from the jenkins-agent service
 
