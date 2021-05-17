@@ -235,6 +235,9 @@ write_files:
         -v /var/run/docker.sock:/var/run/docker.sock \
         "${AGENT_IMAGE_URL_LINUX}" \
         -webSocket \
+        -executors 1 \
+        -labels "${AGENT_NAME}" \
+        -mode exclusive \
         -master "${JENKINS_URL}" \
         -workDir /home/jenkins/agent \
         -username "${AGENT_USERNAME}" \
