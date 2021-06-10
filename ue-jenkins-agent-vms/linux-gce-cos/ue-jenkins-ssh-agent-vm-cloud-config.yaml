@@ -1,0 +1,251 @@
+#cloud-config
+
+# This script should be supplied as 'user-data' for a GCE VM instance that runs the Container-Optimized OS
+# The instance is expected to have an additional disk attached
+# The disk will be used for persistent storage -- caching agent logs, and build job workspace between runs
+#   and VM restarts (thereby allowing for incremental builds)
+#
+# The VM will be idle, and wait for the Jenkins controller to log in via SSH as 'jenkins-ssh' and run 'sudo -u chronos /run/jenkins-agent.sh' .
+# That script, in turn, will wait for configuration to be present in GCP's Secret Manager, and then bring up a Jenkins
+#   agent within a Docker container
+# The build jobs can either run within the agent's container, or use Jenkins' Docker plugin to run jobs
+#   within other containers (thereby allowing for 'build tools containers')
+
+# Debugging tips:
+# - View /var/log/cloud-init-output.log to see stdout/stderr info from the various step
+# - View /var/log/cloud-init.log to see cloud-init's internal logs
+
+# Module execution order:
+# - bootcmd
+# - users
+# - write_files
+# - runcmd
+
+users:
+  - name: jenkins-ssh
+    gecos: Jenkins SSH
+    primary_group: jenkins-ssh
+    groups: wheel
+
+
+# Reference: https://cloudinit.readthedocs.io/en/latest/topics/modules.html#write-files
+write_files:
+  - path: /run/mount-and-prepare-persistent-disk.sh
+    permissions: 0744
+    owner: root
+    content: |
+      #!/bin/bash
+
+      # Mount /dev/sdb under /mnt/disks/persistent-disk,
+
+      #   format it if necessary
+      DEVICE=/dev/sdb
+      MOUNT_DIR=/mnt/disks/persistent-disk
+      sudo mkdir -p "${MOUNT_DIR}"
+      sudo chmod a+rwx "${MOUNT_DIR}"
+
+      # Attempt to mount partition
+      if ! sudo mount -o discard,defaults,rw "${DEVICE}" "${MOUNT_DIR}"; then
+
+        # Mounting failed: format partition, and attempt to mount again
+      	sudo mkfs -t ext4 -m 0 -E lazy_itable_init=0,lazy_journal_init=0,discard "${DEVICE}"
+      	sudo mount -o discard,defaults,rw "${DEVICE}" "${MOUNT_DIR}"
+      fi
+
+      # Ensure the jenkins agent & workspace folders exist
+      #   since these folders will get mounted into containers later on
+
+      AGENT_DIR="${MOUNT_DIR}/agent"
+      if [ ! -d "${AGENT_DIR}" ]; then
+        mkdir "${AGENT_DIR}"
+        chmod ugo+rwx "${AGENT_DIR}"
+      fi
+
+      WORKSPACE_DIR="${MOUNT_DIR}/workspace"
+      if [ ! -d "${WORKSPACE_DIR}" ]; then
+        mkdir "${WORKSPACE_DIR}"
+        chmod ugo+rwx "${WORKSPACE_DIR}"
+      fi
+
+      # Ensure the Plastic SCM config folder exists
+      # This folder will also be mounted into containers later on
+
+      PLASTIC_CONFIG_DIR="${MOUNT_DIR}/.plastic4"
+      if [ ! -d "${PLASTIC_CONFIG_DIR}" ]; then
+        mkdir "${PLASTIC_CONFIG_DIR}"
+        chmod ugo+rwx "${PLASTIC_CONFIG_DIR}"
+      fi
+
+  - path: /run/configure-services.sh
+    permissions: 0744
+    owner: root
+    content: |
+      #!/bin/bash
+
+      # Allow everyone to access this Docker daemon socket
+      # It is only the 'jenkins' (uid=101000) that needs access, but the socket's user/group shows like this from within the container:
+      #		jenkins@194572782dea:~$ ls -l /var/run/docker.sock
+      #		srw-rw---- 1 nobody nogroup 0 May  2 17:29 /var/run/docker.sock
+      # The only straightforward way to make this work is to grant everyone access to the socket
+      sudo chmod ugo+rw /var/run/docker.sock
+
+      # Restart Docker daemon, to pick up changes in /etc/docker/daemon.json (in case the Docker daemon
+      #   launched before the 'write_files' module ran)
+      sudo systemctl restart docker.service
+
+  - path: /run/jenkins-agent-wrapper.sh
+    permissions: 0744
+    owner: jenkins-ssh
+    content: |
+      #!/bin/bash
+
+      # This script is expected to be launched like this:
+      # /run/jenkins-agent-wrapper.sh <path to agent.jar>
+
+      JAR_FILE=$1
+
+      # Wait for all cloud-init scripts to finish
+      cloud-init status --wait 2>&1
+
+      # Run the inner script in the context of the 'chronos' user. This user has uid=1000, which happens to match the
+      #   ID of the Jenkins user within the Docker container that we will launch.
+      sudo -u chronos -i /run/jenkins-agent.sh ${JAR_FILE}
+
+  - path: /run/jenkins-agent.sh
+    permissions: 0744
+    # The user 'chronos' has uid=1000 within the host VM, and this corresponds to the 'jenkins' user within the contaienr
+    owner: chronos
+    content: |
+      #!/bin/bash
+
+      JAR_FILE=$1
+
+      # Retrieve hostname from GCE instance metadata
+      get_gce_instance_hostname () {
+
+        local METADATA=http://metadata.google.internal/computeMetadata/v1
+        local HOSTNAME=$(curl -H 'Metadata-Flavor: Google' "${METADATA}/instance/hostname")
+
+        echo "${HOSTNAME}"
+      }
+
+      # Retrieve a secret from GCP Secret Manager (base64-encoded)
+      # If the secret is not known, returns ""
+      get_gce_secret_base64 () {
+
+        local SECRET_NAME=$1
+
+        local METADATA=http://metadata.google.internal/computeMetadata/v1
+
+        # Fetch access token for google APIs
+        local ACCESS_TOKEN=$(curl -H 'Metadata-Flavor: Google' "${METADATA}/instance/service-accounts/default/token" | cut -d '"' -f 4)
+        #Typical response format from curl call:
+        #   {
+        #     "name": "projects/<id>/secrets/<name>/versions/1",
+        #     "payload": {
+        #       "data": "<base64 encoded string>"
+        #     }
+        #   }
+
+        local PROJECT=$(curl -H 'Metadata-Flavor: Google' ${METADATA}/project/project-id)
+
+        local SECRET_RESPONSE=$(curl https://secretmanager.googleapis.com/v1/projects/${PROJECT}/secrets/${SECRET_NAME}/versions/latest:access -H "Authorization: Bearer ${ACCESS_TOKEN}")
+
+        if [ $(echo ${SECRET_RESPONSE} | awk -F "\"" '{print $2}') != 'error' ]; then
+          local SECRET=$(echo ${SECRET_RESPONSE} | awk -F "\"" '{print $10}')
+          echo $SECRET
+        fi
+      }
+
+      AGENT_NAME=$(get_gce_instance_hostname | cut -d '.' -f 1)
+
+      echo "Agent name: ${AGENT_NAME}"
+
+      # Wait for necessary parameters to become available in GCE's Secret Manager
+
+      while :
+      do
+        echo "Retrieving configuration from Secrets Manager..."
+        ACCESS_KEY="$(get_gce_secret_base64 "agent-key-file" | base64 --decode)"
+        AGENT_IMAGE_URL_LINUX="$(get_gce_secret_base64 "ssh-agent-image-url-linux" | base64 --decode)"
+        PLASTIC_CONFIG_BASE64="$(get_gce_secret_base64 "plastic-config-tgz")"
+
+        echo "Secret agent-key-file: $([[ "${ACCESS_KEY}" != "" ]] && echo "found" || echo "not found")"
+        echo "Secret ssh-agent-image-url-linux: $([[ "${AGENT_IMAGE_URL_LINUX}" != "" ]] && echo "found" || echo "not found")"
+        echo "Secret plastic-config-tgz: $([[ "${PLASTIC_CONFIG_BASE64}" != "" ]] && echo "found" || echo "not found")"
+
+        if [ "${ACCESS_KEY}" != "" ] && [ "${AGENT_IMAGE_URL_LINUX}" != "" ]; then
+          break
+        fi
+
+        echo "Some required secrets are missing. Sleeping, then retrying..."
+        sleep 10
+      done
+
+      if [ "${PLASTIC_CONFIG_BASE64}" != "" ]; then
+        echo "Deploying Plastic SCM client configuration..."
+        echo "${PLASTIC_CONFIG_BASE64}" | base64 --decode | tar -zxv --directory=/mnt/disks/persistent-disk/.plastic4
+      fi
+
+      echo "Authenticating Docker for Google Artifact Registry..."
+
+      # Use JSON key-based authentication for Docker
+      #
+      # While we could rely on the application default credentials (using the instance's own service account) instead,
+      #   that would work on the host VM but not within the jenkins-agent container (the instance metadata service
+      #   is not available at 169.254.169.254 there). The simplest way for us to get Docker authentication to work
+      #   both on the host VM and within the container is to switch to JSON key authentication and then
+      #   mount the docker config file into the jenkins-agent container.
+
+
+      LOCATION=$(echo "${AGENT_IMAGE_URL_LINUX}" | cut -d '-' -f 1-2)
+      # AGENT_IMAGE_URL_LINUX typically looks like: europe-west1-docker.pkg.dev/<project>/<folder>/<file>
+      echo "${ACCESS_KEY}" | docker login -u _json_key --password-stdin "https://${LOCATION}-docker.pkg.dev" 2>&1
+
+      if [[ ! $? ]]; then
+        echo "docker login exited with code $?"
+      fi
+
+      echo "Starting Jenkins Agent container..."
+
+      # Launch jenkins-agent container
+      #
+      # The mounts serve different purposes:
+      # - /usr/share/jenkins/controller-provided-agent.jar - allows us to run the agent jar that the Jenkins controller supplied
+      # - /home/jenkins/.docker/config.json - allows pulling images from Google Artifact Registry from within the container
+      # - /var/run/docker.sock - allows for interacting with the Docker daemon from within the container
+      # - /home/jenkins/agent - allows for storing logs and .JAR cache somewhere that persists between host VM restarts
+      # - /home/jenkins/worksapce - allows for storing build job workspace somewhere that persists between host VM restarts,
+      #
+      # All these mounts will also be used in any additional containers started by the build job,
+      #   so all these resources will be accessible by the build job's own script logic;
+      #   in theory, the build job only needs access to /home/jenkins/workspace but Jenkins offers no means
+      #   for restricting which of these mounts will be present when the build job's logic runs
+
+      docker \
+        run \
+        --rm \
+        --init \
+        -i \
+        --name=jenkins-agent \
+        --mount type=bind,source=${JAR_FILE},destination=/usr/share/jenkins/controller-provided-agent.jar \
+        --mount type=bind,source=/home/chronos/user/.docker/config.json,destination=/home/jenkins/.docker/config.json \
+        --mount type=bind,source=/mnt/disks/persistent-disk/workspace,destination=/home/jenkins/workspace \
+        --mount type=bind,source=/mnt/disks/persistent-disk/agent,destination=/home/jenkins/agent \
+        --mount type=bind,source=/mnt/disks/persistent-disk/.plastic4,destination=/home/jenkins/.plastic4 \
+        -v /var/run/docker.sock:/var/run/docker.sock \
+        "${AGENT_IMAGE_URL_LINUX}" \
+        java -jar /usr/share/jenkins/controller-provided-agent.jar \
+        -text \
+        -workDir /home/jenkins/agent
+
+      if [[ ! $? ]]; then
+        echo "docker run exited with code $?"
+      fi
+
+      echo "Jenkins Agent container has stopped."
+
+# Reference: https://cloudinit.readthedocs.io/en/latest/topics/modules.html#runcmd
+runcmd:
+  - /run/mount-and-prepare-persistent-disk.sh
+  - /run/configure-services.sh

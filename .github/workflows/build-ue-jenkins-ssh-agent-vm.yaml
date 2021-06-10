@@ -1,0 +1,27 @@
+name: ue-jenkins-ssh-agent-vm
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+
+  build-linux:
+    name: Linux - ue-jenkins-ssh-agent-vm
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Compute short SHA
+        run: echo "::set-output name=short_sha::$(git rev-parse --short ${{ github.sha }})"
+        id: compute_short_sha
+
+      - name: Setup gcloud CLI
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          service_account_key: ${{ secrets.GOOGLE_CLOUD_BUILD_ARTIFACT_UPLOADER_SERVICE_ACCOUNT_KEY }}
+
+      - name: Upload file to storage
+        run: gsutil cp ./ue-jenkins-agent-vms/linux-gce-cos/ue-jenkins-ssh-agent-vm-cloud-config.yaml gs://${{ secrets.GOOGLE_CLOUD_CONFIG_STORAGE_BUCKET }}/ue-jenkins-ssh-agent-vm/cloud-config-commit-${{ steps.compute_short_sha.outputs.short_sha }}.yaml
