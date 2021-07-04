@@ -37,3 +37,9 @@ swarm:3.25
 # Retrieve and manage your Plastic SCM sources from Jenkins.
 # https://plugins.jenkins.io/plasticscm-plugin/
 plasticscm-plugin:3.5
+
+# The Google Compute Engine (GCE) Plugin allows you to use GCE virtual machines (VMs) with Jenkins to execute build tasks.
+# https://github.com/Kalmalyzer/google-compute-engine-plugin/
+# In the Docker image, the plugin will be replaced with a locally modified version that supports
+#   persisting VMs, and running the agent within a Docker container.
+google-compute-engine:4.3.8

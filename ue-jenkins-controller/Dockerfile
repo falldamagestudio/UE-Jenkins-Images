@@ -17,3 +17,7 @@ RUN apt-get update \
     && apt-get install -y plasticscm-client-core
 
 USER jenkins
+
+# Replace the offical google-compute-engine plugin with a locally-built version
+
+ADD google-compute-engine-plugin/target/google-compute-engine.hpi /usr/share/jenkins/ref/plugins/google-compute-engine.jpi
