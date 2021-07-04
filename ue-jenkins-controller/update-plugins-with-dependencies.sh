@@ -20,7 +20,7 @@ HOST_WORKDIR=`realpath .`
 # To work around this, we expect that plugins.txt contents have been bumped recently,
 #  and freeze all plugin versions at what is currently latest.
 
-docker run --rm --name jenkins --volume $HOST_WORKDIR:/workdir:ro $JENKINS_IMAGE jenkins-plugin-cli --plugin-file /workdir/plugins.txt --list >list_stdout.txt 2>list_stderr.txt
+docker run --rm --name jenkins --volume $HOST_WORKDIR:/workdir:ro $JENKINS_IMAGE jenkins-plugin-cli --plugin-file /workdir/plugins.txt --no-download --list >list_stdout.txt 2>list_stderr.txt
 LIST_EXITCODE=$?
 LIST_STDOUT=`cat list_stdout.txt`
 LIST_STDERR=`cat list_stderr.txt`
