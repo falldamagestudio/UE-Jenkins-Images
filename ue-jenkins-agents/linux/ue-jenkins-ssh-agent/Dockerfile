@@ -1,5 +1,7 @@
 FROM jenkins/agent:4.7-1-jdk11@sha256:9002ea40a146f033ee2fa96460c2538bb1513f2e8784ab2296518cac88c518da
 
+ARG user=jenkins
+
 USER root
 
 # Install Docker CLI
