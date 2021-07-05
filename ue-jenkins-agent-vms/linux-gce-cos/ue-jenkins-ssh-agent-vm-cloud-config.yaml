@@ -107,6 +107,9 @@ write_files:
       # Wait for all cloud-init scripts to finish
       cloud-init status --wait 2>&1
 
+      # Ensure agent.jar is readable by the 'chronos' user
+      chmod ugo+r ${JAR_FILE}
+
       # Run the inner script in the context of the 'chronos' user. This user has uid=1000, which happens to match the
       #   ID of the Jenkins user within the Docker container that we will launch.
       sudo -u chronos -i /run/jenkins-agent.sh ${JAR_FILE}
