@@ -12,6 +12,8 @@ configuration-as-code:1.51
 credentials:2.5
 credentials-binding:1.26
 display-url-api:2.3.5
+docker-commons:1.17
+docker-workflow:1.26
 durable-task:1.37
 echarts-api:5.1.2-2
 font-awesome-api:5.15.3-3

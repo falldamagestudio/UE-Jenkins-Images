@@ -34,6 +34,10 @@ timestamper:1.13
 # https://plugins.jenkins.io/swarm/
 swarm:3.25
 
+# Jenkins plugin which allows building, testing, and using Docker images from Jenkins Pipeline projects.
+# https://plugins.jenkins.io/docker-workflow/
+docker-workflow:1.26
+
 # Retrieve and manage your Plastic SCM sources from Jenkins.
 # https://plugins.jenkins.io/plasticscm-plugin/
 plasticscm-plugin:3.5
