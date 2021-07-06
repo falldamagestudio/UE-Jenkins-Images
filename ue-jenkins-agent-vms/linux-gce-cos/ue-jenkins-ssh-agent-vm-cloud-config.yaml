@@ -29,20 +29,23 @@ bootcmd:
   #   this results in occasional startup failures for instances.
   - sudo systemctl stop sshd
 
-  # If this is first boot, then create a filesystem on the persistent disk
-  - cloud-init-per once mkfs-sdb mkfs -t ext4 -m 0 -E lazy_itable_init=0,lazy_journal_init=0,discard /dev/sdb
+  # Mount persistent disk; if mount fails, then create a filesystem on the persistent disk, and retry
+  - >-
+    mkdir -p /mnt/disks/persistent-disk
+    && if ! mount -o discard,defaults,rw /dev/sdb /mnt/disks/persistent-disk; then
+    mkfs -t ext4 -m 0 -E lazy_itable_init=0,lazy_journal_init=0,discard /dev/sdb;
+    mount -o discard,defaults,rw /dev/sdb /mnt/disks/persistent-disk;
+    fi
+    && chmod ugo+rwx /mnt/disks/persistent-disk
 
-  # Mount persistent disk
-  - mkdir -p /mnt/disks/persistent-disk && mount -o discard,defaults,rw /dev/sdb /mnt/disks/persistent-disk && chmod ugo+rwx /mnt/disks/persistent-disk
+  # Create agent folder
+  - mkdir /mnt/disks/persistent-disk/agent && chmod ugo+rwx /mnt/disks/persistent-disk/agent
 
-  # If this is first boot, then create agent folder
-  - cloud-init-per once create-agent-dir mkdir /mnt/disks/persistent-disk/agent && chmod ugo+rwx /mnt/disks/persistent-disk/agent
+  # Create workspace folder
+  - mkdir /mnt/disks/persistent-disk/workspace && chmod ugo+rwx /mnt/disks/persistent-disk/workspace
 
-  # If this is first boot, then create workspace folder
-  - cloud-init-per once create-workspace-dir mkdir /mnt/disks/persistent-disk/workspace && chmod ugo+rwx /mnt/disks/persistent-disk/workspace
-
-  # If this is first boot, then create Plastic SCM config folder
-  - cloud-init-per once create-plastic-config-dir mkdir /mnt/disks/persistent-disk/.plastic4 && chmod ugo+rwx /mnt/disks/persistent-disk/.plastic4
+  # Create Plastic SCM config folder
+  - mkdir /mnt/disks/persistent-disk/.plastic4 && chmod ugo+rwx /mnt/disks/persistent-disk/.plastic4
 
   # Allow everyone to access this Docker daemon socket
   # It is only the 'jenkins' (uid=1000) that needs access, but the socket's user/group shows like this from within the container:
