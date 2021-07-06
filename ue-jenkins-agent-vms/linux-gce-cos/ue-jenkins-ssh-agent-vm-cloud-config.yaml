@@ -5,7 +5,7 @@
 # The disk will be used for persistent storage -- caching agent logs, and build job workspace between runs
 #   and VM restarts (thereby allowing for incremental builds)
 #
-# The VM will be idle, and wait for the Jenkins controller to log in via SSH as 'jenkins-ssh' and run 'sudo -u chronos /run/jenkins-agent.sh' .
+# The VM will be idle, and wait for the Jenkins controller to log in via SSH as 'jenkins-ssh' and run with '/var/jenkins-agent-wrapper.sh' as the java executable path.
 # That script, in turn, will wait for configuration to be present in GCP's Secret Manager, and then bring up a Jenkins
 #   agent within a Docker container
 # The build jobs can either run within the agent's container, or use Jenkins' Docker plugin to run jobs
@@ -21,88 +21,70 @@
 # - write_files
 # - runcmd
 
+# Reference: https://cloudinit.readthedocs.io/en/latest/topics/modules.html#bootcmd
+bootcmd:
+  # Stop SSH daemon
+  # This blocks the Jenkins controller from accessing this instance until initialization is complete.
+  # Well -- there is probably still a time window where sshd does not stop as it should;
+  #   this results in occasional startup failures for instances.
+  - sudo systemctl stop sshd
+
+  # If this is first boot, then create a filesystem on the persistent disk
+  - cloud-init-per once mkfs-sdb mkfs -t ext4 -m 0 -E lazy_itable_init=0,lazy_journal_init=0,discard /dev/sdb
+
+  # Mount persistent disk
+  - mkdir -p /mnt/disks/persistent-disk && chmod a+rwx /mnt/disks/persistent-disk
+  - mount -o discard,defaults,rw /dev/sdb /mnt/disks/persistent-disk
+
+  # If this is first boot, then create agent folder
+  - cloud-init-per once create-agent-dir mkdir /mnt/disks/persistent-disk/agent && chmod ugo+rwx /mnt/disks/persistent-disk/agent
+
+  # If this is first boot, then create workspace folder
+  - cloud-init-per once create-workspace-dir mkdir /mnt/disks/persistent-disk/workspace && chmod ugo+rwx /mnt/disks/persistent-disk/workspace
+
+  # If this is first boot, then create Plastic SCM config folder
+  - cloud-init-per once create-plastic-config-dir mkdir /mnt/disks/persistent-disk/.plastic4 && chmod ugo+rwx /mnt/disks/persistent-disk/.plastic4
+
+  # Allow everyone to access this Docker daemon socket
+  # It is only the 'jenkins' (uid=1000) that needs access, but the socket's user/group shows like this from within the container:
+  #   jenkins@194572782dea:~$ ls -l /var/run/docker.sock
+  #   srw-rw---- 1 nobody nogroup 0 May  2 17:29 /var/run/docker.sock
+  # The most straightforward way to make this work is to grant everyone access to the socket
+  # Alternatively, we could add 'chronos' to the docker group
+  - chmod ugo+rw /var/run/docker.sock
+
 users:
   - name: jenkins-ssh
     gecos: Jenkins SSH
     primary_group: jenkins-ssh
     groups: wheel
 
-
 # Reference: https://cloudinit.readthedocs.io/en/latest/topics/modules.html#write-files
 write_files:
-  - path: /run/mount-and-prepare-persistent-disk.sh
-    permissions: 0744
-    owner: root
-    content: |
-      #!/bin/bash
-
-      # Mount /dev/sdb under /mnt/disks/persistent-disk,
-
-      #   format it if necessary
-      DEVICE=/dev/sdb
-      MOUNT_DIR=/mnt/disks/persistent-disk
-      sudo mkdir -p "${MOUNT_DIR}"
-      sudo chmod a+rwx "${MOUNT_DIR}"
-
-      # Attempt to mount partition
-      if ! sudo mount -o discard,defaults,rw "${DEVICE}" "${MOUNT_DIR}"; then
-
-        # Mounting failed: format partition, and attempt to mount again
-      	sudo mkfs -t ext4 -m 0 -E lazy_itable_init=0,lazy_journal_init=0,discard "${DEVICE}"
-      	sudo mount -o discard,defaults,rw "${DEVICE}" "${MOUNT_DIR}"
-      fi
-
-      # Ensure the jenkins agent & workspace folders exist
-      #   since these folders will get mounted into containers later on
-
-      AGENT_DIR="${MOUNT_DIR}/agent"
-      if [ ! -d "${AGENT_DIR}" ]; then
-        mkdir "${AGENT_DIR}"
-        chmod ugo+rwx "${AGENT_DIR}"
-      fi
-
-      WORKSPACE_DIR="${MOUNT_DIR}/workspace"
-      if [ ! -d "${WORKSPACE_DIR}" ]; then
-        mkdir "${WORKSPACE_DIR}"
-        chmod ugo+rwx "${WORKSPACE_DIR}"
-      fi
-
-      # Ensure the Plastic SCM config folder exists
-      # This folder will also be mounted into containers later on
-
-      PLASTIC_CONFIG_DIR="${MOUNT_DIR}/.plastic4"
-      if [ ! -d "${PLASTIC_CONFIG_DIR}" ]; then
-        mkdir "${PLASTIC_CONFIG_DIR}"
-        chmod ugo+rwx "${PLASTIC_CONFIG_DIR}"
-      fi
-
-  - path: /run/configure-services.sh
-    permissions: 0744
-    owner: root
-    content: |
-      #!/bin/bash
-
-      # Allow everyone to access this Docker daemon socket
-      # It is only the 'jenkins' (uid=101000) that needs access, but the socket's user/group shows like this from within the container:
-      #		jenkins@194572782dea:~$ ls -l /var/run/docker.sock
-      #		srw-rw---- 1 nobody nogroup 0 May  2 17:29 /var/run/docker.sock
-      # The only straightforward way to make this work is to grant everyone access to the socket
-      sudo chmod ugo+rw /var/run/docker.sock
-
-      # Restart Docker daemon, to pick up changes in /etc/docker/daemon.json (in case the Docker daemon
-      #   launched before the 'write_files' module ran)
-      sudo systemctl restart docker.service
-
   - path: /run/jenkins-agent-wrapper.sh
     permissions: 0744
     owner: jenkins-ssh
     content: |
       #!/bin/bash
 
-      # This script is expected to be launched like this:
-      # /run/jenkins-agent-wrapper.sh <path to agent.jar>
+      # This script is expected to be launched either like this:
+      #   /run/jenkins-agent-wrapper.sh -fullversion
+      # or like this:
+      #   /run/jenkins-agent-wrapper.sh -jar <path to agent.jar>
 
-      JAR_FILE=$1
+      # Respond to version query; the GCE plugin does this to verify that the java executable is present, and doesn't care about the actual version number
+      if [[ "$1" == "-fullversion" ]]; then
+        echo "java-to-docker shim"
+        exit 0
+      fi
+
+      # If it isn't a version query, then we require it to be a launch command
+      if [[ $# -ne 2 || "$1" != "-jar" ]]; then
+        echo "Error: java-to-docker shim should be executed like this: /run/jenkins-agent-wrapper.sh -jar <path to agent.jar>"
+        exit 1
+      fi
+
+      JAR_FILE=$2
 
       # Wait for all cloud-init scripts to finish
       cloud-init status --wait 2>&1
@@ -216,13 +198,16 @@ write_files:
       # The mounts serve different purposes:
       # - /usr/share/jenkins/controller-provided-agent.jar - allows us to run the agent jar that the Jenkins controller supplied
       # - /home/jenkins/.docker/config.json - allows pulling images from Google Artifact Registry from within the container
+      # - /home/jenkins/.plastic4 - allows using Plastic SCM tools from within the container
       # - /var/run/docker.sock - allows for interacting with the Docker daemon from within the container
-      # - /home/jenkins/agent - allows for storing logs and .JAR cache somewhere that persists between host VM restarts
-      # - /home/jenkins/worksapce - allows for storing build job workspace somewhere that persists between host VM restarts,
+      #   (This has the same path on the host as within the container, since the 'docker' commandline tool requires it)
+      # - /mnt/disks/persistent-disk/agent - allows for storing logs and .JAR cache somewhere that persists between host VM restarts
+      # - /mnt/disks/persistent-disk/workspace - allows for storing build job workspace somewhere that persists between host VM restarts
+      #   (This has the same path on the host as within the container, since the "copy over agent.jar from controller to node" logic will copy it into this folder on the host)
       #
       # All these mounts will also be used in any additional containers started by the build job,
       #   so all these resources will be accessible by the build job's own script logic;
-      #   in theory, the build job only needs access to /home/jenkins/workspace but Jenkins offers no means
+      #   in theory, the build job only needs access to /mnt/disks/persistent-disk/workspace but Jenkins offers no means
       #   for restricting which of these mounts will be present when the build job's logic runs
 
       docker \
@@ -233,14 +218,14 @@ write_files:
         --name=jenkins-agent \
         --mount type=bind,source=${JAR_FILE},destination=/usr/share/jenkins/controller-provided-agent.jar \
         --mount type=bind,source=/home/chronos/user/.docker/config.json,destination=/home/jenkins/.docker/config.json \
-        --mount type=bind,source=/mnt/disks/persistent-disk/workspace,destination=/home/jenkins/workspace \
-        --mount type=bind,source=/mnt/disks/persistent-disk/agent,destination=/home/jenkins/agent \
         --mount type=bind,source=/mnt/disks/persistent-disk/.plastic4,destination=/home/jenkins/.plastic4 \
+        --mount type=bind,source=/mnt/disks/persistent-disk/agent,destination=/mnt/disks/persistent-disk/agent \
+        --mount type=bind,source=/mnt/disks/persistent-disk/workspace,destination=/mnt/disks/persistent-disk/workspace \
         -v /var/run/docker.sock:/var/run/docker.sock \
         "${AGENT_IMAGE_URL_LINUX}" \
         java -jar /usr/share/jenkins/controller-provided-agent.jar \
         -text \
-        -workDir /home/jenkins/agent
+        -workDir /mnt/disks/persistent-disk/agent
 
       if [[ ! $? ]]; then
         echo "docker run exited with code $?"
@@ -250,5 +235,6 @@ write_files:
 
 # Reference: https://cloudinit.readthedocs.io/en/latest/topics/modules.html#runcmd
 runcmd:
-  - /run/mount-and-prepare-persistent-disk.sh
-  - /run/configure-services.sh
+  # Start SSH Daemon
+  # The Jenkins controller is now free to initiate contact with this instance
+  - sudo systemctl start sshd
