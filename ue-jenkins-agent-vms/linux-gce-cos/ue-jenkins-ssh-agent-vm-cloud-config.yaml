@@ -33,7 +33,7 @@ bootcmd:
   - cloud-init-per once mkfs-sdb mkfs -t ext4 -m 0 -E lazy_itable_init=0,lazy_journal_init=0,discard /dev/sdb
 
   # Mount persistent disk
-  - mkdir -p /mnt/disks/persistent-disk && chmod a+rwx /mnt/disks/persistent-disk
+  - mkdir -p /mnt/disks/persistent-disk && chmod ugo+rwx /mnt/disks/persistent-disk
   - mount -o discard,defaults,rw /dev/sdb /mnt/disks/persistent-disk
 
   # If this is first boot, then create agent folder
