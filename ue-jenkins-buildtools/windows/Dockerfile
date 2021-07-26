@@ -12,4 +12,4 @@ RUN "powershell try { C:\Workspace\InstallSoftware.ps1 } catch { Write-Error $_ 
 
 RUN "powershell Remove-Item C:\Workspace -Recurse -Force"
 
-ENTRYPOINT ["powershell.exe"]
+CMD ["cmd.exe"]
