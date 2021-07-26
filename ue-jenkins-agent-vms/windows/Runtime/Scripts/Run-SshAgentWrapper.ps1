@@ -30,8 +30,8 @@ try {
     $JenkinsWorkspaceFolder = "C:\W"
     $PlasticConfigFolder = "C:\PlasticConfig"
 
-    $SlaveJarFolder = "C:\SlaveJar"
-    $SlaveJarFile = "C:\SlaveJar\slave.jar"
+    $AgentJarFolder = "C:\AgentJar"
+    $AgentJarFile = "C:\AgentJar\agent.jar"
 
     # Fetch configuration parameters repeatedly, until all are available
     while ($true) {
@@ -74,10 +74,10 @@ try {
 
     Authenticate-DockerForGoogleArtifactRegistry -AgentKey $AgentKey -Region $Region
 
-    Write-Host "Copying provided slave.jar to $SlaveJarFile..."
+    Write-Host "Copying provided agent jar to $AgentJarFile..."
 
-    New-Item -ItemType Directory -Path $SlaveJarFolder -Force -ErrorAction Stop | Out-Null
-    Copy-Item $jar $SlaveJarFile -ErrorAction Stop
+    New-Item -ItemType Directory -Path $AgentJarFolder -Force -ErrorAction Stop | Out-Null
+    Copy-Item $jar $AgentJarFile -ErrorAction Stop
 
     Write-Host "Running Jenkins Agent..."
 
@@ -86,8 +86,8 @@ try {
         JenkinsWorkspaceFolder = $JenkinsWorkspaceFolder
         PlasticConfigFolder = $PlasticConfigFolder
         AgentImageURL = $AgentImageURL
-        SlaveJarFolder = $SlaveJarFolder
-        SlaveJarFile = $SlaveJarFile
+        AgentJarFolder = $AgentJarFolder
+        AgentJarFile = $AgentJarFile
     }
 
     Run-SshAgent @ServiceParams

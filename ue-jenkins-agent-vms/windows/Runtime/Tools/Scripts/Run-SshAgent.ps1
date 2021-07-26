@@ -19,8 +19,8 @@ function Run-SshAgent {
 		[Parameter(Mandatory)] [string] $JenkinsWorkspaceFolder,
 		[Parameter(Mandatory)] [string] $PlasticConfigFolder,
 		[Parameter(Mandatory)] [string] $AgentImageURL,
-		[Parameter(Mandatory)] [string] $SlaveJarFolder,
-		[Parameter(Mandatory)] [string] $SlaveJarFile
+		[Parameter(Mandatory)] [string] $AgentJarFolder,
+		[Parameter(Mandatory)] [string] $AgentJarFile
 	)
 
 	$Arguments = @(
@@ -28,8 +28,8 @@ function Run-SshAgent {
 		"--rm"
 		"--name","jenkins-agent"
 		"-i"
-		# Share slave jar folder with containers
-		"--mount","type=bind,source=${SlaveJarFolder},destination=${SlaveJarFolder}"
+		# Share agent jar folder with containers
+		"--mount","type=bind,source=${AgentJarFolder},destination=${AgentJarFolder}"
 		# Share Jenkins agent work folder with containers
 		"--mount","type=bind,source=${JenkinsAgentFolder},destination=${JenkinsAgentFolder}"
 		# Share Jenkins workspace folder with containers
@@ -41,7 +41,7 @@ function Run-SshAgent {
 		# Enable docker CLI users inside containers to communicate with Docker daemon
 		"-v","\\.\pipe\docker_engine:\\.\pipe\docker_engine"
 		$AgentImageUrl
-        "java","-jar",$SlaveJarFile
+        "java","-jar",$AgentJarFile
 		"-text"
 		"-workDir",$JenkinsAgentFolder
 

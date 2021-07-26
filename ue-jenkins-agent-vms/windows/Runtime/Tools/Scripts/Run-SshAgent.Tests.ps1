@@ -13,7 +13,7 @@ Describe 'Run-SshAgent' {
 
 		Mock Invoke-External-PrintStdout { throw "Cannot find docker" }
 
-		{ Run-SshAgent -SlaveJarFolder "C:\SlaveJar" -SlaveJarFile "C:\SlaveJar\slave.jar" -JenkinsAgentFolder "C:\JenkinsAgent" -JenkinsWorkspaceFolder "C:\JenkinsWorkspace" -PlasticConfigFolder "C:\PlasticConfig" -AgentImageURL "agent-image" } |
+		{ Run-SshAgent -AgentJarFolder "C:\AgentJar" -AgentJarFile "C:\AgentJar\agent.jar" -JenkinsAgentFolder "C:\JenkinsAgent" -JenkinsWorkspaceFolder "C:\JenkinsWorkspace" -PlasticConfigFolder "C:\PlasticConfig" -AgentImageURL "agent-image" } |
 			Should -Throw
 
 		Assert-MockCalled -Times 1 Invoke-External-PrintStdout -ParameterFilter { $LiteralPath -eq "docker" }
@@ -23,7 +23,7 @@ Describe 'Run-SshAgent' {
 
 		Mock Invoke-External-PrintStdout { 125 }
 
-		{ Run-SshAgent -SlaveJarFolder "C:\SlaveJar" -SlaveJarFile "C:\SlaveJar\slave.jar" -JenkinsAgentFolder "C:\JenkinsAgent" -JenkinsWorkspaceFolder "C:\JenkinsWorkspace" -PlasticConfigFolder "C:\PlasticConfig" -AgentImageURL "agent-image" } |
+		{ Run-SshAgent -AgentJarFolder "C:\AgentJar" -AgentJarFile "C:\AgentJar\agent.jar" -JenkinsAgentFolder "C:\JenkinsAgent" -JenkinsWorkspaceFolder "C:\JenkinsWorkspace" -PlasticConfigFolder "C:\PlasticConfig" -AgentImageURL "agent-image" } |
 			Should -Throw
 
 		Assert-MockCalled -Times 1 Invoke-External-PrintStdout -ParameterFilter { $LiteralPath -eq "docker" }
@@ -33,7 +33,7 @@ Describe 'Run-SshAgent' {
 
 		Mock Invoke-External-PrintStdout { 0 }
 
-		{ Run-SshAgent -SlaveJarFolder "C:\SlaveJar" -SlaveJarFile "C:\SlaveJar\slave.jar" -JenkinsAgentFolder "C:\JenkinsAgent" -JenkinsWorkspaceFolder "C:\JenkinsWorkspace" -PlasticConfigFolder "C:\PlasticConfig" -AgentImageURL "agent-image" } |
+		{ Run-SshAgent -AgentJarFolder "C:\AgentJar" -AgentJarFile "C:\AgentJar\agent.jar" -JenkinsAgentFolder "C:\JenkinsAgent" -JenkinsWorkspaceFolder "C:\JenkinsWorkspace" -PlasticConfigFolder "C:\PlasticConfig" -AgentImageURL "agent-image" } |
 			Should -Not -Throw
 
 		Assert-MockCalled -Times 3 Invoke-External-PrintStdout -ParameterFilter { $LiteralPath -eq "docker" }

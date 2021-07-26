@@ -1,3 +1,4 @@
+
 . ${PSScriptRoot}\..\Tools\Scripts\Ensure-TestToolVersions.ps1
 
 BeforeAll {
@@ -104,7 +105,7 @@ Describe 'Run-SshAgentWrapper' {
 
 		Mock Start-Sleep { if ($script:SleepCount -lt 10) { $script:SleepCount++ } else { throw "Infinite loop detected when waiting for GCE secrets to be set" } }
 
-		{ & ${PSScriptRoot}\Run-SshAgentWrapper.ps1 -jar "C:\SlaveJarDownloadLocation\slave.jar" } |
+		{ & ${PSScriptRoot}\Run-SshAgentWrapper.ps1 -jar "C:\AgentJarDownloadLocation\agent.jar" } |
 			Should -Not -Throw
 
 		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "agent-key-file" }
