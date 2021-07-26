@@ -21,6 +21,7 @@ Describe 'GCEService-InboundAgent' {
 		$PlasticConfigZipRef = @(72, 101, 108, 108, 111) # "Hello"
 
 		$script:LoopCount = 0
+		$script:SleepCount = 0
 
 		Mock Start-Transcript { }
 		Mock Resolve-Path { "invalid path" }
@@ -48,7 +49,7 @@ Describe 'GCEService-InboundAgent' {
 		Mock Run-InboundAgent -ParameterFilter { ($JenkinsURL -eq $JenkinsURLRef) -and ($JenkinsSecret -eq $JenkinsSecretRef) -and ($AgentImageURL -eq $AgentImageURLRef) -and ($AgentName -eq $AgentNameRef) } { }
 		Mock Run-InboundAgent { throw "Invalid invocation of Run-InboundAgent" }
 
-		Mock Start-Sleep { }
+		Mock Start-Sleep { if ($script:SleepCount -lt 10) { $script:SleepCount++ } else { throw "Infinite loop detected when waiting for GCE secrets to be set" } }
 
 		{ & ${PSScriptRoot}\GCEService-InboundAgent.ps1 } |
 			Should -Not -Throw

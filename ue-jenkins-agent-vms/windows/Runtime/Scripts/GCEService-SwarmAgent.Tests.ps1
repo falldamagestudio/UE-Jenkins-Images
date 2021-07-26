@@ -24,6 +24,7 @@ Describe 'GCEService-SwarmAgent' {
 		$PlasticConfigZipRef = @(72, 101, 108, 108, 111) # "Hello"
 
 		$script:LoopCount = 0
+		$script:SleepCount = 0
 
 		Mock Start-Transcript { }
 		Mock Resolve-Path { "invalid path" }
@@ -53,7 +54,7 @@ Describe 'GCEService-SwarmAgent' {
 		Mock Run-SwarmAgent -ParameterFilter { ($JenkinsURL -eq $JenkinsURLRef) -and ($AgentUsername -eq $AgentUsernameRef) -and ($AgentAPIToken -eq $AgentAPITokenRef) -and ($AgentImageURL -eq $AgentImageURLRef) -and ($NumExecutors -eq $NumExecutorsRef) -and ($AgentName -eq $AgentNameRef) } { }
 		Mock Run-SwarmAgent { throw "Invalid invocation of Run-SwarmAgent" }
 
-		Mock Start-Sleep { }
+		Mock Start-Sleep { if ($script:SleepCount -lt 10) { $script:SleepCount++ } else { throw "Infinite loop detected when waiting for GCE secrets to be set" } }
 
 		{ & ${PSScriptRoot}\GCEService-SwarmAgent.ps1 } |
 			Should -Not -Throw
