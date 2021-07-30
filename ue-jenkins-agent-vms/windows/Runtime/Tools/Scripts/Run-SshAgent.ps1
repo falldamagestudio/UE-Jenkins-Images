@@ -56,11 +56,10 @@ function Run-SshAgent {
 		}
 
 		# Start Docker agent
-		& "docker" @Arguments
-#		$ExitCode = Invoke-External-PrintStdout -LiteralPath "docker" -ArgumentList $Arguments
-#		if ($ExitCode -ne 0) {
-#			throw [RunSshAgentException]::new("run", $ExitCode)
-#		}
+		$ExitCode = Invoke-External-PrintStdout -LiteralPath "docker" -ArgumentList $Arguments
+		if ($ExitCode -ne 0) {
+			throw [RunSshAgentException]::new("run", $ExitCode)
+		}
 
 	} finally {
 		try {
