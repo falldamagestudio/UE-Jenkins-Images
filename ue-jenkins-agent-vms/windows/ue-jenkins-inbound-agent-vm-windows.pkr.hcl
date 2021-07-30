@@ -29,6 +29,15 @@ variable "zone" {
   default = ""
 }
 
+packer {
+  required_plugins {
+    windows-update = {
+      version = "0.12.0"
+      source = "github.com/rgl/windows-update"
+    }
+  }
+}
+
 source "googlecompute" "build_machine" {
   communicator                    = "winrm"
   disable_default_service_account = true
@@ -51,6 +60,9 @@ source "googlecompute" "build_machine" {
 
 build {
   sources = ["source.googlecompute.build_machine"]
+
+  provisioner "windows-update" {
+  }
 
   provisioner "file" {
     destination = "C:\\"
