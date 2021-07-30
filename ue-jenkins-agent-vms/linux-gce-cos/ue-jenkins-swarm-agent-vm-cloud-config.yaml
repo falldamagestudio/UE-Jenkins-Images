@@ -186,12 +186,14 @@ write_files:
         LABELS="$(get_gce_instance_metadata "jenkins-labels")"
         PLASTIC_CONFIG_BASE64="$(get_gce_secret_base64 "plastic-config-tgz")"
 
+        echo "Required secrets/instance metadata:"
         echo "Secret agent-key-file: $([[ "${AGENT_KEY_FILE}" != "" ]] && echo "found" || echo "not found")"
         echo "Secret jenkins-url: $([[ "${JENKINS_URL}" != "" ]] && echo "found" || echo "not found")"
         echo "Secret swarm-agent-image-url-linux: $([[ "${AGENT_IMAGE_URL_LINUX}" != "" ]] && echo "found" || echo "not found")"
         echo "Secret swarm-agent-username: $([[ "${AGENT_USERNAME}" != "" ]] && echo "found" || echo "not found")"
         echo "Secret swarm-agent-api-token: $([[ "${AGENT_API_TOKEN}" != "" ]] && echo "found" || echo "not found")"
         echo "Instance metadata jenkins-labels: $([[ "${LABELS}" != "" ]] && echo "found" || echo "not found")"
+        echo "Optional secrets:"
         echo "Secret plastic-config-tgz: $([[ "${PLASTIC_CONFIG_BASE64}" != "" ]] && echo "found" || echo "not found")"
 
         if [ "${ACCESS_KEY}" != "" ] && [ "${JENKINS_URL}" != "" ] && [ "${AGENT_IMAGE_URL_LINUX}" != "" ] && [ "${AGENT_USERNAME}" != "" ] && [ "${AGENT_API_TOKEN}" != "" ] && [ "${LABELS}" != "" ]; then

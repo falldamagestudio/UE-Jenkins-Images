@@ -157,8 +157,10 @@ write_files:
         AGENT_IMAGE_URL_LINUX="$(get_gce_secret_base64 "ssh-agent-image-url-linux" | base64 --decode)"
         PLASTIC_CONFIG_BASE64="$(get_gce_secret_base64 "plastic-config-tgz")"
 
+        echo "Required secrets/instance metadata:"
         echo "Secret agent-key-file: $([[ "${ACCESS_KEY}" != "" ]] && echo "found" || echo "not found")"
         echo "Secret ssh-agent-image-url-linux: $([[ "${AGENT_IMAGE_URL_LINUX}" != "" ]] && echo "found" || echo "not found")"
+        echo "Optional secrets:"
         echo "Secret plastic-config-tgz: $([[ "${PLASTIC_CONFIG_BASE64}" != "" ]] && echo "found" || echo "not found")"
 
         if [ "${ACCESS_KEY}" != "" ] && [ "${AGENT_IMAGE_URL_LINUX}" != "" ]; then
