@@ -48,4 +48,4 @@ jobs:
         id: build_image
         run: |
           IMAGE_NAME=ue-jenkins-inbound-agent-vm-${{ steps.compute_short_sha.outputs.short_sha }}-windows
-          cd ue-jenkins-agent-vms/windows && packer build -var project_id=${{ secrets.GOOGLE_CLOUD_PROJECT_ID }} -var zone=${{ secrets.GOOGLE_CLOUD_ZONE }} -var network=image-builder-network -var subnetwork=image-builder-subnetwork -var image_name=${IMAGE_NAME} ue-jenkins-inbound-agent-vm-windows.pkr.hcl
+          cd ue-jenkins-agent-vms/windows && packer init ue-jenkins-inbound-agent-vm-windows.pkr.hcl && packer build -var project_id=${{ secrets.GOOGLE_CLOUD_PROJECT_ID }} -var zone=${{ secrets.GOOGLE_CLOUD_ZONE }} -var network=image-builder-network -var subnetwork=image-builder-subnetwork -var image_name=${IMAGE_NAME} ue-jenkins-inbound-agent-vm-windows.pkr.hcl
