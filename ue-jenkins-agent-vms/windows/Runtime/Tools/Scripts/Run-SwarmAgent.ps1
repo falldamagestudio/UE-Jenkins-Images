@@ -23,7 +23,7 @@ function Run-SwarmAgent {
 		[Parameter(Mandatory)] [string] $AgentAPIToken,
 		[Parameter(Mandatory)] [string] $AgentImageURL,
 		[Parameter(Mandatory)] [int] $NumExecutors,
-		[Parameter(Mandatory)] [string[]] $Labels,
+		[Parameter(Mandatory)] [string] $Labels,
 		[Parameter(Mandatory)] [string] $AgentName
 	)
 
@@ -45,7 +45,7 @@ function Run-SwarmAgent {
 		# Use Websocket protocol
 		"-webSocket"
 		"-executors","${NumExecutors}"
-		"-labels",($Labels -join ' ')
+		"-labels",$Labels
 		# Only build jobs with label expressions matching this node
 		"-mode","exclusive"
 		"-master",$JenkinsUrl

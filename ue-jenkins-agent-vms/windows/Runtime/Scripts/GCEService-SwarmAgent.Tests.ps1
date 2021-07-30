@@ -4,6 +4,7 @@ BeforeAll {
 	. ${PSScriptRoot}\..\Tools\Scripts\Resize-PartitionToMaxSize.ps1
 	. ${PSScriptRoot}\..\Tools\Scripts\Get-GCESecret.ps1
 	. ${PSScriptRoot}\..\Tools\Scripts\Get-GCEInstanceHostname.ps1
+	. ${PSScriptRoot}\..\Tools\Scripts\Get-GCEInstanceMetadata.ps1
 	. ${PSScriptRoot}\..\Tools\Scripts\Authenticate-DockerForGoogleArtifactRegistry.ps1
 	. ${PSScriptRoot}\..\Tools\Scripts\Run-SwarmAgent.ps1
 }
@@ -20,7 +21,7 @@ Describe 'GCEService-SwarmAgent' {
 		$AgentUsernameRef = "admin@example.com"
 		$AgentAPITokenRef = "5678"
 		$NumExecutorsRef = 1
-		$LabelsRef = @( $AgentNameRef )
+		$LabelsRef = "lab1 lab2"
 		$PlasticConfigZipRef = @(72, 101, 108, 108, 111) # "Hello"
 
 		$script:LoopCount = 0
@@ -44,6 +45,8 @@ Describe 'GCEService-SwarmAgent' {
 		Mock Get-GCESecret -ParameterFilter { $Key -eq "swarm-agent-api-token" } { if ($script:LoopCount -lt 3) { $script:LoopCount++; $null } else { $AgentAPITokenRef } }
 		Mock Get-GCESecret -ParameterFilter { $Key -eq "plastic-config-zip" } { $PlasticConfigZipRef }
 		Mock Get-GCESecret { throw "Invalid invocation of Get-GCESecret" }
+		Mock Get-GCEInstanceMetadata -ParameterFilter { $Key -eq "jenkins-labels" } { $LabelsRef }
+		Mock Get-GCEInstanceMetadata { throw "Invalid invocation of Get-GCEInstanceMetadata" }
 
 		Mock Expand-Archive { }
 
@@ -51,7 +54,7 @@ Describe 'GCEService-SwarmAgent' {
 		Mock Authenticate-DockerForGoogleArtifactRegistry { throw "Invalid invocation of Authenticate-DockerForGoogleArtifactRegistry" }
 
 		# TODO: validate $Labels
-		Mock Run-SwarmAgent -ParameterFilter { ($JenkinsURL -eq $JenkinsURLRef) -and ($AgentUsername -eq $AgentUsernameRef) -and ($AgentAPIToken -eq $AgentAPITokenRef) -and ($AgentImageURL -eq $AgentImageURLRef) -and ($NumExecutors -eq $NumExecutorsRef) -and ($AgentName -eq $AgentNameRef) } { }
+		Mock Run-SwarmAgent -ParameterFilter { ($JenkinsURL -eq $JenkinsURLRef) -and ($AgentUsername -eq $AgentUsernameRef) -and ($AgentAPIToken -eq $AgentAPITokenRef) -and ($AgentImageURL -eq $AgentImageURLRef) -and ($NumExecutors -eq $NumExecutorsRef) -and ($Labels -eq $LabelsRef) -and ($AgentName -eq $AgentNameRef) } { }
 		Mock Run-SwarmAgent { throw "Invalid invocation of Run-SwarmAgent" }
 
 		Mock Start-Sleep { if ($script:SleepCount -lt 10) { $script:SleepCount++ } else { throw "Infinite loop detected when waiting for GCE secrets to be set" } }
@@ -65,6 +68,7 @@ Describe 'GCEService-SwarmAgent' {
 		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "swarm-agent-username" }
 		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "swarm-agent-api-token" }
 		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "plastic-config-zip" }
+		Assert-MockCalled -Times 3 Get-GCEInstanceMetadata -ParameterFilter { $Key -eq "jenkins-labels" }
 
 		Assert-MockCalled -Times 2 Start-Sleep
 

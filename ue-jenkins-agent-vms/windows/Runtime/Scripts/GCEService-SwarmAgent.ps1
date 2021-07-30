@@ -8,6 +8,7 @@ try {
     . ${PSScriptRoot}\..\Tools\Scripts\Resize-PartitionToMaxSize.ps1
     . ${PSScriptRoot}\..\Tools\Scripts\Get-GCESecret.ps1
     . ${PSScriptRoot}\..\Tools\Scripts\Get-GCEInstanceHostname.ps1
+    . ${PSScriptRoot}\..\Tools\Scripts\Get-GCEInstanceMetadata.ps1
     . ${PSScriptRoot}\..\Tools\Scripts\Authenticate-DockerForGoogleArtifactRegistry.ps1
     . ${PSScriptRoot}\..\Tools\Scripts\Run-SwarmAgent.ps1
 
@@ -37,18 +38,22 @@ try {
         $AgentUsername = Get-GCESecret -Key "swarm-agent-username"
         $AgentAPIToken = Get-GCESecret -Key "swarm-agent-api-token"
         $PlasticConfigZip = Get-GCESecret -Key "plastic-config-zip" -Binary $true
+        $Labels = Get-GCEInstanceMetadata -Key "jenkins-labels"
 
+        Write-Host "Required settings:"
         Write-Host "Secret jenkins-url: $(if ($JenkinsURL -ne $null) { "found" } else { "not found" })"
         Write-Host "Secret agent-key-file: $(if ($AgentKey -ne $null) { "found" } else { "not found" })"
         Write-Host "Secret agent-image-url-windows: $(if ($AgentImageURL -ne $null) { "found" } else { "not found" })"
         Write-Host "Secret swarm-agent-username: $(if ($AgentUsername -ne $null) { "found" } else { "not found" })"
         Write-Host "Secret swarm-agent-api-token: $(if ($AgentAPIToken -ne $null) { "found" } else { "not found" })"
+        Write-Host "Instance metadata jenkins-labels: $(if ($Labels -ne $null) { "found" } else { "not found" })"
+        Write-Host "Optional settings:"
         Write-Host "Secret plastic-config-zip: $(if ($PlasticConfigZip -ne $null) { "found" } else { "not found" })"
 
-        if (($JenkinsURL -ne $null) -and ($AgentImageURL -ne $null) -and ($AgentKey -ne $null) -and ($AgentUsername -ne $null) -and ($AgentAPIToken -ne $null)) {
+        if (($JenkinsURL -ne $null) -and ($AgentImageURL -ne $null) -and ($AgentKey -ne $null) -and ($AgentUsername -ne $null) -and ($AgentAPIToken -ne $null) -and ($Labels -ne $null)) {
             break
         } else {
-            Write-Host "Some required secrets are missing. Sleeping, then retrying..."
+            Write-Host "Some required secrets/instance metadata are missing. Sleeping, then retrying..."
             Start-Sleep 10
         }
     }
@@ -84,7 +89,7 @@ try {
         AgentAPIToken = $AgentAPIToken
         AgentImageURL = $AgentImageURL
         NumExecutors = 1
-        Labels = @( $AgentName )
+        Labels = $Labels
         AgentName = $AgentName
     }
 
