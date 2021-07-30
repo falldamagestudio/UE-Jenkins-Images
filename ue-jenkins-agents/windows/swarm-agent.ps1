@@ -1,6 +1,6 @@
 if($args.Length -eq 1) {
     # if `docker run` only has one argument, we assume user is running alternate command like `powershell` or `pwsh` to inspect the image
-    Invoke-Expression $args
+    Invoke-Expression $args[0]
 } else {
     $AgentArguments = @('-jar', 'C:\ProgramData\Jenkins\swarm-client.jar')
 
