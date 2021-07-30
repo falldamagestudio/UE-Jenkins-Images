@@ -45,7 +45,7 @@ function Run-SwarmAgent {
 		# Use Websocket protocol
 		"-webSocket"
 		"-executors","${NumExecutors}"
-		"-labels",$Labels -join ' '
+		"-labels",($Labels -join ' ')
 		# Only build jobs with label expressions matching this node
 		"-mode","exclusive"
 		"-master",$JenkinsUrl
