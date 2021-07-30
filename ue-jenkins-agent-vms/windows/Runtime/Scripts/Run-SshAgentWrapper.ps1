@@ -42,8 +42,10 @@ try {
         $AgentImageURL = Get-GCESecret -Key "ssh-agent-image-url-windows"
         $PlasticConfigZip = Get-GCESecret -Key "plastic-config-zip" -Binary $true
  
+        Write-Host "Required settings:"
         Write-Host "Secret agent-key-file: $(if ($AgentKey -ne $null) { "found" } else { "not found" })"
         Write-Host "Secret ssh-agent-image-url-windows: $(if ($AgentImageURL -ne $null) { "found" } else { "not found" })"
+        Write-Host "Optional settings:"
         Write-Host "Secret plastic-config-zip: $(if ($PlasticConfigZip -ne $null) { "found" } else { "not found" })"
 
         if (($AgentImageURL -ne $null) -and ($AgentKey -ne $null)) {

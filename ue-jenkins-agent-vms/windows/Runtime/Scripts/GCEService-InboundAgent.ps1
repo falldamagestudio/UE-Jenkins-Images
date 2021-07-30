@@ -37,10 +37,12 @@ try {
         $JenkinsSecret = Get-GCESecret -Key "inbound-agent-secret-${AgentName}"
         $PlasticConfigZip = Get-GCESecret -Key "plastic-config-zip" -Binary $true
 
+        Write-Host "Required settings:"
         Write-Host "Secret jenkins-url: $(if ($JenkinsURL -ne $null) { "found" } else { "not found" })"
         Write-Host "Secret agent-key-file: $(if ($AgentKey -ne $null) { "found" } else { "not found" })"
         Write-Host "Secret inbound-agent-image-url-windows: $(if ($AgentImageURL -ne $null) { "found" } else { "not found" })"
         Write-Host "Secret inbound-agent-secret-${AgentName}: $(if ($JenkinsSecret -ne $null) { "found" } else { "not found" })"
+        Write-Host "Optional settings:"
         Write-Host "Secret plastic-config-zip: $(if ($PlasticConfigZip -ne $null) { "found" } else { "not found" })"
 
         if (($JenkinsURL -ne $null) -and ($AgentImageURL -ne $null) -and ($AgentKey -ne $null) -and ($JenkinsSecret -ne $null)) {
