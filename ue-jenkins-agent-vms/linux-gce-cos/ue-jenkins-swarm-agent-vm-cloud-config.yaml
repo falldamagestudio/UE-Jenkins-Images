@@ -130,6 +130,17 @@ write_files:
         echo "${HOSTNAME}"
       }
 
+      # Retrieve GCE instance metadata
+      get_gce_instance_metadata () {
+
+        local KEY=$1
+
+        local METADATA=http://metadata.google.internal/computeMetadata/v1
+        local VALUE=$(curl -H 'Metadata-Flavor: Google' "${METADATA}/instance/attributes/${KEY}")
+
+        echo "${VALUE}"
+      }
+
       # Retrieve a secret from GCP Secret Manager (base64-encoded)
       # If the secret is not known, returns ""
       get_gce_secret_base64 () {
@@ -172,6 +183,7 @@ write_files:
         AGENT_IMAGE_URL_LINUX="$(get_gce_secret_base64 "swarm-agent-image-url-linux" | base64 --decode)"
         AGENT_USERNAME="$(get_gce_secret_base64 "swarm-agent-username" | base64 --decode)"
         AGENT_API_TOKEN="$(get_gce_secret_base64 "swarm-agent-api-token" | base64 --decode)"
+        LABELS="$(get_gce_instance_metadata "jenkins-labels")"
         PLASTIC_CONFIG_BASE64="$(get_gce_secret_base64 "plastic-config-tgz")"
 
         echo "Secret agent-key-file: $([[ "${AGENT_KEY_FILE}" != "" ]] && echo "found" || echo "not found")"
@@ -179,13 +191,14 @@ write_files:
         echo "Secret swarm-agent-image-url-linux: $([[ "${AGENT_IMAGE_URL_LINUX}" != "" ]] && echo "found" || echo "not found")"
         echo "Secret swarm-agent-username: $([[ "${AGENT_USERNAME}" != "" ]] && echo "found" || echo "not found")"
         echo "Secret swarm-agent-api-token: $([[ "${AGENT_API_TOKEN}" != "" ]] && echo "found" || echo "not found")"
+        echo "Instance metadata jenkins-labels: $([[ "${LABELS}" != "" ]] && echo "found" || echo "not found")"
         echo "Secret plastic-config-tgz: $([[ "${PLASTIC_CONFIG_BASE64}" != "" ]] && echo "found" || echo "not found")"
 
-        if [ "${ACCESS_KEY}" != "" ] && [ "${JENKINS_URL}" != "" ] && [ "${AGENT_IMAGE_URL_LINUX}" != "" ] && [ "${AGENT_USERNAME}" != "" ] && [ "${AGENT_API_TOKEN}" != "" ]; then
+        if [ "${ACCESS_KEY}" != "" ] && [ "${JENKINS_URL}" != "" ] && [ "${AGENT_IMAGE_URL_LINUX}" != "" ] && [ "${AGENT_USERNAME}" != "" ] && [ "${AGENT_API_TOKEN}" != "" ] && [ "${LABELS}" != "" ]; then
           break
         fi
 
-        echo "Some required secrets are missing. Sleeping, then retrying..."
+        echo "Some required secrets/instance metadata are missing. Sleeping, then retrying..."
         sleep 10
       done
 
@@ -236,7 +249,7 @@ write_files:
         "${AGENT_IMAGE_URL_LINUX}" \
         -webSocket \
         -executors 1 \
-        -labels "${AGENT_NAME}" \
+        -labels "${LABELS}" \
         -mode exclusive \
         -master "${JENKINS_URL}" \
         -workDir /home/jenkins/agent \
