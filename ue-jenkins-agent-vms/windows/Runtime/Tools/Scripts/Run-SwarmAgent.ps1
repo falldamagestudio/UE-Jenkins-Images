@@ -1,17 +1,10 @@
-. ${PSScriptRoot}\Invoke-External-PrintStdout.ps1
-
-class RunSwarmAgentException : Exception {
-	$Operation
-	$ExitCode
-
-	RunSwarmAgentException([string] $operation, [int] $exitCode) : base("docker ${operation} exited with code ${exitCode}") { $this.Operation = $operation; $this.ExitCode = $exitCode }
-}
+. ${PSScriptRoot}\Run-DockerAgent.ps1
 
 function Run-SwarmAgent {
 
 	<#
 		.SYNOPSIS
-		Runs Jenkins Inbound Agent in a Docker container
+		Runs Jenkins Swarm Agent in a Docker container
 	#>
 
 	param (
@@ -28,7 +21,6 @@ function Run-SwarmAgent {
 	)
 
 	$Arguments = @(
-		"run"
 		"--rm"
 		"--name","jenkins-agent"
 		# Share Jenkins agent work folder with containers
@@ -57,25 +49,5 @@ function Run-SwarmAgent {
 
 	)
 
-	try {
-
-		# Fetch Docker agent image
-		$ExitCode = Invoke-External-PrintStdout -LiteralPath "docker" -ArgumentList @("pull", $AgentImageUrl)
-		if ($ExitCode -ne 0) {
-			throw [RunSwarmAgentException]::new("pull", $ExitCode)
-		}
-
-		# Start Docker agent
-		$ExitCode = Invoke-External-PrintStdout -LiteralPath "docker" -ArgumentList $Arguments
-		if ($ExitCode -ne 0) {
-			throw [RunSwarmAgentException]::new("run", $ExitCode)
-		}
-
-	} finally {
-		try {
-			Invoke-External-PrintStdout -LiteralPath "docker" -ArgumentList @("stop", "jenkins-agent")
-		} catch {
-			# Ignore errors here, it is a cleanup path anyway
-		}
-	}
+	Run-DockerAgent -AgentImageURL $AgentImageURL -AgentRunArguments $Arguments
 }

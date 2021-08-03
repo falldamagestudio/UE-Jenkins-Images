@@ -1,11 +1,4 @@
-. ${PSScriptRoot}\Invoke-External-PrintStdout.ps1
-
-class RunInboundAgentException : Exception {
-	$Operation
-	$ExitCode
-
-	RunInboundAgentException([string] $operation, [int] $exitCode) : base("docker ${operation} exited with code ${exitCode}") { $this.Operation = $operation; $this.ExitCode = $exitCode }
-}
+. ${PSScriptRoot}\Run-DockerAgent.ps1
 
 function Run-InboundAgent {
 
@@ -25,7 +18,6 @@ function Run-InboundAgent {
 	)
 
 	$Arguments = @(
-		"run"
 		"--rm"
 		"--name","jenkins-agent"
 		# Share Jenkins agent work folder with containers
@@ -46,25 +38,5 @@ function Run-InboundAgent {
 		"-WebSocket"
 	)
 
-	try {
-
-		# Fetch Docker agent image
-		$ExitCode = Invoke-External-PrintStdout -LiteralPath "docker" -ArgumentList @("pull", $AgentImageUrl)
-		if ($ExitCode -ne 0) {
-			throw [RunInboundAgentException]::new("pull", $ExitCode)
-		}
-
-		# Start Docker agent
-		$ExitCode = Invoke-External-PrintStdout -LiteralPath "docker" -ArgumentList $Arguments
-		if ($ExitCode -ne 0) {
-			throw [RunInboundAgentException]::new("run", $ExitCode)
-		}
-
-	} finally {
-		try {
-			Invoke-External-PrintStdout -LiteralPath "docker" -ArgumentList @("stop", "jenkins-agent")
-		} catch {
-			# Ignore errors here, it is a cleanup path anyway
-		}
-	}
+	Run-DockerAgent -AgentImageURL $AgentImageURL -AgentRunArguments $Arguments
 }

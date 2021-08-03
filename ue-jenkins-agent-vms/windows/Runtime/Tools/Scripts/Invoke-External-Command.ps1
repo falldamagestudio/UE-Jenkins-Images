@@ -2,7 +2,7 @@
 # This allows for calling programs that talk directly to stdin/stdout but is also mockable in tests.
 #
 # Reference: https://stackoverflow.com/a/56821110
-function Invoke-External-ConnectedStdinStdout {
+function Invoke-External-Command {
 
 	<#
 		.SYNOPSIS
@@ -10,9 +10,10 @@ function Invoke-External-ConnectedStdinStdout {
 
     .DESCRIPTION
     This runs a console command. It will not work well with non-console applications.
-    Standard Input is fed in from stdin.
-    Standard Output is returned from the function.
+    Standard Input is fetched from stdin.
+    Standard Output is returned from the function, and can be captured in a variable or piped elsewhere.
     If $MergeStderr is set, standard error will be mixed in with the standard output.
+
     Error messages will sometimes be formatted as this, and printed in red, first message being expanded:
       <commandname> : <message>
         + CategoryInfo          : NotSpecified: (<message>  :String) [], RemoteException
@@ -20,9 +21,6 @@ function Invoke-External-ConnectedStdinStdout {
       ... but further stderr prints will be just the messages themselves...
       ... and sometimes the error messages will be printed just as the message itself.
     Stdout and stderr will be interleaved in the order that the application prints to them.
-
-    If you wish to send in custom input to the command, invoke it like this:
-      $MyStdin | Invoke-External-ConnectedStdinStdout ...
 
     If you wish to capture the program's output, invoke it like this:
       $CapturedOutput = Invoke-External-ConnectedStdinStdout ...
@@ -32,7 +30,7 @@ function Invoke-External-ConnectedStdinStdout {
         [Parameter(Mandatory=$true)] [string] $LiteralPath,
         [Parameter(Mandatory=$false)] [string[]] $ArgumentList,
         [Parameter(Mandatory=$false)] [switch] $MergeStderr=$false,
-        [Parameter(Mandatory=$true)] [ref] $ExitCode
+        [Parameter(Mandatory=$false)] [ref] $ExitCode
     )
 
   if ($MergeStderr) {
