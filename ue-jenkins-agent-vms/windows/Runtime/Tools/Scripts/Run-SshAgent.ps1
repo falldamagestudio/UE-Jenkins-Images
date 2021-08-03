@@ -1,3 +1,4 @@
+. ${PSScriptRoot}\Invoke-External-ConnectedStdinStdout.ps1
 . ${PSScriptRoot}\Invoke-External-PrintStdout.ps1
 
 class RunSshAgentException : Exception {
@@ -56,16 +57,8 @@ function Run-SshAgent {
 		}
 
 		# Start Docker agent
-		#
-		# HACK: launch Docker directly; this will stream directly against stdin & stdout,
-		#  and any kind of wrapping (including putting this into a function call!?)
-		#  results in weird behaviours where something hangs waiting for something else
-		#
-		# The Pester tests won't handle this well; the call to Docker can't be mocked,
-		#  so at least one test is failing right now -- but, the agent works when used
-		#  by Jenkins
-		& "docker" $Arguments
-		$ExitCode = $LASTEXITCODE
+		$ExitCode = 0
+		Invoke-External-ConnectedStdinStdout -LiteralPath "docker" -ArgumentList $Arguments -ExitCode ([ref]$ExitCode)
 		if ($ExitCode -ne 0) {
 			throw [RunSshAgentException]::new("run", $ExitCode)
 		}
