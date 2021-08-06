@@ -16,6 +16,20 @@ RUN apt-get update \
     && apt-get update \
     && apt-get install -y plasticscm-client-core
 
+# Create settings folder for Plastic
+#
+# We're doing it here instead of letting Kubernetes' mounting of secrets create
+#  the folder. Otherwise, if we let Kubernetes mount individual files into a
+#  non-existent .plastic4 folder, then Kubernetes will create the folder with
+#  permissions 755, and uid=0 / gid=jenkins. This means that the Jenkins controller
+#  (which runs as uid=jenkins) will not be able to create new files in that folder.
+# This, in turn results in some `cm` invocations failing, which results in error
+#  messages like these when triggering a job in a Plasti repo:
+#   ERROR: Unable to find Jenkinsfiles/build_game_linux_plastic_static.groovy from Plastic
+#   SCM repository "UE-Jenkins-Game@ue_jenkins_buildsystem@cloud" path "/" smartbranch "/main"
+
+RUN mkdir -m 775 /var/jenkins_home/.plastic4
+
 USER jenkins
 
 # Replace the offical google-compute-engine plugin with a locally-built version
