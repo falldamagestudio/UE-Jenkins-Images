@@ -3,7 +3,9 @@ name: ue-jenkins-swarm-agent
 on:
   push:
     branches:
-      - '**'
+      - 'main'
+
+  workflow_dispatch:
 
 jobs:
   build-linux:

@@ -3,7 +3,9 @@ name: ue-jenkins-controller
 on:
   push:
     branches:
-      - '**'
+      - 'main'
+
+  workflow_dispatch:
 
 jobs:
   build:

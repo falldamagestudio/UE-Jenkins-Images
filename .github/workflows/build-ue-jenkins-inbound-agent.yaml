@@ -3,7 +3,9 @@ name: ue-jenkins-inbound-agent
 on:
   push:
     branches:
-      - '**'
+      - 'main'
+
+  workflow_dispatch:
 
 jobs:
   build-linux:
