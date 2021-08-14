@@ -31,4 +31,15 @@ RUN \
 		zip && \
 	rm -rf /var/lib/apt/lists/*
 
+USER root
+
+# Install Plastic SCM client
+
+RUN apt-get update \
+    && apt-get install -y apt-transport-https \
+    && echo "deb https://www.plasticscm.com/plasticrepo/stable/debian/ ./" | tee /etc/apt/sources.list.d/plasticscm-stable.list \
+    && wget https://www.plasticscm.com/plasticrepo/stable/debian/Release.key -O - | apt-key add - \
+    && apt-get update \
+    && apt-get install -y plasticscm-client-core
+
 USER jenkins

@@ -8,6 +8,10 @@
 
 . ${PSScriptRoot}\Install-VC2010RedistributableX64.ps1
 
+. ${PSScriptRoot}\Install-Plastic.ps1
+
+. ${PSScriptRoot}\Create-PlasticClientConfigLinks.ps1
+
 Write-Host "Enabling Win32 Long Paths..."
 
 Enable-Win32LongPaths
@@ -35,5 +39,13 @@ Write-Host "Installing VC++ 2010 Redistributable (x64)..."
 # This provides MSVCP100.DLL & MSVCR100.DLL which is used by Engine/Binaries/ThirdParty/QualComm/Win64/TextureConverter.dll
 #  which in turn is loaded by UE4Editor-Cmd.exe
 Install-VC2010RedistributableX64
+
+Write-Host "Installing Plastic SCM..."
+
+Install-Plastic
+
+Write-Host "Creating symlinks for plastic client config files..."
+
+Create-PlasticClientConfigLinks
 
 Write-Host "Done."
