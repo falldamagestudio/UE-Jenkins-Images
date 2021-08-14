@@ -28,6 +28,7 @@ RUN \
 		tzdata \
 		unzip \
 		xdg-user-dirs \
+		wget \
 		zip && \
 	rm -rf /var/lib/apt/lists/*
 
