@@ -13,8 +13,8 @@ RUN groupadd -g ${gid} ${group} \
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install our build prerequisites
-RUN \
-	apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends \
 		build-essential \
 		ca-certificates \
 		curl \
@@ -28,19 +28,21 @@ RUN \
 		tzdata \
 		unzip \
 		xdg-user-dirs \
-		wget \
-		zip && \
-	rm -rf /var/lib/apt/lists/*
+		zip \
+	&& apt-get clean \
+	&& rm -rf /var/lib/apt/lists/*
 
 USER root
 
 # Install Plastic SCM client
 
 RUN apt-get update \
-    && apt-get install -y apt-transport-https \
+    && apt-get install -y --no-install-recommends apt-transport-https wget gnupg \
     && echo "deb https://www.plasticscm.com/plasticrepo/stable/debian/ ./" | tee /etc/apt/sources.list.d/plasticscm-stable.list \
-    && wget https://www.plasticscm.com/plasticrepo/stable/debian/Release.key -O - | apt-key add - \
+    && wget --progress=dot https://www.plasticscm.com/plasticrepo/stable/debian/Release.key -O - | apt-key add - \
     && apt-get update \
-    && apt-get install -y plasticscm-client-core
+    && apt-get install -y --no-install-recommends plasticscm-client-core \
+	&& apt-get clean \
+	&& rm -rf /var/lib/apt/lists/*
 
 USER jenkins
