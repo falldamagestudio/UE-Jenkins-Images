@@ -25,7 +25,7 @@ function Run-InboundAgent {
 		# Share Jenkins workspace folder with containers
 		"--mount","type=bind,source=${JenkinsWorkspaceFolder},destination=${JenkinsWorkspaceFolder}"
 		# Share Plastic SCM config folder with containers
-		"--mount","type=bind,source=${PlasticConfigFolder},destination=C:\Users\Jenkins\AppData\Local\plastic4"
+		"--mount","type=bind,source=${PlasticConfigFolder},destination=${PlasticConfigFolder}"
 		# Share docker auth for Google Artifact Registry with docker CLI users inside containers
 		"--mount","type=bind,source=${env:USERPROFILE}\.docker,destination=C:\users\jenkins\.docker"
 		# Enable docker CLI users inside containers to communicate with Docker daemon

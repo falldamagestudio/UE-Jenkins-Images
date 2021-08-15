@@ -30,7 +30,7 @@ function Create-PlasticClientConfigLinks {
     }
 
     $SourceFolder = "${env:LOCALAPPDATA}\plastic4"
-    $TargetFolder = "C:\plastic-config"
+    $TargetFolder = "C:\PlasticConfig"
 
     # Create folder for config files
     New-Item -ItemType Directory -Path $SourceFolder | Out-Null
