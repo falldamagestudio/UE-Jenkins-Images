@@ -15,32 +15,48 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Compute short SHA
-        run: echo "::set-output name=short_sha::$(git rev-parse --short ${{ github.sha }})"
-        id: compute_short_sha
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+      - name: Set parameters
+        id: parameters
+        run: |
+          SHORT_SHA=$(git rev-parse --short ${{ github.sha }})
+          IMAGE_NAME=${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-inbound-agent
+          IMAGE_TAG=commit-${SHORT_SHA}-linux
+          IMAGE_URL=${IMAGE_NAME}:${IMAGE_TAG}
+          echo "::set-output name=image_url::${IMAGE_URL}"
 
       - name: Setup gcloud CLI
         uses: google-github-actions/setup-gcloud@master
         with:
           service_account_key: ${{ secrets.GOOGLE_CLOUD_BUILD_ARTIFACT_UPLOADER_SERVICE_ACCOUNT_KEY }}
 
+      - name: Test if image already exists
+        id: image_exists
+        run: |
+          # Detect whether the image already exists
+          # If it does exist, it sets the 'image_exists' output
+          # It it doesn't exist, it leaves the 'image_exists' output unset
+          gcloud artifacts docker images describe ${{ steps.parameters.outputs.image_url }} > /dev/null 2>&1 && echo "::set-output name=image_exists::true" || true
+
+      - name: Set up QEMU
+        if: ${{ ! steps.image_exists.outputs.image_exists }}
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        if: ${{ ! steps.image_exists.outputs.image_exists }}
+        uses: docker/setup-buildx-action@v1
+
       - name: Configure docker to use gcloud as credential helper
+        if: ${{ ! steps.image_exists.outputs.image_exists }}
         run: |
           gcloud auth configure-docker ${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev
 
       - name: Build image and push to GAR
-        id: docker_build
+        if: ${{ ! steps.image_exists.outputs.image_exists }}
         uses: docker/build-push-action@v2
         with:
           context: ./ue-jenkins-agents/linux/ue-jenkins-inbound-agent
           push: true
-          tags: ${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-inbound-agent:commit-${{ steps.compute_short_sha.outputs.short_sha }}-linux
+          tags: ${{ steps.parameters.outputs.image_url }}
 
   build-windows:
     name: Windows - ue-jenkins-inbound-agent
@@ -49,14 +65,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Compute short SHA
-        run: echo "::set-output name=short_sha::$(git rev-parse --short ${{ github.sha }})"
-        id: compute_short_sha
-
-      - name: Setup Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: "1.14.0"
+      - name: Set parameters
+        id: parameters
+        run: |
+          SHORT_SHA=$(git rev-parse --short ${{ github.sha }})
+          IMAGE_NAME=${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-inbound-agent
+          IMAGE_TAG=commit-${SHORT_SHA}-windows
+          IMAGE_URL=${IMAGE_NAME}:${IMAGE_TAG}
+          echo "::set-output name=image_name::${IMAGE_NAME}"
+          echo "::set-output name=image_tag::${IMAGE_TAG}"
+          echo "::set-output name=image_url::${IMAGE_URL}"
 
       - name: Setup gcloud CLI
         uses: google-github-actions/setup-gcloud@master
@@ -65,21 +83,39 @@ jobs:
           service_account_key: ${{ secrets.GOOGLE_CLOUD_IMAGE_BUILDER_INSTANCE_CONTROLLER_SERVICE_ACCOUNT_KEY }}
           export_default_credentials: true
 
+      - name: Test if image already exists
+        id: image_exists
+        run: |
+          # Detect whether the image already exists
+          # If it does exist, it sets the 'image_exists' output
+          # It it doesn't exist, it leaves the 'image_exists' output unset
+          gcloud artifacts docker images describe ${{ steps.parameters.outputs.image_url }} > /dev/null 2>&1 && echo "::set-output name=image_exists::true" || true
+
+      - name: Setup Go
+        if: ${{ ! steps.image_exists.outputs.image_exists }}
+        uses: actions/setup-go@v2
+        with:
+          go-version: "1.14.0"
+
       - name: Build windows-docker-image-builder tool
+        if: ${{ ! steps.image_exists.outputs.image_exists }}
         run: |
           (cd windows-docker-image-builder && go build -o main .)
 
       - name: Add service account key to builder workspace
+        if: ${{ ! steps.image_exists.outputs.image_exists }}
         run: |
           echo '${{ secrets.GOOGLE_CLOUD_BUILD_ARTIFACT_UPLOADER_SERVICE_ACCOUNT_KEY }}' > ue-jenkins-agents/windows/service-account-key.json
 
       # We zip up the builder-workspace folder, because the cloud image builder will otherwise copy builder-workspace files
       # one-by-one, spending one second per file
       - name: Zip up builder workspace
+        if: ${{ ! steps.image_exists.outputs.image_exists }}
         run: |
           (cd ue-jenkins-agents/windows && mkdir ../windows-builder-workspace-zipped && zip -r ../windows-builder-workspace-zipped/builder-workspace.zip *)
 
       - name: Start Windows VM, Build image and push to GAR via said VM, tear down VM
+        if: ${{ ! steps.image_exists.outputs.image_exists }}
         run: |
           ./windows-docker-image-builder/main \
             -labels type=windows-image-builder \
@@ -93,8 +129,9 @@ jobs:
             -image windows-cloud/global/images/windows-server-2019-dc-for-containers-v20210212 \
             -workspace-path ue-jenkins-agents/windows-builder-workspace-zipped \
             -serviceAccount build-artifact-uploader@${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}.iam.gserviceaccount.com \
-            -command "powershell try { Expand-Archive -Path .\\builder-workspace.zip -DestinationPath .; .\\Build.ps1 -GceRegion ${{ secrets.ARTIFACT_REGISTRY_LOCATION }} -Dockerfile ue-jenkins-inbound-agent-windows.Dockerfile -ImageName ${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-inbound-agent -ImageTag commit-${{ steps.compute_short_sha.outputs.short_sha }}-windows } catch { Write-Error \$_ }"
+            -command "powershell try { Expand-Archive -Path .\\builder-workspace.zip -DestinationPath .; .\\Build.ps1 -GceRegion ${{ secrets.ARTIFACT_REGISTRY_LOCATION }} -Dockerfile ue-jenkins-inbound-agent-windows.Dockerfile -ImageName ${{ steps.parameters.outputs.image_name }} -ImageTag ${{ steps.parameters.outputs.image_tag }} } catch { Write-Error \$_ }"
 
       - name: Remove builder workspace
+        if: ${{ ! steps.image_exists.outputs.image_exists }}
         run: |
           rm -rf ue-jenkins-agents/windows-builder-workspace-zipped
