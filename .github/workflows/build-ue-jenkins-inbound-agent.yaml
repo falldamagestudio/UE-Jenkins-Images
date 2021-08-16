@@ -112,7 +112,7 @@ jobs:
       - name: Zip up builder workspace
         if: ${{ ! steps.image_exists.outputs.image_exists }}
         run: |
-          (cd ue-jenkins-agents/windows && mkdir ../windows-builder-workspace-zipped && zip -r ../windows-builder-workspace-zipped/builder-workspace.zip *)
+          (mkdir windows-builder-workspace-zipped && zip -r windows-builder-workspace-zipped/builder-workspace.zip . -i ue-jenkins-agents/\\* -i windows-scripts\\*)
 
       - name: Start Windows VM, Build image and push to GAR via said VM, tear down VM
         if: ${{ ! steps.image_exists.outputs.image_exists }}
@@ -127,11 +127,11 @@ jobs:
             -diskType pd-ssd \
             -diskSizeGb 100 \
             -image windows-cloud/global/images/windows-server-2019-dc-for-containers-v20210212 \
-            -workspace-path ue-jenkins-agents/windows-builder-workspace-zipped \
+            -workspace-path windows-builder-workspace-zipped \
             -serviceAccount build-artifact-uploader@${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}.iam.gserviceaccount.com \
-            -command "powershell try { Expand-Archive -Path .\\builder-workspace.zip -DestinationPath .; .\\Build.ps1 -GceRegion ${{ secrets.ARTIFACT_REGISTRY_LOCATION }} -Dockerfile ue-jenkins-inbound-agent-windows.Dockerfile -ImageName ${{ steps.parameters.outputs.image_name }} -ImageTag ${{ steps.parameters.outputs.image_tag }} } catch { Write-Error \$_ }"
+            -command "powershell try { Expand-Archive -Path .\\builder-workspace.zip -DestinationPath .; .\\ue-jenkins-agents\\windows\\Build.ps1 -GceRegion ${{ secrets.ARTIFACT_REGISTRY_LOCATION }} -Dockerfile ue-jenkins-inbound-agent-windows.Dockerfile -ImageName ${{ steps.parameters.outputs.image_name }} -ImageTag ${{ steps.parameters.outputs.image_tag }} } catch { Write-Error \$_ }"
 
       - name: Remove builder workspace
         if: ${{ ! steps.image_exists.outputs.image_exists }}
         run: |
-          rm -rf ue-jenkins-agents/windows-builder-workspace-zipped
+          rm -rf windows-builder-workspace-zipped
