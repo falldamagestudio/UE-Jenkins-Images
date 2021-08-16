@@ -66,28 +66,28 @@ build {
 
   provisioner "file" {
     destination = "C:\\"
-    source      = "Scripts"
+    source      = "ImageBuilder"
   }
 
   provisioner "file" {
     destination = "C:\\"
-    source      = "..\\..\\windows-scripts"
+    source      = "..\\..\\Scripts\\Windows"
   }
 
   provisioner "powershell" {
-    inline = [ "try { C:\\Scripts\\InstallSoftware.ps1 } catch { Write-Error $_; exit 1 }" ]
+    inline = [ "try { C:\\ImageBuilder\\InstallSoftware.ps1 } catch { Write-Error $_; exit 1 }" ]
   }
 
   provisioner "powershell" {
-    inline = [ "try { C:\\windows-scripts\\Agents\\Services\\GCERegisterService-InboundAgent.ps1 } catch { Write-Error $_; exit 1 }" ]
+    inline = [ "try { C:\\Scripts\\Windows\\Agents\\Services\\GCERegisterService-InboundAgent.ps1 } catch { Write-Error $_; exit 1 }" ]
   }
 
   provisioner "powershell" {
-    inline = [ "exit (Invoke-Pester -Script C:\\Scripts\\VerifyInstance.ps1 -PassThru).FailedCount" ]
+    inline = [ "exit (Invoke-Pester -Script C:\\ImageBuilder\\VerifyInstance.ps1 -PassThru).FailedCount" ]
   }
 
   provisioner "powershell" {
-    inline = [ "Remove-Item -Force -Recurse C:\\Scripts" ]
+    inline = [ "Remove-Item -Force -Recurse C:\\ImageBuilder" ]
   }
 
 }

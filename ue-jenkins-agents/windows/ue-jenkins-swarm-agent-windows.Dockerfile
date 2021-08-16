@@ -64,7 +64,7 @@ RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tl
 # Install additional software
 
 # Include shared installation scripts
-COPY windows-scripts\* C:\Workspace\
+COPY Scripts\Windows\* C:\Workspace\
 
 # Include specific installation scripts
 COPY ue-jenkins-agents\windows\Container\* C:\Workspace\

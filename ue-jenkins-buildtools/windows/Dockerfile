@@ -35,7 +35,7 @@ RUN net user "${env:user}" /add /expire:never /passwordreq:no ; `
 USER $user
 
 # Include shared installation scripts
-COPY windows-scripts\* C:\Workspace\
+COPY Scripts\Windows\* C:\Workspace\
 
 # Include specific installation scripts, and extra system DLLs
 COPY ue-jenkins-buildtools\windows\Container\* C:\Workspace\

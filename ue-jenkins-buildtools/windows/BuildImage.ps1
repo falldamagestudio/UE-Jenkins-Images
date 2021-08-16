@@ -15,7 +15,7 @@ class DockerBuildException : Exception {
 #   be executed within the container - so we run the installer on the host OS, and we can then
 #   fetch the DLLs from the host filesystem, and provide them to the container build process)
 
-. ${PSScriptRoot}\..\..\windows-scripts\Applications\Install-DirectXRedistributable.ps1
+. ${PSScriptRoot}\..\..\Scripts\Windows\Applications\Install-DirectXRedistributable.ps1
 
 Install-DirectXRedistributable
 
