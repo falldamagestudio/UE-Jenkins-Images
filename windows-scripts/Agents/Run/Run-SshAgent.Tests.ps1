@@ -1,4 +1,4 @@
-. ${PSScriptRoot}\Ensure-TestToolVersions.ps1
+. ${PSScriptRoot}\..\..\Helpers\Ensure-TestToolVersions.ps1
 
 BeforeAll {
 

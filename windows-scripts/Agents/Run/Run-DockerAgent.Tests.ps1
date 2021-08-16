@@ -1,8 +1,8 @@
-. ${PSScriptRoot}\Ensure-TestToolVersions.ps1
+. ${PSScriptRoot}\..\..\Helpers\Ensure-TestToolVersions.ps1
 
 BeforeAll {
 
-	. ${PSScriptRoot}\Invoke-External-Command.ps1
+	. ${PSScriptRoot}\..\..\Helpers\Invoke-External-Command.ps1
 	. ${PSScriptRoot}\Run-DockerAgent.ps1
 
 }

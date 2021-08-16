@@ -1,9 +1,9 @@
-. ${PSScriptRoot}\Ensure-TestToolVersions.ps1
+. ${PSScriptRoot}\..\Helpers\Ensure-TestToolVersions.ps1
 
 BeforeAll {
 
 	. ${PSScriptRoot}\Authenticate-DockerForGoogleArtifactRegistry.ps1
-	. ${PSScriptRoot}\Invoke-External-WithStdio.ps1
+	. ${PSScriptRoot}\..\Helpers\Invoke-External-WithStdio.ps1
 
 }
 

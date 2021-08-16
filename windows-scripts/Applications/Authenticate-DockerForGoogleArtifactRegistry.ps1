@@ -1,4 +1,4 @@
-. ${PSScriptRoot}\Invoke-External-WithStdio.ps1
+. ${PSScriptRoot}\..\Helpers\Invoke-External-WithStdio.ps1
 
 class AuthenticateDockerForGoogleArtifactRegistryException : Exception {
 	$ExitCode

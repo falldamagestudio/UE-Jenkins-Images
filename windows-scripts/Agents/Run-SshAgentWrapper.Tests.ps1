@@ -1,10 +1,10 @@
 
-. ${PSScriptRoot}\..\Tools\Scripts\Ensure-TestToolVersions.ps1
+. ${PSScriptRoot}\..\Helpers\Ensure-TestToolVersions.ps1
 
 BeforeAll {
-	. ${PSScriptRoot}\..\Tools\Scripts\Get-GCESecret.ps1
-	. ${PSScriptRoot}\..\Tools\Scripts\Run-SshAgent.ps1
-	. ${PSScriptRoot}\..\Tools\Scripts\Authenticate-DockerForGoogleArtifactRegistry.ps1
+	. ${PSScriptRoot}\..\SystemConfiguration\Get-GCESecret.ps1
+	. ${PSScriptRoot}\Run\Run-SshAgent.ps1
+	. ${PSScriptRoot}\..\Applications\Authenticate-DockerForGoogleArtifactRegistry.ps1
 }
 
 Describe 'Run-SshAgentWrapper' {

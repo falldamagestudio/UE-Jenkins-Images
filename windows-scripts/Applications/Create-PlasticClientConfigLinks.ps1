@@ -1,4 +1,4 @@
-. ${PSScriptRoot}\Invoke-External-PrintStdout.ps1
+. ${PSScriptRoot}\..\Helpers\Invoke-External-PrintStdout.ps1
 
 function Create-PlasticClientConfigLinks {
 

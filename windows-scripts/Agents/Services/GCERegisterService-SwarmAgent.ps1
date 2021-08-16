@@ -1,4 +1,4 @@
-. ${PSScriptRoot}\..\Tools\Scripts\Register-AutoStartService.ps1
+. ${PSScriptRoot}\..\..\SystemConfiguration\Register-AutoStartService.ps1
 
 Write-Host "Registering Jenkins Agent script as autostarting..."
 

@@ -6,13 +6,14 @@ param (
 # Log all output to file (in addition to console output, when run manually )
 # This enables post-mortem inspection of the script's activities via log files
 # It also allows GCE's logging agent to pick up the activity and forward it to Google's Cloud Logging
-Start-Transcript -LiteralPath "$(Resolve-Path "${PSScriptRoot}\..\Logs")\Run-SshAgentWrapper-$(Get-Date -Format "yyyyMMdd-HHmmss").txt"
+# TODO: decide on a better path for logs
+Start-Transcript -LiteralPath "$(Resolve-Path "${PSScriptRoot}")\Run-SshAgentWrapper-$(Get-Date -Format "yyyyMMdd-HHmmss").txt"
 
 try {
 
-    . ${PSScriptRoot}\..\Tools\Scripts\Get-GCESecret.ps1
-    . ${PSScriptRoot}\..\Tools\Scripts\Authenticate-DockerForGoogleArtifactRegistry.ps1
-    . ${PSScriptRoot}\..\Tools\Scripts\Run-SshAgent.ps1
+    . ${PSScriptRoot}\..\SystemConfiguration\Get-GCESecret.ps1
+    . ${PSScriptRoot}\..\Applications\Authenticate-DockerForGoogleArtifactRegistry.ps1
+    . ${PSScriptRoot}\Run\Run-SshAgent.ps1
 
     # Respond to version query; the GCE plugin does this to verify that the java executable is present, and doesn't care about the actual version number
     if ($fullversion) {

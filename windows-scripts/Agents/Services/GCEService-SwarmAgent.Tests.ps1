@@ -1,12 +1,12 @@
-. ${PSScriptRoot}\..\Tools\Scripts\Ensure-TestToolVersions.ps1
+. ${PSScriptRoot}\..\..\Helpers\Ensure-TestToolVersions.ps1
 
 BeforeAll {
-	. ${PSScriptRoot}\..\Tools\Scripts\Resize-PartitionToMaxSize.ps1
-	. ${PSScriptRoot}\..\Tools\Scripts\Get-GCESecret.ps1
-	. ${PSScriptRoot}\..\Tools\Scripts\Get-GCEInstanceHostname.ps1
-	. ${PSScriptRoot}\..\Tools\Scripts\Get-GCEInstanceMetadata.ps1
-	. ${PSScriptRoot}\..\Tools\Scripts\Authenticate-DockerForGoogleArtifactRegistry.ps1
-	. ${PSScriptRoot}\..\Tools\Scripts\Run-SwarmAgent.ps1
+	. ${PSScriptRoot}\..\..\SystemConfiguration\Resize-PartitionToMaxSize.ps1
+	. ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESecret.ps1
+	. ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCEInstanceHostname.ps1
+	. ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCEInstanceMetadata.ps1
+	. ${PSScriptRoot}\..\..\Applications\Authenticate-DockerForGoogleArtifactRegistry.ps1
+	. ${PSScriptRoot}\..\Run\Run-SwarmAgent.ps1
 }
 
 Describe 'GCEService-SwarmAgent' {

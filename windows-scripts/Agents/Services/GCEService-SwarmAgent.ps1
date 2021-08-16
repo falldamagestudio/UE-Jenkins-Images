@@ -1,16 +1,16 @@
 # Log all output to file (in addition to console output, when run manually )
 # This enables post-mortem inspection of the script's activities via log files
 # It also allows GCE's logging agent to pick up the activity and forward it to Google's Cloud Logging
-Start-Transcript -LiteralPath "$(Resolve-Path "${PSScriptRoot}\..\Logs")\GCEService-SwarmAgent-$(Get-Date -Format "yyyyMMdd-HHmmss").txt"
+Start-Transcript -LiteralPath "$(Resolve-Path "${PSScriptRoot}")\GCEService-SwarmAgent-$(Get-Date -Format "yyyyMMdd-HHmmss").txt"
 
 try {
 
-    . ${PSScriptRoot}\..\Tools\Scripts\Resize-PartitionToMaxSize.ps1
-    . ${PSScriptRoot}\..\Tools\Scripts\Get-GCESecret.ps1
-    . ${PSScriptRoot}\..\Tools\Scripts\Get-GCEInstanceHostname.ps1
-    . ${PSScriptRoot}\..\Tools\Scripts\Get-GCEInstanceMetadata.ps1
-    . ${PSScriptRoot}\..\Tools\Scripts\Authenticate-DockerForGoogleArtifactRegistry.ps1
-    . ${PSScriptRoot}\..\Tools\Scripts\Run-SwarmAgent.ps1
+    . ${PSScriptRoot}\..\..\SystemConfiguration\Resize-PartitionToMaxSize.ps1
+    . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESecret.ps1
+    . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCEInstanceHostname.ps1
+    . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCEInstanceMetadata.ps1
+    . ${PSScriptRoot}\..\..\Applications\Authenticate-DockerForGoogleArtifactRegistry.ps1
+    . ${PSScriptRoot}\..\Run\Run-SwarmAgent.ps1
 
     $JenkinsAgentFolder = "C:\J"
     $JenkinsWorkspaceFolder = "C:\W"

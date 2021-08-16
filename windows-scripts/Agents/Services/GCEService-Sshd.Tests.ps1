@@ -1,8 +1,8 @@
-. ${PSScriptRoot}\..\Tools\Scripts\Ensure-TestToolVersions.ps1
+. ${PSScriptRoot}\..\..\Helpers\Ensure-TestToolVersions.ps1
 
 BeforeAll {
-	. ${PSScriptRoot}\..\Tools\Scripts\Resize-PartitionToMaxSize.ps1
-	. ${PSScriptRoot}\..\Tools\Scripts\Get-GCESecret.ps1
+	. ${PSScriptRoot}\..\..\SystemConfiguration\Resize-PartitionToMaxSize.ps1
+	. ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESecret.ps1
 }
 
 Describe 'GCEService-Sshd' {

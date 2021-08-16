@@ -1,4 +1,4 @@
-. ${PSScriptRoot}\Invoke-External-Command.ps1
+. ${PSScriptRoot}\..\..\Helpers\Invoke-External-Command.ps1
 
 class RunDockerAgentException : Exception {
 	$Operation
