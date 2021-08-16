@@ -7,20 +7,20 @@ param (
 
 Write-Host "Resizing C: partition to use all available disk space..."
 
-. "${PSScriptRoot}\..\..\Scripts\Windows\SystemConfiguration\Resize-PartitionToMaxSize.ps1"
+. "${PSScriptRoot}\..\..\..\Scripts\Windows\SystemConfiguration\Resize-PartitionToMaxSize.ps1"
 Resize-PartitionToMaxSize -DriveLetter C
 
 Write-Host "Installing test dependencies..."
 
-& "${PSScriptRoot}\..\..\Scripts\Windows\ImageBuilder\Host\InstallTestDependencies.ps1"
+& "${PSScriptRoot}\..\..\..\Scripts\Windows\ImageBuilder\Host\InstallTestDependencies.ps1"
 
 Write-Host "Running tests for Powershell scripts..."
 
-& "${PSScriptRoot}\..\..\Scripts\Windows\Helpers\RunTests.ps1"
+& "${PSScriptRoot}\..\..\..\Scripts\Windows\Helpers\RunTests.ps1"
 
 Write-Host "Setting up Docker authentication..."
 
-& "${PSScriptRoot}\..\..\Scripts\Windows\ImageBuilder\Host\SetupDockerRegistryAuthentication.ps1" -GceRegion ${GceRegion}
+& "${PSScriptRoot}\..\..\..\Scripts\Windows\ImageBuilder\Host\SetupDockerRegistryAuthentication.ps1" -GceRegion ${GceRegion}
 
 Write-Host "Building image..."
 
