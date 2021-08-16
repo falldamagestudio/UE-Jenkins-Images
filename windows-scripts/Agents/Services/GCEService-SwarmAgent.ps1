@@ -1,7 +1,7 @@
 # Log all output to file (in addition to console output, when run manually )
 # This enables post-mortem inspection of the script's activities via log files
 # It also allows GCE's logging agent to pick up the activity and forward it to Google's Cloud Logging
-Start-Transcript -LiteralPath "$(Resolve-Path "${PSScriptRoot}")\GCEService-SwarmAgent-$(Get-Date -Format "yyyyMMdd-HHmmss").txt"
+Start-Transcript -LiteralPath "C:\Logs\GCEService-SwarmAgent-$(Get-Date -Format "yyyyMMdd-HHmmss").txt"
 
 try {
 

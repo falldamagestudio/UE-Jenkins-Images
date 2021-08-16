@@ -7,7 +7,7 @@ param (
 # This enables post-mortem inspection of the script's activities via log files
 # It also allows GCE's logging agent to pick up the activity and forward it to Google's Cloud Logging
 # TODO: decide on a better path for logs
-Start-Transcript -LiteralPath "$(Resolve-Path "${PSScriptRoot}")\Run-SshAgentWrapper-$(Get-Date -Format "yyyyMMdd-HHmmss").txt"
+Start-Transcript -LiteralPath "C:\Logs\Run-SshAgentWrapper-$(Get-Date -Format "yyyyMMdd-HHmmss").txt"
 
 try {
 
