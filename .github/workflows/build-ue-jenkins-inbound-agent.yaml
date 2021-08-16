@@ -102,11 +102,6 @@ jobs:
         run: |
           (cd windows-docker-image-builder && go build -o main .)
 
-      - name: Add service account key to builder workspace
-        if: ${{ ! steps.image_exists.outputs.image_exists }}
-        run: |
-          echo '${{ secrets.GOOGLE_CLOUD_BUILD_ARTIFACT_UPLOADER_SERVICE_ACCOUNT_KEY }}' > Docker/ue-jenkins-agents/windows/service-account-key.json
-
       - name: Start Windows VM, Build image and push to GAR via said VM, tear down VM
         if: ${{ ! steps.image_exists.outputs.image_exists }}
         run: |
@@ -117,5 +112,6 @@ jobs:
             ${{ secrets.GOOGLE_CLOUD_REGION }} \
             ${{ secrets.GOOGLE_CLOUD_ZONE }} \
             ${{ secrets.ARTIFACT_REGISTRY_LOCATION }} \
+            ${{ secrets.GOOGLE_CLOUD_BUILD_ARTIFACT_UPLOADER_SERVICE_ACCOUNT_KEY }} \
             ${{ steps.parameters.outputs.image_name }} \
             ${{ steps.parameters.outputs.image_tag }}

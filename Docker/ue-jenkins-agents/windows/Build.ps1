@@ -1,6 +1,7 @@
 param (
 	[Parameter(Mandatory=$true)][string]$GceRegion,
 	[Parameter(Mandatory=$true)][string]$Dockerfile,
+	[Parameter(Mandatory=$true)][string]$AgentKey,
 	[Parameter(Mandatory=$true)][string]$ImageName,
 	[Parameter(Mandatory=$true)][string]$ImageTag
 )
@@ -16,11 +17,12 @@ Write-Host "Installing test dependencies..."
 
 Write-Host "Running tests for Powershell scripts..."
 
-& "${PSScriptRoot}\..\..\..\Scripts\Windows\Helpers\RunTests.ps1"
+& "${PSScriptRoot}\..\..\..\Scripts\Windows\Helpers\Run-Tests.ps1" -Path "${PSScriptRoot}\..\..\..\Scripts"
+& "${PSScriptRoot}\..\..\..\Scripts\Windows\Helpers\Run-Tests.ps1" -Path "${PSScriptRoot}\..\..\..\Docker"
 
 Write-Host "Setting up Docker authentication..."
 
-& "${PSScriptRoot}\..\..\..\Scripts\Windows\ImageBuilder\Host\SetupDockerRegistryAuthentication.ps1" -GceRegion ${GceRegion}
+& "${PSScriptRoot}\..\..\..\Scripts\Windows\Applications\Authenticate-DockerForGoogleArtifactRegistry.ps1" -AgentKey ${AgentKey} -Region ${GceRegion}
 
 Write-Host "Building image..."
 

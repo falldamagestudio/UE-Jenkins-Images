@@ -1,3 +1,7 @@
+param (
+	[Parameter(Mandatory)] [string] $Path
+)
+
 class PesterException : Exception {
 	$NumFailedTests
 
@@ -5,7 +9,7 @@ class PesterException : Exception {
 }
 
 # Run Pester tests, both for host OS scripts and container scripts
-Invoke-Pester
+Invoke-Pester -Path $Path
 
 # Pester will return number of failed tests as its exit code; convert nonzero exit codes into exceptions
 $NumFailedTests = $LASTEXITCODE
