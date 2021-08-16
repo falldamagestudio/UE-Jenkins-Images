@@ -16,17 +16,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Compute short SHA
-        run: echo "::set-output name=short_sha::$(git rev-parse --short ${{ github.sha }})"
-        id: compute_short_sha
+      - name: Set parameters
+        id: parameters
+        run: |
+          SHORT_SHA=$(git rev-parse --short ${{ github.sha }})
+          FILE_URL=gs://${{ secrets.GOOGLE_CLOUD_CONFIG_STORAGE_BUCKET }}/ue-jenkins-inbound-agent-vm/cloud-config-commit-${SHORT_SHA}.yaml
+          echo "::set-output name=file_url::${FILE_URL}"
 
       - name: Setup gcloud CLI
         uses: google-github-actions/setup-gcloud@master
         with:
           service_account_key: ${{ secrets.GOOGLE_CLOUD_BUILD_ARTIFACT_UPLOADER_SERVICE_ACCOUNT_KEY }}
 
+      - name: Test if file already exists
+        id: file_exists
+        run: |
+          # Detect whether the file already exists
+          # If it does exist, it sets the 'file_exists' output
+          # It it doesn't exist, it leaves the 'file_exists' output unset
+          gsutil ls ${{ steps.parameters.outputs.file_url }} > /dev/null 2>&1 && echo "::set-output name=file_exists::true" || true
+
       - name: Upload file to storage
-        run: gsutil cp ./ue-jenkins-agent-vms/linux-gce-cos/ue-jenkins-inbound-agent-vm-cloud-config.yaml gs://${{ secrets.GOOGLE_CLOUD_CONFIG_STORAGE_BUCKET }}/ue-jenkins-inbound-agent-vm/cloud-config-commit-${{ steps.compute_short_sha.outputs.short_sha }}.yaml
+        if: ${{ ! steps.file_exists.outputs.file_exists }}
+        run: gsutil cp ./ue-jenkins-agent-vms/linux-gce-cos/ue-jenkins-inbound-agent-vm-cloud-config.yaml ${{ steps.parameters.outputs.file_url }}
 
   build-windows:
     name: Windows - ue-jenkins-inbound-agent-vm
@@ -35,9 +47,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Compute short SHA
-        run: echo "::set-output name=short_sha::$(git rev-parse --short ${{ github.sha }})"
-        id: compute_short_sha
+      - name: Set parameters
+        id: parameters
+        run: |
+          SHORT_SHA=$(git rev-parse --short ${{ github.sha }})
+          IMAGE_NAME=ue-jenkins-inbound-agent-vm-${SHORT_SHA}-windows
+          echo "::set-output name=image_name::${IMAGE_NAME}"
 
       - name: Setup gcloud CLI
         uses: google-github-actions/setup-gcloud@master
@@ -46,8 +61,15 @@ jobs:
           service_account_key: ${{ secrets.GOOGLE_CLOUD_IMAGE_BUILDER_INSTANCE_CONTROLLER_SERVICE_ACCOUNT_KEY }}
           export_default_credentials: true
 
-      - name: "Build image"
-        id: build_image
+      - name: Test if image already exists
+        id: image_exists
         run: |
-          IMAGE_NAME=ue-jenkins-inbound-agent-vm-${{ steps.compute_short_sha.outputs.short_sha }}-windows
-          cd ue-jenkins-agent-vms/windows && packer init ue-jenkins-inbound-agent-vm-windows.pkr.hcl && packer build -var project_id=${{ secrets.GOOGLE_CLOUD_PROJECT_ID }} -var zone=${{ secrets.GOOGLE_CLOUD_ZONE }} -var network=image-builder-network -var subnetwork=image-builder-subnetwork -var image_name=${IMAGE_NAME} ue-jenkins-inbound-agent-vm-windows.pkr.hcl
+          # Detect whether the image already exists
+          # If it does exist, it sets the 'image_exists' output
+          # It it doesn't exist, it leaves the 'image_exists' output unset
+          gcloud compute images describe ${{ steps.parameters.outputs.image_name }} > /dev/null 2>&1 && echo "::set-output name=image_exists::true" || true
+
+      - name: "Build image"
+        if: ${{ ! steps.image_exists.outputs.image_exists }}
+        run: |
+          cd ue-jenkins-agent-vms/windows && packer init ue-jenkins-inbound-agent-vm-windows.pkr.hcl && packer build -var project_id=${{ secrets.GOOGLE_CLOUD_PROJECT_ID }} -var zone=${{ secrets.GOOGLE_CLOUD_ZONE }} -var network=image-builder-network -var subnetwork=image-builder-subnetwork -var image_name=${{ steps.parameters.outputs.image_name }} ue-jenkins-inbound-agent-vm-windows.pkr.hcl
