@@ -17,33 +17,50 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Compute short SHA
-        run: echo "::set-output name=short_sha::$(git rev-parse --short ${{ github.sha }})"
-        id: compute_short_sha
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+      - name: Set parameters
+        id: parameters
+        run: |
+          SHORT_SHA=$(git rev-parse --short ${{ github.sha }})
+          IMAGE_NAME=${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-controller
+          IMAGE_TAG=commit-${SHORT_SHA}
+          IMAGE_URL=${IMAGE_NAME}:${IMAGE_TAG}
+          echo "::set-output name=image_url::${IMAGE_URL}"
 
       - name: Setup gcloud CLI
         uses: google-github-actions/setup-gcloud@master
         with:
           service_account_key: ${{ secrets.GOOGLE_CLOUD_BUILD_ARTIFACT_UPLOADER_SERVICE_ACCOUNT_KEY }} 
 
+      - name: Test if image already exists
+        id: image_exists
+        run: |
+          # Detect whether the image already exists
+          # If it does exist, it sets the 'image_exists' output
+          # It it doesn't exist, it leaves the 'image_exists' output unset
+          gcloud artifacts docker images describe ${{ steps.parameters.outputs.image_url }} > /dev/null 2>&1 && echo "::set-output name=image_exists::true" || true
+
+      - name: Set up QEMU
+        if: ${{ ! steps.image_exists.outputs.image_exists }}
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        if: ${{ ! steps.image_exists.outputs.image_exists }}
+        uses: docker/setup-buildx-action@v1
+
       - name: Configure docker to use gcloud as credential helper
+        if: ${{ ! steps.image_exists.outputs.image_exists }}
         run: |
           gcloud auth configure-docker ${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev
 
       - name: Build custom google-compute-engine plugin
+        if: ${{ ! steps.image_exists.outputs.image_exists }}
         run: |
-          cd ue-jenkins-controller/google-compute-engine-plugin && mvn install
+          cd ue-jenkins-controller/google-compute-engine-plugin && mvn install --no-transfer-progress
 
       - name: Build image and push to GCR
-        id: docker_build
+        if: ${{ ! steps.image_exists.outputs.image_exists }}
         uses: docker/build-push-action@v2
         with:
           context: ./ue-jenkins-controller
           push: true
-          tags: ${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-controller:commit-${{ steps.compute_short_sha.outputs.short_sha }}
+          tags: ${{ steps.parameters.outputs.image_url }}
