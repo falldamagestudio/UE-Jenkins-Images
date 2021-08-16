@@ -15,7 +15,7 @@ class DockerBuildException : Exception {
 #   be executed within the container - so we run the installer on the host OS, and we can then
 #   fetch the DLLs from the host filesystem, and provide them to the container build process)
 
-. ${PSScriptRoot}\Install-DirectXRedistributable.ps1
+. ${PSScriptRoot}\..\..\windows-scripts\Applications\Install-DirectXRedistributable.ps1
 
 Install-DirectXRedistributable
 
@@ -38,7 +38,7 @@ Copy-Item C:\Windows\System32\glu32.dll Container -ErrorAction Stop
 
 # Build container image
 
-& docker build -t "${ImageName}:${ImageTag}" .
+& docker build -t "${ImageName}:${ImageTag}" -f Dockerfile ..\..
 $DockerExitCode = $LASTEXITCODE
 if ($DockerExitcode -ne 0) {
 	throw [DockerBuildException]::new($DockerExitCode)

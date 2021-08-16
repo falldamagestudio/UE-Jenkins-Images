@@ -1,11 +1,11 @@
-. ${PSScriptRoot}\..\Tools\Scripts\Enable-Win32LongPaths.ps1
-. ${PSScriptRoot}\..\Tools\Scripts\Add-WindowsDefenderExclusionRule.ps1
+. ${PSScriptRoot}\..\windows-scripts\SystemConfiguration\Enable-Win32LongPaths.ps1
+. ${PSScriptRoot}\..\windows-scripts\SystemConfiguration\Add-WindowsDefenderExclusionRule.ps1
 
-. ${PSScriptRoot}\..\Tools\Scripts\Install-GCELoggingAgent.ps1
-. ${PSScriptRoot}\..\Tools\Scripts\Install-GCELoggingAgentSource-ServiceWrapper.ps1
-. ${PSScriptRoot}\..\Tools\Scripts\Install-GCELoggingAgentSource-JenkinsAgentRemoting.ps1
+. ${PSScriptRoot}\..\windows-scripts\Applications\Install-GCELoggingAgent.ps1
+. ${PSScriptRoot}\..\windows-scripts\Applications\Install-GCELoggingAgentSource-ServiceWrapper.ps1
+. ${PSScriptRoot}\..\windows-scripts\Applications\Install-GCELoggingAgentSource-JenkinsAgentRemoting.ps1
 
-$ServiceWrapperLogsFolder = "C:\Runtime\Logs"
+$ServiceWrapperLogsFolder = "C:\Logs"
 $JenkinsAgentFolder = "C:\J"
 $JenkinsWorkspaceFolder = "C:\W"
 
@@ -14,6 +14,10 @@ $PlasticConfigFolder = "C:\PlasticConfig"
 Write-Host "Enabling Win32 Long Paths..."
 
 Enable-Win32LongPaths
+
+Write-Host "Creating folders for logs..."
+
+New-Item -ItemType Directory -Path $ServiceWrapperLogsFolder -ErrorAction Stop | Out-Null
 
 Write-Host "Creating folders for Jenkins..."
 

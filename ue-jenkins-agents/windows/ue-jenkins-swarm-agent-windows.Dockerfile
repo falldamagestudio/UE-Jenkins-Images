@@ -63,13 +63,17 @@ RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tl
 
 # Install additional software
 
-COPY Container\*.ps1 C:\Workspace\
+# Include shared installation scripts
+COPY windows-scripts\* C:\Workspace\
+
+# Include specific installation scripts
+COPY ue-jenkins-agents\windows\Container\* C:\Workspace\
 
 RUN try { C:\Workspace\InstallSoftware.ps1 } catch { Write-Error $_ } `
     Remove-Item C:\Workspace -Recurse -Force
 
 # Include agent start script
 
-COPY swarm-agent.ps1 C:/ProgramData/Jenkins
+COPY ue-jenkins-agents\windows\swarm-agent.ps1 C:/ProgramData/Jenkins
 
 ENTRYPOINT ["powershell.exe", "-f", "C:/ProgramData/Jenkins/swarm-agent.ps1"]

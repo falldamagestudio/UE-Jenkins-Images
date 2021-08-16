@@ -1,16 +1,16 @@
-. ${PSScriptRoot}\Enable-Win32LongPaths.ps1
+. ${PSScriptRoot}\SystemConfiguration\Enable-Win32LongPaths.ps1
 
-. ${PSScriptRoot}\Install-VisualStudioBuildTools.ps1
+. ${PSScriptRoot}\Applications\Install-VisualStudioBuildTools.ps1
 
-. ${PSScriptRoot}\Install-DebuggingToolsForWindows.ps1
+. ${PSScriptRoot}\Applications\Install-DebuggingToolsForWindows.ps1
 
-. ${PSScriptRoot}\Install-SystemDLLs.ps1
+. ${PSScriptRoot}\ImageBuilder\Container\Install-SystemDLLs.ps1
 
-. ${PSScriptRoot}\Install-VC2010RedistributableX64.ps1
+. ${PSScriptRoot}\Applications\Install-VC2010RedistributableX64.ps1
 
-. ${PSScriptRoot}\Install-Plastic.ps1
+. ${PSScriptRoot}\Applications\Install-Plastic.ps1
 
-. ${PSScriptRoot}\Create-PlasticClientConfigLinks.ps1
+. ${PSScriptRoot}\Applications\Create-PlasticClientConfigLinks.ps1
 
 Write-Host "Enabling Win32 Long Paths..."
 

@@ -12,7 +12,7 @@ class DockerBuildException : Exception {
 
 # Build container image
 
-& docker build -f $Dockerfile -t "${ImageName}:${ImageTag}" .
+& docker build -f $Dockerfile -t "${ImageName}:${ImageTag}" ..\..
 $DockerExitCode = $LASTEXITCODE
 if ($DockerExitcode -ne 0) {
 	throw [DockerBuildException]::new($DockerExitCode)

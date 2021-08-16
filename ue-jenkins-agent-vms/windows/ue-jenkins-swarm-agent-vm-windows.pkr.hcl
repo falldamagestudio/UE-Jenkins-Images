@@ -66,28 +66,28 @@ build {
 
   provisioner "file" {
     destination = "C:\\"
-    source      = "ImageCreation"
+    source      = "Scripts"
   }
 
   provisioner "file" {
     destination = "C:\\"
-    source      = "Runtime"
+    source      = "..\\..\\windows-scripts"
   }
 
   provisioner "powershell" {
-    inline = [ "try { C:\\ImageCreation\\Scripts\\InstallSoftware.ps1 } catch { Write-Error $_; exit 1 }" ]
+    inline = [ "try { C:\\Scripts\\InstallSoftware.ps1 } catch { Write-Error $_; exit 1 }" ]
   }
 
   provisioner "powershell" {
-    inline = [ "try { C:\\ImageCreation\\Scripts\\GCERegisterService-SwarmAgent.ps1 } catch { Write-Error $_; exit 1 }" ]
+    inline = [ "try { C:\\windows-scripts\\Agents\\Services\\GCERegisterService-SwarmAgent.ps1 } catch { Write-Error $_; exit 1 }" ]
   }
 
   provisioner "powershell" {
-    inline = [ "exit (Invoke-Pester -Script C:\\ImageCreation\\Scripts\\VerifyInstance.ps1 -PassThru).FailedCount" ]
+    inline = [ "exit (Invoke-Pester -Script C:\\Scripts\\VerifyInstance.ps1 -PassThru).FailedCount" ]
   }
 
   provisioner "powershell" {
-    inline = [ "Remove-Item -Force -Recurse C:\\ImageCreation" ]
+    inline = [ "Remove-Item -Force -Recurse C:\\Scripts" ]
   }
 
 }

@@ -34,11 +34,11 @@ RUN net user "${env:user}" /add /expire:never /passwordreq:no ; `
 	
 USER $user
 
-# Include all installation scripts
-COPY Container\*.ps1 C:\Workspace\
+# Include shared installation scripts
+COPY windows-scripts\* C:\Workspace\
 
-# Include XINPUT1_3.DLL
-COPY Container\*.dll C:\Workspace\
+# Include specific installation scripts, and extra system DLLs
+COPY ue-jenkins-buildtools\windows\Container\* C:\Workspace\
 
 RUN try { C:\Workspace\InstallSoftware.ps1 } catch { Write-Error $_ }
 
