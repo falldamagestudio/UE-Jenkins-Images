@@ -47,3 +47,7 @@ plasticscm-plugin:3.5
 # In the Docker image, the plugin will be replaced with a locally modified version that supports
 #   persisting VMs, and running the agent within a Docker container.
 google-compute-engine:4.3.8
+
+# Export build timestamps to build env variables; BUILD_TIMESTAMP exported by default
+# https://plugins.jenkins.io/build-timestamp/
+build-timestamp:1.0.3
