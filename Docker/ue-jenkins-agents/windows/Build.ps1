@@ -6,30 +6,36 @@ param (
 	[Parameter(Mandatory=$true)][string]$ImageTag
 )
 
+. ${PSScriptRoot}\..\..\..\Scripts\Windows\SystemConfiguration\Resize-PartitionToMaxSize.ps1
+. ${PSScriptRoot}\..\..\..\Scripts\Windows\Applications\Authenticate-DockerForGoogleArtifactRegistry.ps1
+. ${PSScriptRoot}\..\..\..\Scripts\Windows\Helpers\Run-Tests.ps1
+. ${PSScriptRoot}\..\..\..\Scripts\Windows\ImageBuilder\Host\Install-TestDependencies.ps1
+. ${PSScriptRoot}\..\..\..\Scripts\Windows\ImageBuilder\Host\Build-DockerImage.ps1
+. ${PSScriptRoot}\..\..\..\Scripts\Windows\ImageBuilder\Host\Push-DockerImage.ps1
+
 Write-Host "Resizing C: partition to use all available disk space..."
 
-. "${PSScriptRoot}\..\..\..\Scripts\Windows\SystemConfiguration\Resize-PartitionToMaxSize.ps1"
 Resize-PartitionToMaxSize -DriveLetter C
 
 Write-Host "Installing test dependencies..."
 
-& "${PSScriptRoot}\..\..\..\Scripts\Windows\ImageBuilder\Host\InstallTestDependencies.ps1"
+Install-TestDependencies
 
 Write-Host "Running tests for Powershell scripts..."
 
-& "${PSScriptRoot}\..\..\..\Scripts\Windows\Helpers\Run-Tests.ps1" -Path "${PSScriptRoot}\..\..\..\Scripts"
-& "${PSScriptRoot}\..\..\..\Scripts\Windows\Helpers\Run-Tests.ps1" -Path "${PSScriptRoot}\..\..\..\Docker"
+Run-Tests -Path "${PSScriptRoot}\..\..\..\Scripts"
+Run-Tests -Path "${PSScriptRoot}\..\..\..\Docker"
 
 Write-Host "Setting up Docker authentication..."
 
-& "${PSScriptRoot}\..\..\..\Scripts\Windows\Applications\Authenticate-DockerForGoogleArtifactRegistry.ps1" -AgentKey ${AgentKey} -Region ${GceRegion}
+Authenticate-DockerForGoogleArtifactRegistry -AgentKey ${AgentKey} -Region ${GceRegion}
 
 Write-Host "Building image..."
 
-& "${PSScriptRoot}\BuildImage.ps1" -Dockerfile $Dockerfile -ImageName ${ImageName} -ImageTag ${ImageTag}
+Build-Image -Dockerfile $Dockerfile -ImageName ${ImageName} -ImageTag ${ImageTag}
 
 Write-Host "Pushing image to registry..."
 
-& "${PSScriptRoot}\PushImage.ps1" -ImageName ${ImageName} -ImageTag ${ImageTag}
+Push-Image -ImageName ${ImageName} -ImageTag ${ImageTag}
 
 Write-Host "Done."

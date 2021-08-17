@@ -36,16 +36,16 @@ SERVICE_ACCOUNT="build-artifact-uploader@${PROJECT_ID}.iam.gserviceaccount.com"
 #  content of ${ARTIFACT_UPLOADER_SERVICE_ACCOUNT_KEY} -> c:\workspace\service-account-key.json
 # Writing an error will signal an error to windows-docker-image-builder, which results in a nonzero exit code
 #
-# The current implementation extracts builder-files.zip to the root folder,
-#  which makes the Docker and Scripts folders available as C:\Docker and C:\Scripts respectively
+# The current implementation extracts builder-files.zip to the workspace folder,
+#  which makes the Docker and Scripts folders available as .\Docker and .\Scripts respectively
 #  and then the build script is executed
 
 COMMAND="powershell \
 	try { \
-		Expand-Archive -Path .\\builder-files.zip -DestinationPath C:\\; \
-		\"C:\\${BUILD_SCRIPT}\" \
+		Expand-Archive -Path .\\builder-files.zip -DestinationPath . -ErrorAction Stop; \
+		\".\\${BUILD_SCRIPT}\" \
 			-GceRegion \"${ARTIFACT_REGISTRY_LOCATION}\" \
-			-Dockerfile \"C:\\${DOCKERFILE}\" \
+			-Dockerfile \"${DOCKERFILE}\" \
 			-AgentKey (Get-Content -Raw \".\\service-account-key.json\" -ErrorAction Stop) \
 			-ImageName \"${IMAGE_NAME}\" \
 			-ImageTag \"${IMAGE_TAG}\"; \
