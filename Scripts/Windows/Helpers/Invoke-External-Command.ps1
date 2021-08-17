@@ -59,5 +59,7 @@ function Invoke-External-Command {
     }
   }
 
-  $ExitCode.Value = $LASTEXITCODE
+  if ($ExitCode) {
+    $ExitCode.Value = $LASTEXITCODE
+  }
 }
