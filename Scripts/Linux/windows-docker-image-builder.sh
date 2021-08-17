@@ -27,11 +27,12 @@ SERVICE_ACCOUNT="build-artifact-uploader@${PROJECT_ID}.iam.gserviceaccount.com"
 	&& zip -r builder-files/builder-files.zip . -i "Scripts/*" -i "Docker/*" \
 	&& echo "${ARTIFACT_UPLOADER_SERVICE_ACCOUNT_KEY}" > "${ROOT_DIR}/builder-files/service-account-key.json")
 
-# This command is executed on the builder VM like this:
+# This command is executed on the builder VM, in CMD, like this:
+#  'cd c:\workspace & <COMMAND>'
 #
-# Shell: cmd
-# Current working directory: c:\workspace
-#  which contains two files:
+# Minimize the amount of logic in <COMMAND>.
+#
+# The current working directory will thus be C:\workspace. It contains two files:
 #  ${ROOT_DIR}/builder-files/builder-files.zip -> c:\workspace\builder-files.zip
 #  content of ${ARTIFACT_UPLOADER_SERVICE_ACCOUNT_KEY} -> c:\workspace\service-account-key.json
 # Writing an error will signal an error to windows-docker-image-builder, which results in a nonzero exit code
@@ -46,13 +47,12 @@ COMMAND="powershell \
 		\".\\${BUILD_SCRIPT}\" \
 			-GceRegion \"${ARTIFACT_REGISTRY_LOCATION}\" \
 			-Dockerfile \"${DOCKERFILE}\" \
-			-AgentKey (Get-Content -Raw \".\\service-account-key.json\" -ErrorAction Stop) \
+			-AgentKeyFile \".\\service-account-key.json\" \
 			-ImageName \"${IMAGE_NAME}\" \
 			-ImageTag \"${IMAGE_TAG}\"; \
-		} catch { \
-			Write-Error \$_ \
-		} \
-	"
+	} catch { \
+		Write-Error \$_ \
+	}"
 
 "${ROOT_DIR}/windows-docker-image-builder/main" \
    -labels type=windows-image-builder \
@@ -68,4 +68,8 @@ COMMAND="powershell \
    -serviceAccount "${SERVICE_ACCOUNT}" \
    -command "${COMMAND}"
 
+EXITCODE=$?
+
 rm -r "${ROOT_DIR}/builder-files"
+
+exit $EXITCODE

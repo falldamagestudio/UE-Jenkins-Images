@@ -6,5 +6,5 @@ COPY Scripts C:\
 
 COPY Docker C:\
 
-RUN try { C:\Docker\ue-jenkins-agents\windows\InstallSoftware.ps1 } catch { Write-Error $_ } `
+RUN try { C:\Docker\ue-jenkins-agents\windows\ContainerBuild.ps1 } catch { Write-Error $_ } `
     Remove-Item C:\Docker -Recurse -Force

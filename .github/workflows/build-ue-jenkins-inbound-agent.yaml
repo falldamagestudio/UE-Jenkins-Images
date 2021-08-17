@@ -106,7 +106,7 @@ jobs:
         if: ${{ ! steps.image_exists.outputs.image_exists }}
         run: |
           ./Scripts/Linux/windows-docker-image-builder.sh \
-            ./Docker/ue-jenkins-agents/windows/Build.ps1 \
+            ./Docker/ue-jenkins-agents/windows/HostBuild.ps1 \
             ./Docker/ue-jenkins-agents/windows/ue-jenkins-inbound-agent.Dockerfile \
             ${{ secrets.GOOGLE_CLOUD_PROJECT_ID }} \
             ${{ secrets.GOOGLE_CLOUD_REGION }} \
