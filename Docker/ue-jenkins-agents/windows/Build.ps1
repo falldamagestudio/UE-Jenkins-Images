@@ -24,18 +24,17 @@ Install-TestDependencies
 Write-Host "Running tests for Powershell scripts..."
 
 Run-Tests -Path "${PSScriptRoot}\..\..\..\Scripts"
-Run-Tests -Path "${PSScriptRoot}\..\..\..\Docker"
 
 Write-Host "Setting up Docker authentication..."
 
-Authenticate-DockerForGoogleArtifactRegistry -AgentKey ${AgentKey} -Region ${GceRegion}
+Authenticate-DockerForGoogleArtifactRegistry -AgentKey $AgentKey -Region $GceRegion
 
 Write-Host "Building image..."
 
-Build-Image -Dockerfile $Dockerfile -ImageName ${ImageName} -ImageTag ${ImageTag}
+Build-Image -Dockerfile $Dockerfile -ImageName $ImageName -ImageTag $ImageTag -Context .
 
 Write-Host "Pushing image to registry..."
 
-Push-Image -ImageName ${ImageName} -ImageTag ${ImageTag}
+Push-Image -ImageName $ImageName -ImageTag $ImageTag
 
 Write-Host "Done."
