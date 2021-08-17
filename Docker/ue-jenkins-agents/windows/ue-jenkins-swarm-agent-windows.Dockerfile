@@ -63,14 +63,17 @@ RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tl
 
 # Install additional software
 
-# Include shared installation scripts
-COPY Scripts\Windows\* C:\Workspace\
+COPY Scripts C:\Scripts
 
-# Include specific installation scripts
-COPY Docker\ue-jenkins-agents\windows\Container\* C:\Workspace\
+COPY Docker C:\Docker
 
-RUN try { C:\Workspace\InstallSoftware.ps1 } catch { Write-Error $_ } `
-    Remove-Item C:\Workspace -Recurse -Force
+RUN try { `
+        & C:\Docker\ue-jenkins-agents\windows\ContainerBuild.ps1 `
+    } catch { `
+        Write-Error $_; throw $_ `
+    } finally { `
+        Remove-Item -Recurse -Force -Path C:\Docker -ErrorAction SilentlyContinue `
+    }
 
 # Include agent start script
 

@@ -2,11 +2,14 @@
 
 FROM jenkins/agent:4.7-1-jdk11-windowsservercore-ltsc2019@sha256:ab08be256ad3f63839ed76eee4f6040f6227f1606d568200c9877f96ff7677d5
 
-# Include shared installation scripts
-COPY Scripts\Windows\* C:\Workspace\
+COPY Scripts C:\Scripts
 
-# Include specific installation scripts
-COPY Docker\ue-jenkins-agents\windows\Container\* C:\Workspace\
+COPY Docker C:\Docker
 
-RUN try { C:\Workspace\InstallSoftware.ps1 } catch { Write-Error $_ } `
-    Remove-Item C:\Workspace -Recurse -Force
+RUN try { `
+        & C:\Docker\ue-jenkins-agents\windows\ContainerBuild.ps1 `
+    } catch { `
+        Write-Error $_; throw $_ `
+    } finally { `
+        Remove-Item -Recurse -Force -Path C:\Docker -ErrorAction SilentlyContinue `
+    }
