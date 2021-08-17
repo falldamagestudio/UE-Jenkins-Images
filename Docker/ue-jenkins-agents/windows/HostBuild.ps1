@@ -25,19 +25,20 @@ Resize-PartitionToMaxSize -DriveLetter C
 #
 #Run-Tests -Path "${PSScriptRoot}\..\..\..\Scripts"
 
-# HACK
-#Write-Host "Sleeping for an hour..."
-#Start-Sleep 3600
-
 Write-Host "Setting up Docker authentication..."
 
-# Due to unknown reasons, this fails with an error message like this when the windows-docker-image-builder drives:
-#  Error response from daemon: Get https://europe-west1-docker.pkg.dev/v2/: unauthorized: authentication failed
-# This error does not occur if manually logging in via WinRM to an interactive session and performing authentication.
+# Due to unknown reasons, Authenticate-DockerForGoogleArtifactRegistry fails with an
+#  error message like this when the windows-docker-image-builder drives:
+#    Error response from daemon: Get https://europe-west1-docker.pkg.dev/v2/: unauthorized: authentication failed
+# This error does not occur if manually logging in via WinRM to an interactive session and performing authentication,
+#  even to the same machine, even if running the same script.
+# While we would like to use the Authenticate-DockerForGoogleArtifactRegistry flow in all circumstances,
+#  that is not feasible when using windows-docker-image-builder.
 #
-#Authenticate-DockerForGoogleArtifactRegistry -AgentKey (Get-Content -Raw -Encoding ASCII -Path $AgentKeyFile -ErrorAction Stop) -Region $GceRegion
+# Authenticate-DockerForGoogleArtifactRegistry -AgentKey (Get-Content -Raw -Encoding ASCII -Path $AgentKeyFile -ErrorAction Stop) -Region $GceRegion
 
-# Instead, we use this version - it uses a different process that works also for the image builder
+# Instead, we use this version - it installs a separate tool for authentication, but
+#  has proven to work.
 Setup-DockerRegistryAuthentication -AgentKeyFile $AgentKeyFile -GceRegion $GceRegion
 
 Write-Host "Building image..."
