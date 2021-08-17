@@ -15,7 +15,6 @@ function Run-Tests
 
 	# Pester will return number of failed tests as its exit code; convert nonzero exit codes into exceptions
 	$NumFailedTests = $LASTEXITCODE
-	Write-Host $NumFailedTests
 
 	if ($NumFailedTests -ne 0) {
 		throw [PesterException]::new($NumFailedTests)
