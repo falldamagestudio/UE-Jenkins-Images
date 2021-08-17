@@ -10,9 +10,10 @@ function Invoke-External-Command {
 
     .DESCRIPTION
     This runs a console command. It will not work well with non-console applications.
-    Standard Input is fetched from stdin.
+    Standard Input is fetched from -StdIn if supplied.
     Standard Output is returned from the function, and can be captured in a variable or piped elsewhere.
-    If $MergeStderr is set, standard error will be mixed in with the standard output.
+    If $MergeStderr is set, standard error will be mixed in with the standard output. Otherwise it is
+     sent via the error stream.
 
     Error messages will sometimes be formatted as this, and printed in red, first message being expanded:
       <commandname> : <message>
@@ -22,21 +23,41 @@ function Invoke-External-Command {
       ... and sometimes the error messages will be printed just as the message itself.
     Stdout and stderr will be interleaved in the order that the application prints to them.
 
+    If you wish to send stdin input to the command, invoke it like this:
+      Invoke-External-Command ... -StdIn $StdInMessage
+
     If you wish to capture the program's output, invoke it like this:
-      $CapturedOutput = Invoke-External-ConnectedStdinStdout ...
+      $CapturedStdOut = Invoke-External-Command ...
+
+    If you wish to capture the program's output and error, invoke it like this:
+      $CapturedStdOutAndStdErr = Invoke-External-Command ... -MergeStderr
+
+    If you wish to capture the program's exit code, invoke it like this:
+      $ReturnedExitCode = 0
+      Invoke-External-Command -ExitCode ([ref]$ReturnedExitCode)
   #>
 
     param (
         [Parameter(Mandatory=$true)] [string] $LiteralPath,
         [Parameter(Mandatory=$false)] [string[]] $ArgumentList,
+        [Parameter(Mandatory=$false)] [string] $StdIn,
         [Parameter(Mandatory=$false)] [switch] $MergeStderr=$false,
         [Parameter(Mandatory=$false)] [ref] $ExitCode
     )
 
-  if ($MergeStderr) {
-    & $LiteralPath $ArgumentList 2>&1
+  if ($StdIn) {
+    if ($MergeStderr) {
+      $StdIn | & $LiteralPath $ArgumentList 2>&1
+    } else {
+      $StdIn | & $LiteralPath $ArgumentList
+    }
   } else {
-    & $LiteralPath $ArgumentList
+    if ($MergeStderr) {
+      & $LiteralPath $ArgumentList 2>&1
+    } else {
+      & $LiteralPath $ArgumentList
+    }
   }
+
   $ExitCode.Value = $LASTEXITCODE
 }
