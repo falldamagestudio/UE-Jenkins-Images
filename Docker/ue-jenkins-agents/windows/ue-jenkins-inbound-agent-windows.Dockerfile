@@ -9,7 +9,7 @@ COPY Docker C:\Docker
 RUN try { `
         & C:\Docker\ue-jenkins-agents\windows\ContainerBuild.ps1 `
     } catch { `
-        Write-Error $_ `
+        Write-Error $_; throw $_ `
     } finally { `
         Remove-Item -Recurse -Force -Path C:\Docker -ErrorAction SilentlyContinue `
     }
