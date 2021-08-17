@@ -1,4 +1,4 @@
-. ${PSScriptRoot}\..\Helpers\Invoke-External-WithStdio.ps1
+. ${PSScriptRoot}\..\Helpers\Invoke-External-Command.ps1
 
 class AuthenticateDockerForGoogleArtifactRegistryException : Exception {
 	$ExitCode
@@ -18,17 +18,17 @@ function Authenticate-DockerForGoogleArtifactRegistry {
 		[Parameter(Mandatory)] [string] $Region
 	)
 
-	$Application = "powershell"
+	$Application = "docker"
 
 	$ArgumentList = @(
-		"docker"
 		"login"
 		"-u","_json_key"
 		"--password-stdin"
 		"${Region}-docker.pkg.dev"
 	)
 
-	$ExitCode,$StdOut,$StdErr = Invoke-External-WithStdio -LiteralPath $Application -StdIn $AgentKey -ArgumentList $ArgumentList 
+	$ExitCode = 0
+	Invoke-External-Command -LiteralPath $Application -ArgumentList $ArgumentList -StdIn $AgentKey -ExitCode ([ref] $ExitCode)
 
     if ($ExitCode -ne 0) {
 		throw [AuthenticateDockerForGoogleArtifactRegistryException]::new($ExitCode)

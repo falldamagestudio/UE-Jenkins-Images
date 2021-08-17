@@ -11,21 +11,21 @@ Describe 'Authenticate-DockerForGoogleArtifactRegistry' {
 
 	It "Throws an exception if docker cannot be found or returns an error" {
 
-		Mock Invoke-External-WithStdio { return 1234, "", "" }
+		Mock Invoke-External-Command { $ExitCode.Value = 1234 }
 
 		{ Authenticate-DockerForGoogleArtifactRegistry -AgentKey "5678" -Region "europe-west1" } |
 			Should -Throw
 
-		Assert-MockCalled -Times 1 Invoke-External-WithStdio -ParameterFilter { $LiteralPath -eq "powershell" }
+		Assert-MockCalled -Times 1 Invoke-External-Command -ParameterFilter { $LiteralPath -eq "docker" }
 	}
 
 	It "succeeds if Docker returns a zero error code" {
 
-		Mock Invoke-External-WithStdio { return 0, "", "" }
+		Mock Invoke-External-Command { $ExitCode.Value = 0 }
 
 		{ Authenticate-DockerForGoogleArtifactRegistry -AgentKey "5678" -Region "europe-west1" } |
 			Should -Not -Throw
 
-		Assert-MockCalled -Times 1 Invoke-External-WithStdio -ParameterFilter { $LiteralPath -eq "powershell" }
+		Assert-MockCalled -Times 1 Invoke-External-Command -ParameterFilter { $LiteralPath -eq "docker" }
 	}
 }
