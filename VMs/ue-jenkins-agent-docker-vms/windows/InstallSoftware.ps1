@@ -1,9 +1,9 @@
-. ${PSScriptRoot}\..\..\Scripts\Windows\SystemConfiguration\Enable-Win32LongPaths.ps1
-. ${PSScriptRoot}\..\..\Scripts\Windows\SystemConfiguration\Add-WindowsDefenderExclusionRule.ps1
+. ${PSScriptRoot}\..\..\..\..\Scripts\Windows\SystemConfiguration\Enable-Win32LongPaths.ps1
+. ${PSScriptRoot}\..\..\..\..\Scripts\Windows\SystemConfiguration\Add-WindowsDefenderExclusionRule.ps1
 
-. ${PSScriptRoot}\..\..\Scripts\Windows\Applications\Install-GCELoggingAgent.ps1
-. ${PSScriptRoot}\..\..\Scripts\Windows\Applications\Install-GCELoggingAgentSource-ServiceWrapper.ps1
-. ${PSScriptRoot}\..\..\Scripts\Windows\Applications\Install-GCELoggingAgentSource-JenkinsAgentRemoting.ps1
+. ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Applications\Install-GCELoggingAgent.ps1
+. ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Applications\Install-GCELoggingAgentSource-ServiceWrapper.ps1
+. ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Applications\Install-GCELoggingAgentSource-JenkinsAgentRemoting.ps1
 
 $ServiceWrapperLogsFolder = "C:\Logs"
 $JenkinsAgentFolder = "C:\J"

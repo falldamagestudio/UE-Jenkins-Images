@@ -65,29 +65,30 @@ build {
   }
 
   provisioner "file" {
+    source      = "builder-files"
     destination = "C:\\"
-    source      = "ImageBuilder"
-  }
-
-  provisioner "file" {
-    destination = "C:\\"
-    source      = "..\\..\\..\\Scripts\\Windows"
   }
 
   provisioner "powershell" {
-    inline = [ "try { C:\\ImageBuilder\\InstallSoftware.ps1 } catch { Write-Error $_; exit 1 }" ]
+    inline = [ "try { Expand-Archive -Path C:\\builder-files\\builder-files.zip -DestinationPath C:\\ -ErrorAction Stop } catch { Write-Error $_; exit 1 }" ]
   }
 
   provisioner "powershell" {
-    inline = [ "try { C:\\Scripts\\Windows\\Agents\\Services\\GCERegisterService-InboundAgent.ps1 } catch { Write-Error $_; exit 1 }" ]
+    inline = [ "try { & C:\\VMs\\ue-jenkins-agent-docker-vms\\windows\\InstallSoftware.ps1 } catch { Write-Error $_; exit 1 }" ]
   }
 
   provisioner "powershell" {
-    inline = [ "exit (Invoke-Pester -Script C:\\ImageBuilder\\VerifyInstance.ps1 -PassThru).FailedCount" ]
+    inline = [ "try { & C:\\Scripts\\Windows\\Agents\\Services\\GCERegisterService-InboundAgent.ps1 } catch { Write-Error $_; exit 1 }" ]
   }
 
   provisioner "powershell" {
-    inline = [ "Remove-Item -Force -Recurse C:\\ImageBuilder" ]
+    inline = [ "exit (Invoke-Pester -Script C:\\VMs\\ue-jenkins-agent-docker-vms\\windows\\VerifyInstance.ps1 -PassThru).FailedCount" ]
   }
 
+  provisioner "powershell" {
+    inline = [
+      "Remove-Item -Force -Recurse C:\\VMs -ErrorAction Stop",
+      "Remove-Item -Force -Recurse C:\\builder-files -ErrorAction Stop"
+    ]
+  }
 }
