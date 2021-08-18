@@ -1,27 +1,25 @@
 . ${PSScriptRoot}\Run-DockerAgent.ps1
 
-function Run-SshAgent {
+function Run-DockerInboundAgent {
 
 	<#
 		.SYNOPSIS
-		Runs Jenkins SSH Agent in a Docker container
+		Runs Jenkins Inbound Agent in a Docker container
 	#>
 
 	param (
 		[Parameter(Mandatory)] [string] $JenkinsAgentFolder,
 		[Parameter(Mandatory)] [string] $JenkinsWorkspaceFolder,
 		[Parameter(Mandatory)] [string] $PlasticConfigFolder,
+		[Parameter(Mandatory)] [string] $JenkinsURL,
+		[Parameter(Mandatory)] [string] $JenkinsSecret,
 		[Parameter(Mandatory)] [string] $AgentImageURL,
-		[Parameter(Mandatory)] [string] $AgentJarFolder,
-		[Parameter(Mandatory)] [string] $AgentJarFile
+		[Parameter(Mandatory)] [string] $AgentName
 	)
 
 	$Arguments = @(
 		"--rm"
 		"--name","jenkins-agent"
-		"-i"
-		# Share agent jar folder with containers
-		"--mount","type=bind,source=${AgentJarFolder},destination=${AgentJarFolder}"
 		# Share Jenkins agent work folder with containers
 		"--mount","type=bind,source=${JenkinsAgentFolder},destination=${JenkinsAgentFolder}"
 		# Share Jenkins workspace folder with containers
@@ -33,10 +31,11 @@ function Run-SshAgent {
 		# Enable docker CLI users inside containers to communicate with Docker daemon
 		"-v","\\.\pipe\docker_engine:\\.\pipe\docker_engine"
 		$AgentImageUrl
-        "java","-jar",$AgentJarFile
-		"-text"
-		"-workDir",$JenkinsAgentFolder
-
+		"-Url",$JenkinsUrl
+		"-WorkDir",$JenkinsAgentFolder
+		"-Secret",$JenkinsSecret
+		"-Name",$AgentName
+		"-WebSocket"
 	)
 
 	Run-DockerAgent -AgentImageURL $AgentImageURL -AgentRunArguments $Arguments

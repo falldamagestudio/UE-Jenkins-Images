@@ -5,7 +5,7 @@ BeforeAll {
 	. ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESecret.ps1
 }
 
-Describe 'GCEService-Sshd' {
+Describe 'GCEService-DockerSshAgent-Startup' {
 
 	It "Retries settings fetch until parameters are available" {
 
@@ -39,7 +39,7 @@ Describe 'GCEService-Sshd' {
 
 		Mock Start-Sleep { if ($script:SleepCount -lt 10) { $script:SleepCount++ } else { throw "Infinite loop detected when waiting for GCE secrets to be set" } }
 
-		{ & ${PSScriptRoot}\GCEService-Sshd.ps1 } |
+		{ & ${PSScriptRoot}\GCEService-DockerSshAgent-Startup.ps1 } |
 			Should -Not -Throw
 
 		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "ssh-vm-public-key-windows" }

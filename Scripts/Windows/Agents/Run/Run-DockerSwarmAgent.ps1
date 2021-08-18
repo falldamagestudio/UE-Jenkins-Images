@@ -1,10 +1,10 @@
 . ${PSScriptRoot}\Run-DockerAgent.ps1
 
-function Run-InboundAgent {
+function Run-DockerSwarmAgent {
 
 	<#
 		.SYNOPSIS
-		Runs Jenkins Inbound Agent in a Docker container
+		Runs Jenkins Swarm Agent in a Docker container
 	#>
 
 	param (
@@ -12,8 +12,11 @@ function Run-InboundAgent {
 		[Parameter(Mandatory)] [string] $JenkinsWorkspaceFolder,
 		[Parameter(Mandatory)] [string] $PlasticConfigFolder,
 		[Parameter(Mandatory)] [string] $JenkinsURL,
-		[Parameter(Mandatory)] [string] $JenkinsSecret,
+		[Parameter(Mandatory)] [string] $AgentUsername,
+		[Parameter(Mandatory)] [string] $AgentAPIToken,
 		[Parameter(Mandatory)] [string] $AgentImageURL,
+		[Parameter(Mandatory)] [int] $NumExecutors,
+		[Parameter(Mandatory)] [string] $Labels,
 		[Parameter(Mandatory)] [string] $AgentName
 	)
 
@@ -31,11 +34,19 @@ function Run-InboundAgent {
 		# Enable docker CLI users inside containers to communicate with Docker daemon
 		"-v","\\.\pipe\docker_engine:\\.\pipe\docker_engine"
 		$AgentImageUrl
-		"-Url",$JenkinsUrl
-		"-WorkDir",$JenkinsAgentFolder
-		"-Secret",$JenkinsSecret
-		"-Name",$AgentName
-		"-WebSocket"
+		# Use Websocket protocol
+		"-webSocket"
+		"-executors","${NumExecutors}"
+		"-labels",$Labels
+		# Only build jobs with label expressions matching this node
+		"-mode","exclusive"
+		"-master",$JenkinsUrl
+		"-workDir",$JenkinsAgentFolder
+		"-username",$AgentUsername
+		"-password",$AgentAPIToken
+		"-disableClientsUniqueId"
+		"-name",$AgentName
+
 	)
 
 	Run-DockerAgent -AgentImageURL $AgentImageURL -AgentRunArguments $Arguments

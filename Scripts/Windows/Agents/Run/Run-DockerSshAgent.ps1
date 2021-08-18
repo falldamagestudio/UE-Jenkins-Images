@@ -1,28 +1,27 @@
 . ${PSScriptRoot}\Run-DockerAgent.ps1
 
-function Run-SwarmAgent {
+function Run-DockerSshAgent {
 
 	<#
 		.SYNOPSIS
-		Runs Jenkins Swarm Agent in a Docker container
+		Runs Jenkins SSH Agent in a Docker container
 	#>
 
 	param (
 		[Parameter(Mandatory)] [string] $JenkinsAgentFolder,
 		[Parameter(Mandatory)] [string] $JenkinsWorkspaceFolder,
 		[Parameter(Mandatory)] [string] $PlasticConfigFolder,
-		[Parameter(Mandatory)] [string] $JenkinsURL,
-		[Parameter(Mandatory)] [string] $AgentUsername,
-		[Parameter(Mandatory)] [string] $AgentAPIToken,
 		[Parameter(Mandatory)] [string] $AgentImageURL,
-		[Parameter(Mandatory)] [int] $NumExecutors,
-		[Parameter(Mandatory)] [string] $Labels,
-		[Parameter(Mandatory)] [string] $AgentName
+		[Parameter(Mandatory)] [string] $AgentJarFolder,
+		[Parameter(Mandatory)] [string] $AgentJarFile
 	)
 
 	$Arguments = @(
 		"--rm"
 		"--name","jenkins-agent"
+		"-i"
+		# Share agent jar folder with containers
+		"--mount","type=bind,source=${AgentJarFolder},destination=${AgentJarFolder}"
 		# Share Jenkins agent work folder with containers
 		"--mount","type=bind,source=${JenkinsAgentFolder},destination=${JenkinsAgentFolder}"
 		# Share Jenkins workspace folder with containers
@@ -34,18 +33,9 @@ function Run-SwarmAgent {
 		# Enable docker CLI users inside containers to communicate with Docker daemon
 		"-v","\\.\pipe\docker_engine:\\.\pipe\docker_engine"
 		$AgentImageUrl
-		# Use Websocket protocol
-		"-webSocket"
-		"-executors","${NumExecutors}"
-		"-labels",$Labels
-		# Only build jobs with label expressions matching this node
-		"-mode","exclusive"
-		"-master",$JenkinsUrl
+        "java","-jar",$AgentJarFile
+		"-text"
 		"-workDir",$JenkinsAgentFolder
-		"-username",$AgentUsername
-		"-password",$AgentAPIToken
-		"-disableClientsUniqueId"
-		"-name",$AgentName
 
 	)
 

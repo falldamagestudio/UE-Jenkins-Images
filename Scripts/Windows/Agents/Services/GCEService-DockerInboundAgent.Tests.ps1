@@ -5,10 +5,10 @@ BeforeAll {
 	. ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESecret.ps1
 	. ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCEInstanceHostname.ps1
 	. ${PSScriptRoot}\..\..\Applications\Authenticate-DockerForGoogleArtifactRegistry.ps1
-	. ${PSScriptRoot}\..\Run\Run-InboundAgent.ps1
+	. ${PSScriptRoot}\..\Run\Run-DockerInboundAgent.ps1
 }
 
-Describe 'GCEService-InboundAgent' {
+Describe 'GCEService-DockerInboundAgent' {
 
 	It "Retries settings fetch until parameters are available" {
 
@@ -46,12 +46,12 @@ Describe 'GCEService-InboundAgent' {
 		Mock Authenticate-DockerForGoogleArtifactRegistry -ParameterFilter { ($AgentKey -eq $AgentKeyFileRef) -and ($Region -eq $RegionRef) } {}
 		Mock Authenticate-DockerForGoogleArtifactRegistry { throw "Invalid invocation of Authenticate-DockerForGoogleArtifactRegistry" }
 
-		Mock Run-InboundAgent -ParameterFilter { ($JenkinsURL -eq $JenkinsURLRef) -and ($JenkinsSecret -eq $JenkinsSecretRef) -and ($AgentImageURL -eq $AgentImageURLRef) -and ($AgentName -eq $AgentNameRef) } { }
-		Mock Run-InboundAgent { throw "Invalid invocation of Run-InboundAgent" }
+		Mock Run-DockerInboundAgent -ParameterFilter { ($JenkinsURL -eq $JenkinsURLRef) -and ($JenkinsSecret -eq $JenkinsSecretRef) -and ($AgentImageURL -eq $AgentImageURLRef) -and ($AgentName -eq $AgentNameRef) } { }
+		Mock Run-DockerInboundAgent { throw "Invalid invocation of Run-DockerInboundAgent" }
 
 		Mock Start-Sleep { if ($script:SleepCount -lt 10) { $script:SleepCount++ } else { throw "Infinite loop detected when waiting for GCE secrets to be set" } }
 
-		{ & ${PSScriptRoot}\GCEService-InboundAgent.ps1 } |
+		{ & ${PSScriptRoot}\GCEService-DockerInboundAgent.ps1 } |
 			Should -Not -Throw
 
 		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "jenkins-url" }
@@ -66,6 +66,6 @@ Describe 'GCEService-InboundAgent' {
 
 		Assert-MockCalled -Times 1 Authenticate-DockerForGoogleArtifactRegistry
 
-		Assert-MockCalled -Times 1 Run-InboundAgent
+		Assert-MockCalled -Times 1 Run-DockerInboundAgent
 	}
 }

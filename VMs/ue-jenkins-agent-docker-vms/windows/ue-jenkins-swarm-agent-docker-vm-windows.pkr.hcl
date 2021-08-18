@@ -74,7 +74,7 @@ build {
   }
 
   provisioner "powershell" {
-    inline = [ "try { & C:\\VMs\\ue-jenkins-agent-docker-vms\\windows\\InstallSoftware-SwarmAgent.ps1 } catch { Write-Error $_; exit 1 }" ]
+    inline = [ "try { & C:\\VMs\\ue-jenkins-agent-docker-vms\\windows\\InstallSoftware-DockerSwarmAgent.ps1 } catch { Write-Error $_; exit 1 }" ]
   }
 
   provisioner "powershell" {

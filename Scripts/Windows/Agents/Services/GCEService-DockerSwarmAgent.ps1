@@ -1,7 +1,7 @@
 # Log all output to file (in addition to console output, when run manually )
 # This enables post-mortem inspection of the script's activities via log files
 # It also allows GCE's logging agent to pick up the activity and forward it to Google's Cloud Logging
-Start-Transcript -LiteralPath "C:\Logs\GCEService-SwarmAgent-$(Get-Date -Format "yyyyMMdd-HHmmss").txt"
+Start-Transcript -LiteralPath "C:\Logs\GCEService-DockerSwarmAgent-$(Get-Date -Format "yyyyMMdd-HHmmss").txt"
 
 try {
 
@@ -10,7 +10,7 @@ try {
     . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCEInstanceHostname.ps1
     . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCEInstanceMetadata.ps1
     . ${PSScriptRoot}\..\..\Applications\Authenticate-DockerForGoogleArtifactRegistry.ps1
-    . ${PSScriptRoot}\..\Run\Run-SwarmAgent.ps1
+    . ${PSScriptRoot}\..\Run\Run-DockerSwarmAgent.ps1
 
     $JenkinsAgentFolder = "C:\J"
     $JenkinsWorkspaceFolder = "C:\W"
@@ -93,7 +93,7 @@ try {
         AgentName = $AgentName
     }
 
-    Run-SwarmAgent @ServiceParams
+    Run-DockerSwarmAgent @ServiceParams
 
     Write-Host "Done."
 

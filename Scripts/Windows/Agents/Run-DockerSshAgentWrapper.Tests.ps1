@@ -3,11 +3,11 @@
 
 BeforeAll {
 	. ${PSScriptRoot}\..\SystemConfiguration\Get-GCESecret.ps1
-	. ${PSScriptRoot}\Run\Run-SshAgent.ps1
+	. ${PSScriptRoot}\Run\Run-DockerSshAgent.ps1
 	. ${PSScriptRoot}\..\Applications\Authenticate-DockerForGoogleArtifactRegistry.ps1
 }
 
-Describe 'Run-SshAgentWrapper' {
+Describe 'Run-DockerSshAgentWrapper' {
 
 	It "Succeeds when launched with -fullversion" {
 
@@ -25,16 +25,16 @@ Describe 'Run-SshAgentWrapper' {
 
 		Mock Authenticate-DockerForGoogleArtifactRegistry { throw "Authenticate-DockerForGoogleArtifactRegistry should not be called" }
 
-		Mock Run-SshAgent { throw "Run-SshAgent should not be called" }
+		Mock Run-DockerSshAgent { throw "Run-DockerSshAgent should not be called" }
 
 		Mock Start-Sleep { throw "Start-Sleep should not be called" }
 
 		Mock New-Item { throw "New-Item should not be called" }
 		Mock Copy-Item { throw "Copy-Item should not be called" }
 
-		Mock Run-SshAgent { throw "Run-SshAgent should not be called" }
+		Mock Run-DockerSshAgent { throw "Run-DockerSshAgent should not be called" }
 
-		{ & ${PSScriptRoot}\Run-SshAgentWrapper.ps1 -fullversion } |
+		{ & ${PSScriptRoot}\Run-DockerSshAgentWrapper.ps1 -fullversion } |
 			Should -Not -Throw
 	}
 
@@ -54,16 +54,16 @@ Describe 'Run-SshAgentWrapper' {
 
 		Mock Authenticate-DockerForGoogleArtifactRegistry { throw "Authenticate-DockerForGoogleArtifactRegistry should not be called" }
 
-		Mock Run-SshAgent { throw "Run-SshAgent should not be called" }
+		Mock Run-DockerSshAgent { throw "Run-DockerSshAgent should not be called" }
 
 		Mock Start-Sleep { throw "Start-Sleep should not be called" }
 
 		Mock New-Item { throw "New-Item should not be called" }
 		Mock Copy-Item { throw "Copy-Item should not be called" }
 
-		Mock Run-SshAgent { throw "Run-SshAgent should not be called" }
+		Mock Run-DockerSshAgent { throw "Run-DockerSshAgent should not be called" }
 
-		{ & ${PSScriptRoot}\Run-SshAgentWrapper.ps1 } |
+		{ & ${PSScriptRoot}\Run-DockerSshAgentWrapper.ps1 } |
 			Should -Throw
 	}
 
@@ -100,12 +100,12 @@ Describe 'Run-SshAgentWrapper' {
 
 		Mock Copy-Item { }
 
-		Mock Run-SshAgent -ParameterFilter { ($AgentImageURL -eq $AgentImageURLRef) } { }
-		Mock Run-SshAgent { throw "Invalid invocation of Run-SshAgent" }
+		Mock Run-DockerSshAgent -ParameterFilter { ($AgentImageURL -eq $AgentImageURLRef) } { }
+		Mock Run-DockerSshAgent { throw "Invalid invocation of Run-DockerSshAgent" }
 
 		Mock Start-Sleep { if ($script:SleepCount -lt 10) { $script:SleepCount++ } else { throw "Infinite loop detected when waiting for GCE secrets to be set" } }
 
-		{ & ${PSScriptRoot}\Run-SshAgentWrapper.ps1 -jar "C:\AgentJarDownloadLocation\agent.jar" } |
+		{ & ${PSScriptRoot}\Run-DockerSshAgentWrapper.ps1 -jar "C:\AgentJarDownloadLocation\agent.jar" } |
 			Should -Not -Throw
 
 		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "agent-key-file" }
@@ -122,6 +122,6 @@ Describe 'Run-SshAgentWrapper' {
 		Assert-MockCalled -Times 1 New-Item
 		Assert-MockCalled -Times 1 Copy-Item
 
-		Assert-MockCalled -Times 1 Run-SshAgent
+		Assert-MockCalled -Times 1 Run-DockerSshAgent
 	}
 }

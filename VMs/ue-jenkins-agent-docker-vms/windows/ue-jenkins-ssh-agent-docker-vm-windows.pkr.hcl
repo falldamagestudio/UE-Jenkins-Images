@@ -74,7 +74,7 @@ build {
   }
 
   provisioner "powershell" {
-    inline = [ "try { & C:\\VMs\\ue-jenkins-agent-docker-vms\\windows\\InstallSoftware-SshAgent.ps1 } catch { Write-Error $_; exit 1 }" ]
+    inline = [ "try { & C:\\VMs\\ue-jenkins-agent-docker-vms\\windows\\InstallSoftware-DockerSshAgent.ps1 } catch { Write-Error $_; exit 1 }" ]
   }
   provisioner "powershell" {
     inline = [ "exit (Invoke-Pester -Script C:\\VMs\\ue-jenkins-agent-docker-vms\\windows\\VerifyInstance.ps1 -PassThru).FailedCount" ]

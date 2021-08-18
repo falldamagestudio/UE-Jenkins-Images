@@ -1,55 +1,51 @@
-param (
-    [Parameter(Mandatory=$false)] [string] $jar,
-    [Parameter(Mandatory=$false)] [Switch] $fullversion
-)
-
 # Log all output to file (in addition to console output, when run manually )
 # This enables post-mortem inspection of the script's activities via log files
 # It also allows GCE's logging agent to pick up the activity and forward it to Google's Cloud Logging
-# TODO: decide on a better path for logs
-Start-Transcript -LiteralPath "C:\Logs\Run-SshAgentWrapper-$(Get-Date -Format "yyyyMMdd-HHmmss").txt"
+Start-Transcript -LiteralPath "C:\Logs\GCEService-DockerInboundAgent-$(Get-Date -Format "yyyyMMdd-HHmmss").txt"
 
 try {
 
-    . ${PSScriptRoot}\..\SystemConfiguration\Get-GCESecret.ps1
-    . ${PSScriptRoot}\..\Applications\Authenticate-DockerForGoogleArtifactRegistry.ps1
-    . ${PSScriptRoot}\Run\Run-SshAgent.ps1
-
-    # Respond to version query; the GCE plugin does this to verify that the java executable is present, and doesn't care about the actual version number
-    if ($fullversion) {
-        Write-Host "java-to-docker shim"
-        return
-    }
-
-    # If it isn't a version query, then we require it to be a launch command
-    if (!$jar) {
-        Write-Host "Error: java-to-docker shim should be executed like this: /run/jenkins-agent-wrapper.sh -jar <path to agent.jar>"
-        throw "Error: java-to-docker shim should be executed like this: /run/jenkins-agent-wrapper.sh -jar <path to agent.jar>"
-    }
+    . ${PSScriptRoot}\..\..\SystemConfiguration\Resize-PartitionToMaxSize.ps1
+    . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESecret.ps1
+    . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCEInstanceHostname.ps1
+    . ${PSScriptRoot}\..\..\Applications\Authenticate-DockerForGoogleArtifactRegistry.ps1
+    . ${PSScriptRoot}\..\Run\Run-DockerInboundAgent.ps1
 
     $JenkinsAgentFolder = "C:\J"
     $JenkinsWorkspaceFolder = "C:\W"
     $PlasticConfigFolder = "C:\PlasticConfig"
 
-    $AgentJarFolder = "C:\AgentJar"
-    $AgentJarFile = "C:\AgentJar\agent.jar"
+    Write-Host "Ensuring that the boot partition uses the entire boot disk..."
+
+    # If the instance has been created with a boot disk that is larger than the original machine image,
+    #  then the boot partition remains the original size; we must manually expand it
+    #
+    # This should ideally be done on instance start (as opposed to on service start) as this adds another
+    #  ~5 seconds to each service start. We are doing it here to keep things simple.
+     Resize-PartitionToMaxSize -DriveLetter "C"
+
+    $AgentName = (Get-GCEInstanceHostname).Split(".")[0]
 
     # Fetch configuration parameters repeatedly, until all are available
     while ($true) {
 
         Write-Host "Retrieving configuration from Secrets Manager..."
 
+        $JenkinsURL = Get-GCESecret -Key "jenkins-url"
         $AgentKey = Get-GCESecret -Key "agent-key-file"
-        $AgentImageURL = Get-GCESecret -Key "ssh-agent-image-url-windows"
+        $AgentImageURL = Get-GCESecret -Key "inbound-agent-image-url-windows"
+        $JenkinsSecret = Get-GCESecret -Key "inbound-agent-secret-${AgentName}"
         $PlasticConfigZip = Get-GCESecret -Key "plastic-config-zip" -Binary $true
- 
+
         Write-Host "Required settings:"
+        Write-Host "Secret jenkins-url: $(if ($JenkinsURL -ne $null) { "found" } else { "not found" })"
         Write-Host "Secret agent-key-file: $(if ($AgentKey -ne $null) { "found" } else { "not found" })"
-        Write-Host "Secret ssh-agent-image-url-windows: $(if ($AgentImageURL -ne $null) { "found" } else { "not found" })"
+        Write-Host "Secret inbound-agent-image-url-windows: $(if ($AgentImageURL -ne $null) { "found" } else { "not found" })"
+        Write-Host "Secret inbound-agent-secret-${AgentName}: $(if ($JenkinsSecret -ne $null) { "found" } else { "not found" })"
         Write-Host "Optional settings:"
         Write-Host "Secret plastic-config-zip: $(if ($PlasticConfigZip -ne $null) { "found" } else { "not found" })"
 
-        if (($AgentImageURL -ne $null) -and ($AgentKey -ne $null)) {
+        if (($JenkinsURL -ne $null) -and ($AgentImageURL -ne $null) -and ($AgentKey -ne $null) -and ($JenkinsSecret -ne $null)) {
             break
         } else {
             Write-Host "Some required secrets are missing. Sleeping, then retrying..."
@@ -77,23 +73,19 @@ try {
 
     Authenticate-DockerForGoogleArtifactRegistry -AgentKey $AgentKey -Region $Region
 
-    Write-Host "Copying provided agent jar to $AgentJarFile..."
-
-    New-Item -ItemType Directory -Path $AgentJarFolder -Force -ErrorAction Stop | Out-Null
-    Copy-Item $jar $AgentJarFile -ErrorAction Stop
-
     Write-Host "Running Jenkins Agent..."
 
     $ServiceParams = @{
         JenkinsAgentFolder = $JenkinsAgentFolder
         JenkinsWorkspaceFolder = $JenkinsWorkspaceFolder
         PlasticConfigFolder = $PlasticConfigFolder
+        JenkinsURL = $JenkinsURL
+        JenkinsSecret = $JenkinsSecret
         AgentImageURL = $AgentImageURL
-        AgentJarFolder = $AgentJarFolder
-        AgentJarFile = $AgentJarFile
+        AgentName = $AgentName
     }
 
-    Run-SshAgent @ServiceParams
+    Run-DockerInboundAgent @ServiceParams
 
     Write-Host "Done."
 

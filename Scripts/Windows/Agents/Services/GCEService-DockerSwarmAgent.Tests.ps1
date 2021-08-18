@@ -6,10 +6,10 @@ BeforeAll {
 	. ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCEInstanceHostname.ps1
 	. ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCEInstanceMetadata.ps1
 	. ${PSScriptRoot}\..\..\Applications\Authenticate-DockerForGoogleArtifactRegistry.ps1
-	. ${PSScriptRoot}\..\Run\Run-SwarmAgent.ps1
+	. ${PSScriptRoot}\..\Run\Run-DockerSwarmAgent.ps1
 }
 
-Describe 'GCEService-SwarmAgent' {
+Describe 'GCEService-DockerSwarmAgent' {
 
 	It "Retries settings fetch until parameters are available" {
 
@@ -54,12 +54,12 @@ Describe 'GCEService-SwarmAgent' {
 		Mock Authenticate-DockerForGoogleArtifactRegistry { throw "Invalid invocation of Authenticate-DockerForGoogleArtifactRegistry" }
 
 		# TODO: validate $Labels
-		Mock Run-SwarmAgent -ParameterFilter { ($JenkinsURL -eq $JenkinsURLRef) -and ($AgentUsername -eq $AgentUsernameRef) -and ($AgentAPIToken -eq $AgentAPITokenRef) -and ($AgentImageURL -eq $AgentImageURLRef) -and ($NumExecutors -eq $NumExecutorsRef) -and ($Labels -eq $LabelsRef) -and ($AgentName -eq $AgentNameRef) } { }
-		Mock Run-SwarmAgent { throw "Invalid invocation of Run-SwarmAgent" }
+		Mock Run-DockerSwarmAgent -ParameterFilter { ($JenkinsURL -eq $JenkinsURLRef) -and ($AgentUsername -eq $AgentUsernameRef) -and ($AgentAPIToken -eq $AgentAPITokenRef) -and ($AgentImageURL -eq $AgentImageURLRef) -and ($NumExecutors -eq $NumExecutorsRef) -and ($Labels -eq $LabelsRef) -and ($AgentName -eq $AgentNameRef) } { }
+		Mock Run-DockerSwarmAgent { throw "Invalid invocation of Run-DockerSwarmAgent" }
 
 		Mock Start-Sleep { if ($script:SleepCount -lt 10) { $script:SleepCount++ } else { throw "Infinite loop detected when waiting for GCE secrets to be set" } }
 
-		{ & ${PSScriptRoot}\GCEService-SwarmAgent.ps1 } |
+		{ & ${PSScriptRoot}\GCEService-DockerSwarmAgent.ps1 } |
 			Should -Not -Throw
 
 		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "jenkins-url" }
@@ -76,6 +76,6 @@ Describe 'GCEService-SwarmAgent' {
 
 		Assert-MockCalled -Times 1 Authenticate-DockerForGoogleArtifactRegistry
 
-		Assert-MockCalled -Times 1 Run-SwarmAgent
+		Assert-MockCalled -Times 1 Run-DockerSwarmAgent
 	}
 }

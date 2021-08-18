@@ -27,7 +27,7 @@ Describe 'Register-AutoStartService' {
 		$Arg1 = "a"
 		$Arg2 = "b"
 
-		Mock Start-Process -ParameterFilter { @{ ExitCode = 0 } }
+		Mock Start-Process { @{ ExitCode = 0 } }
 
 		Register-AutoStartService -ServiceName $ServiceName -Program $Program -ArgumentList @($Arg1, $Arg2)
 

@@ -5,11 +5,7 @@
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Applications\Install-GCELoggingAgentSource-ServiceWrapper.ps1
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Applications\Install-GCELoggingAgentSource-JenkinsAgentRemoting.ps1
 
-. ${PSScriptRoot}\..\..\..\..\Scripts\Windows\SystemConfiguration\Create-ServiceUser.ps1
-. ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Applications\Install-Chocolatey.ps1
-. ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Applications\Install-OpenSSHServer.ps1
-
-. ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Agents\Services\GCERegisterService-Sshd.ps1
+. ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Agents\Services\GCERegisterService-DockerInboundAgent.ps1
 
 $ServiceWrapperLogsFolder = "C:\Logs"
 $JenkinsAgentFolder = "C:\J"
@@ -52,20 +48,8 @@ Write-Host "Installing forwarding of Jenkins Agent remoting logs to GCP Logging.
 
 Install-GCELoggingAgentSource-JenkinsAgentRemoting -JenkinsAgentFolder $JenkinsAgentFolder
 
-Write-Host "Creating Jenkins user..."
-
-Create-ServiceUser -Name "Jenkins"
-
-Write-Host "Installing Chocolatey..."
-
-Install-Chocolatey
-
-Write-Host "Installing OpenSSH Server..."
-
-Install-OpenSSHServer
-
 Write-Host "Registering Jenkins Agent script as autostarting..."
 
-GCERegisterService-Sshd
+GCERegisterService-DockerInboundAgent
 
 Write-Host "Done."

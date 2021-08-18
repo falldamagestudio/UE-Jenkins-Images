@@ -5,7 +5,7 @@
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Applications\Install-GCELoggingAgentSource-ServiceWrapper.ps1
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Applications\Install-GCELoggingAgentSource-JenkinsAgentRemoting.ps1
 
-. ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Agents\Services\GCERegisterService-SwarmAgent.ps1
+. ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Agents\Services\GCERegisterService-DockerSwarmAgent.ps1
 
 $ServiceWrapperLogsFolder = "C:\Logs"
 $JenkinsAgentFolder = "C:\J"
@@ -50,6 +50,6 @@ Install-GCELoggingAgentSource-JenkinsAgentRemoting -JenkinsAgentFolder $JenkinsA
 
 Write-Host "Registering Jenkins Agent script as autostarting..."
 
-GCERegisterService-SwarmAgent
+GCERegisterService-DockerSwarmAgent
 
 Write-Host "Done."
