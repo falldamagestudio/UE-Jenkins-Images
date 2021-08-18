@@ -1,4 +1,5 @@
 /.git
 /.github
-/ue-jenkins-controller
+/Docker/controller
+/VMs
 /windows-docker-image-builder

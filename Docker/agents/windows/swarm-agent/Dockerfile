@@ -68,7 +68,7 @@ COPY Scripts C:\Scripts
 COPY Docker C:\Docker
 
 RUN try { `
-        & C:\Docker\ue-jenkins-agents\windows\ContainerBuild.ps1 `
+        & C:\Docker\agents\windows\ContainerBuild.ps1 `
     } catch { `
         Write-Error $_; throw $_ `
     } finally { `
@@ -77,6 +77,6 @@ RUN try { `
 
 # Include agent start script
 
-COPY Docker\ue-jenkins-agents\windows\swarm-agent.ps1 C:/ProgramData/Jenkins
+COPY Docker\agents\windows\swarm-agent\swarm-agent.ps1 C:/ProgramData/Jenkins
 
 ENTRYPOINT ["powershell.exe", "-f", "C:/ProgramData/Jenkins/swarm-agent.ps1"]

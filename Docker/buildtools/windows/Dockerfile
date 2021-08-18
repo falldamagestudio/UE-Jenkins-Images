@@ -39,7 +39,7 @@ COPY Scripts C:\Scripts
 COPY Docker C:\Docker
 
 RUN try { `
-        & C:\Docker\ue-jenkins-buildtools\windows\ContainerBuild.ps1 `
+        & C:\Docker\buildtools\windows\ContainerBuild.ps1 `
     } catch { `
         Write-Error $_; throw $_ `
     } finally { `

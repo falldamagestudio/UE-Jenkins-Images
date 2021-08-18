@@ -1,4 +1,4 @@
-name: ue-jenkins-ssh-agent
+name: docker-ssh-agent
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   build-linux:
-    name: Linux - ue-jenkins-ssh-agent
+    name: Linux - docker-ssh-agent
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -19,7 +19,7 @@ jobs:
         id: parameters
         run: |
           SHORT_SHA=$(git rev-parse --short ${{ github.sha }})
-          IMAGE_NAME=${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-ssh-agent
+          IMAGE_NAME=${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ssh-agent
           IMAGE_TAG=commit-${SHORT_SHA}-linux
           IMAGE_URL=${IMAGE_NAME}:${IMAGE_TAG}
           echo "::set-output name=image_url::${IMAGE_URL}"
@@ -54,12 +54,12 @@ jobs:
         if: ${{ ! steps.image_exists.outputs.image_exists }}
         uses: docker/build-push-action@v2
         with:
-          context: ./Docker/ue-jenkins-agents/linux/ue-jenkins-ssh-agent
+          context: ./Docker/agents/linux/ssh-agent
           push: true
           tags: ${{ steps.parameters.outputs.image_url }}
 
   build-windows:
-    name: Windows - ue-jenkins-ssh-agent
+    name: Windows - docker-ssh-agent
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -69,7 +69,7 @@ jobs:
         id: parameters
         run: |
           SHORT_SHA=$(git rev-parse --short ${{ github.sha }})
-          IMAGE_NAME=${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-ssh-agent
+          IMAGE_NAME=${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ssh-agent
           IMAGE_TAG=commit-${SHORT_SHA}-windows
           IMAGE_URL=${IMAGE_NAME}:${IMAGE_TAG}
           echo "::set-output name=image_name::${IMAGE_NAME}"
@@ -106,8 +106,8 @@ jobs:
         if: ${{ ! steps.image_exists.outputs.image_exists }}
         run: |
           ./Scripts/Linux/windows-docker-image-builder.sh \
-            ./Docker/ue-jenkins-agents/windows/HostBuild.ps1 \
-            ./Docker/ue-jenkins-agents/windows/ue-jenkins-ssh-agent-windows.Dockerfile \
+            ./Docker/agents/windows/HostBuild.ps1 \
+            ./Docker/agents/windows/ssh-agent/Dockerfile \
             ${{ secrets.GOOGLE_CLOUD_PROJECT_ID }} \
             ${{ secrets.GOOGLE_CLOUD_REGION }} \
             ${{ secrets.GOOGLE_CLOUD_ZONE }} \

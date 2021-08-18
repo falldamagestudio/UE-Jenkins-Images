@@ -7,7 +7,7 @@ COPY Scripts C:\Scripts
 COPY Docker C:\Docker
 
 RUN try { `
-        & C:\Docker\ue-jenkins-agents\windows\ContainerBuild.ps1 `
+        & C:\Docker\agents\windows\ContainerBuild.ps1 `
     } catch { `
         Write-Error $_; throw $_ `
     } finally { `

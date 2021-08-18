@@ -1,4 +1,4 @@
-name: ue-jenkins-controller
+name: docker-controller
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    name: ue-jenkins-controller
+    name: docker-controller
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -21,7 +21,7 @@ jobs:
         id: parameters
         run: |
           SHORT_SHA=$(git rev-parse --short ${{ github.sha }})
-          IMAGE_NAME=${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/ue-jenkins-controller
+          IMAGE_NAME=${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/controller
           IMAGE_TAG=commit-${SHORT_SHA}
           IMAGE_URL=${IMAGE_NAME}:${IMAGE_TAG}
           echo "::set-output name=image_url::${IMAGE_URL}"
@@ -55,12 +55,12 @@ jobs:
       - name: Build custom google-compute-engine plugin
         if: ${{ ! steps.image_exists.outputs.image_exists }}
         run: |
-          cd Docker/ue-jenkins-controller/google-compute-engine-plugin && mvn install --no-transfer-progress
+          cd Docker/controller/google-compute-engine-plugin && mvn install --no-transfer-progress
 
       - name: Build image and push to GCR
         if: ${{ ! steps.image_exists.outputs.image_exists }}
         uses: docker/build-push-action@v2
         with:
-          context: ./Docker/ue-jenkins-controller
+          context: ./Docker/controller
           push: true
           tags: ${{ steps.parameters.outputs.image_url }}
