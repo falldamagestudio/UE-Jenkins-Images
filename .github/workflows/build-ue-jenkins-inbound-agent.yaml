@@ -112,6 +112,6 @@ jobs:
             "${{ secrets.GOOGLE_CLOUD_REGION }}" \
             "${{ secrets.GOOGLE_CLOUD_ZONE }}" \
             "${{ secrets.ARTIFACT_REGISTRY_LOCATION }}" \
-            "${{ secrets.GOOGLE_CLOUD_BUILD_ARTIFACT_UPLOADER_SERVICE_ACCOUNT_KEY }}" \
+            '${{ secrets.GOOGLE_CLOUD_BUILD_ARTIFACT_UPLOADER_SERVICE_ACCOUNT_KEY }}' \
             "${{ steps.parameters.outputs.image_name }}" \
             "${{ steps.parameters.outputs.image_tag }}"
