@@ -12,11 +12,12 @@ function Register-AutoStartService {
 	#>
 
 	param (
-		[Parameter(Mandatory)] [string] $NssmLocation,
 		[Parameter(Mandatory)] [string] $ServiceName,
 		[Parameter(Mandatory)] [string] $Program,
 		[Parameter(Mandatory=$false)] [string[]] $ArgumentList
 	)
+
+	$NssmLocation = "${PSScriptRoot}\nssm.exe"
 
 	$NssmArguments = @(
 		"install"
