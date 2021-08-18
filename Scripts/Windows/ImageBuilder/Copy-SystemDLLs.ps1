@@ -1,4 +1,9 @@
-function Install-SystemDLLs {
+function Copy-SystemDLLs {
+
+	param (
+		[Parameter(Mandatory=$true)] [string] $SourceFolder,
+		[Parameter(Mandatory=$true)] [string] $TargetFolder
+	)
 
 	$DLLNames = @(
 		# This provides XINPUT1_3.DLL which is used when running the C++ apps (UE4Editor-Cmd.exe for example), even in headless mode
@@ -27,11 +32,9 @@ function Install-SystemDLLs {
 		"GLU32.DLL"
 	)
 
-	$TargetFolder = "C:\Windows\System32"
-
 	foreach ($DLLName in $DLLNames) {
 
-		$SourceLocation = (Join-Path $PSScriptRoot $DLLName -ErrorAction Stop)
+		$SourceLocation = (Join-Path $SourceFolder $DLLName -ErrorAction Stop)
 		$TargetLocation = (Join-Path $TargetFolder $DLLName -ErrorAction Stop)
 
 		Copy-Item -Path $SourceLocation -Destination $TargetLocation -ErrorAction Stop

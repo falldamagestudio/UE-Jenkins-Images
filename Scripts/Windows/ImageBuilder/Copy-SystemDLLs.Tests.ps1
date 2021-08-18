@@ -1,12 +1,12 @@
-. ${PSScriptRoot}\..\..\Helpers\Ensure-TestToolVersions.ps1
+. ${PSScriptRoot}\..\Helpers\Ensure-TestToolVersions.ps1
 
 BeforeAll {
 
-	. ${PSScriptRoot}\Install-SystemDLLs.ps1
+	. ${PSScriptRoot}\Copy-SystemDLLs.ps1
 
 }
 
-Describe 'Install-SystemDLLs' {
+Describe 'Copy-SystemDLLs' {
 
 	It "Reports error if path join fails" {
 
@@ -14,7 +14,7 @@ Describe 'Install-SystemDLLs' {
 
 		Mock Copy-Item { }
 
-		{ Install-SystemDLLs } |
+		{ Copy-SystemDLLs -SourceFolder . -TargetFolder "c:\Windows\System32" } |
 			Should -Throw "Join-Path Failed"
 
 		Assert-MockCalled -Times 0 Copy-Item
@@ -26,7 +26,7 @@ Describe 'Install-SystemDLLs' {
 
 		Mock Copy-Item { throw "Copy-Item failed" }
 
-		{ Install-SystemDLLs } |
+		{ Copy-SystemDLLs -SourceFolder . -TargetFolder "c:\Windows\System32" } |
 			Should -Throw "Copy-Item Failed"
 
 		Assert-MockCalled -Times 1 Copy-Item
@@ -38,7 +38,7 @@ Describe 'Install-SystemDLLs' {
 
 		Mock Copy-Item { }
 
-		{ Install-SystemDLLs } |
+		{ Copy-SystemDLLs -SourceFolder . -TargetFolder "c:\Windows\System32" } |
 			Should -Not -Throw "Copy-Item Failed"
 
 		Assert-MockCalled -Times 7 Copy-Item
