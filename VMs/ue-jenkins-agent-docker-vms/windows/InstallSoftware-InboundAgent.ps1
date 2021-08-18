@@ -5,6 +5,8 @@
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Applications\Install-GCELoggingAgentSource-ServiceWrapper.ps1
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Applications\Install-GCELoggingAgentSource-JenkinsAgentRemoting.ps1
 
+. ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Agents\Services\GCERegisterService-InboundAgent.ps1
+
 $ServiceWrapperLogsFolder = "C:\Logs"
 $JenkinsAgentFolder = "C:\J"
 $JenkinsWorkspaceFolder = "C:\W"
@@ -45,5 +47,9 @@ Install-GCELoggingAgentSource-ServiceWrapper -ServiceWrapperLogsFolder $ServiceW
 Write-Host "Installing forwarding of Jenkins Agent remoting logs to GCP Logging..."
 
 Install-GCELoggingAgentSource-JenkinsAgentRemoting -JenkinsAgentFolder $JenkinsAgentFolder
+
+Write-Host "Registering Jenkins Agent script as autostarting..."
+
+GCERegisterService-InboundAgent
 
 Write-Host "Done."
