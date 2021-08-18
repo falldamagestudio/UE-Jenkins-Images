@@ -54,7 +54,7 @@ jobs:
         if: ${{ ! steps.image_exists.outputs.image_exists }}
         uses: docker/build-push-action@v2
         with:
-          context: ./ue-jenkins-agents/linux/ue-jenkins-ssh-agent
+          context: ./Docker/ue-jenkins-agents/linux/ue-jenkins-ssh-agent
           push: true
           tags: ${{ steps.parameters.outputs.image_url }}
 
@@ -112,6 +112,6 @@ jobs:
             ${{ secrets.GOOGLE_CLOUD_REGION }} \
             ${{ secrets.GOOGLE_CLOUD_ZONE }} \
             ${{ secrets.ARTIFACT_REGISTRY_LOCATION }} \
-            ${{ secrets.GOOGLE_CLOUD_BUILD_ARTIFACT_UPLOADER_SERVICE_ACCOUNT_KEY }} \
+            '${{ secrets.GOOGLE_CLOUD_BUILD_ARTIFACT_UPLOADER_SERVICE_ACCOUNT_KEY }}' \
             ${{ steps.parameters.outputs.image_name }} \
             ${{ steps.parameters.outputs.image_tag }}
