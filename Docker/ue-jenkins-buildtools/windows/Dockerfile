@@ -34,15 +34,17 @@ RUN net user "${env:user}" /add /expire:never /passwordreq:no ; `
 	
 USER $user
 
-# Include shared installation scripts
-COPY Scripts\Windows\* C:\Workspace\
+COPY Scripts C:\Scripts
 
-# Include specific installation scripts, and extra system DLLs
-COPY Docker\ue-jenkins-buildtools\windows\Container\* C:\Workspace\
+COPY Docker C:\Docker
 
-RUN try { C:\Workspace\InstallSoftware.ps1 } catch { Write-Error $_ }
-
-RUN Remove-Item C:\Workspace -Recurse -Force
+RUN try { `
+        & C:\Docker\ue-jenkins-buildtools\windows\ContainerBuild.ps1 `
+    } catch { `
+        Write-Error $_; throw $_ `
+    } finally { `
+        Remove-Item -Recurse -Force -Path C:\Docker -ErrorAction SilentlyContinue `
+    }
 
 # Jenkins expects shell to be cmd
 SHELL ["cmd", "/S", "/C" ]

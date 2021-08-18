@@ -1,16 +1,10 @@
-. ${PSScriptRoot}\SystemConfiguration\Enable-Win32LongPaths.ps1
-
-. ${PSScriptRoot}\Applications\Install-VisualStudioBuildTools.ps1
-
-. ${PSScriptRoot}\Applications\Install-DebuggingToolsForWindows.ps1
-
-. ${PSScriptRoot}\ImageBuilder\Container\Install-SystemDLLs.ps1
-
-. ${PSScriptRoot}\Applications\Install-VC2010RedistributableX64.ps1
-
-. ${PSScriptRoot}\Applications\Install-Plastic.ps1
-
-. ${PSScriptRoot}\Applications\Create-PlasticClientConfigLinks.ps1
+. ${PSScriptRoot}\..\..\..\Scripts\Windows\SystemConfiguration\Enable-Win32LongPaths.ps1
+. ${PSScriptRoot}\..\..\..\Scripts\Windows\Applications\Install-VisualStudioBuildTools.ps1
+. ${PSScriptRoot}\..\..\..\Scripts\Windows\Applications\Install-DebuggingToolsForWindows.ps1
+. ${PSScriptRoot}\..\..\..\Scripts\Windows\ImageBuilder\Copy-SystemDLLs.ps1
+. ${PSScriptRoot}\..\..\..\Scripts\Windows\Applications\Install-VC2010RedistributableX64.ps1
+. ${PSScriptRoot}\..\..\..\Scripts\Windows\Applications\Install-Plastic.ps1
+. ${PSScriptRoot}\..\..\..\Scripts\Windows\Applications\Create-PlasticClientConfigLinks.ps1
 
 Write-Host "Enabling Win32 Long Paths..."
 
@@ -31,7 +25,7 @@ Write-Host "Installing additional system DLLs..."
 # Normally, you would install these by running various installers,  but these can for various
 #  reasons not be installed from within a Windows Server Core container. Instead, these are
 #  explicitly provided from the host OS side.
-Install-SystemDLLs
+Copy-SystemDLLs -SourceFolder $PSScriptRoot -TargetFolder "C:\Windows\System32"
 # Install-DirectXRedistributable
 
 Write-Host "Installing VC++ 2010 Redistributable (x64)..."
