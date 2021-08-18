@@ -54,7 +54,7 @@ jobs:
         if: ${{ ! steps.image_exists.outputs.image_exists }}
         uses: docker/build-push-action@v2
         with:
-          context: ./ue-jenkins-agents/linux/ue-jenkins-inbound-agent
+          context: ./Docker/ue-jenkins-agents/linux/ue-jenkins-inbound-agent
           push: true
           tags: ${{ steps.parameters.outputs.image_url }}
 
