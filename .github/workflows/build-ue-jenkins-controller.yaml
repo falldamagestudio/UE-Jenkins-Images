@@ -55,12 +55,12 @@ jobs:
       - name: Build custom google-compute-engine plugin
         if: ${{ ! steps.image_exists.outputs.image_exists }}
         run: |
-          cd ue-jenkins-controller/google-compute-engine-plugin && mvn install --no-transfer-progress
+          cd Docker/ue-jenkins-controller/google-compute-engine-plugin && mvn install --no-transfer-progress
 
       - name: Build image and push to GCR
         if: ${{ ! steps.image_exists.outputs.image_exists }}
         uses: docker/build-push-action@v2
         with:
-          context: ./ue-jenkins-controller
+          context: ./Docker/ue-jenkins-controller
           push: true
           tags: ${{ steps.parameters.outputs.image_url }}
