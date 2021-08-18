@@ -51,7 +51,7 @@ jobs:
         id: parameters
         run: |
           SHORT_SHA=$(git rev-parse --short ${{ github.sha }})
-          IMAGE_NAME=docker-swarm-agent-vm-${SHORT_SHA}-windows
+          IMAGE_NAME=docker-swarm-agent-${SHORT_SHA}-windows
           echo "::set-output name=image_name::${IMAGE_NAME}"
 
       - name: Setup gcloud CLI
