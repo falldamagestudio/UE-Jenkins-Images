@@ -1,4 +1,4 @@
-name: ue-jenkins-inbound-agent-docker-vm
+name: ue-jenkins-docker-ssh-agent-vm
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
 jobs:
 
   build-linux:
-    name: Linux - ue-jenkins-inbound-agent-docker-vm
+    name: Linux - ue-jenkins-docker-ssh-agent-vm
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -20,7 +20,7 @@ jobs:
         id: parameters
         run: |
           SHORT_SHA=$(git rev-parse --short ${{ github.sha }})
-          FILE_URL=gs://${{ secrets.GOOGLE_CLOUD_CONFIG_STORAGE_BUCKET }}/ue-jenkins-inbound-agent-docker-vm/cloud-config-commit-${SHORT_SHA}.yaml
+          FILE_URL=gs://${{ secrets.GOOGLE_CLOUD_CONFIG_STORAGE_BUCKET }}/ue-jenkins-docker-ssh-agent-vm/cloud-config-commit-${SHORT_SHA}.yaml
           echo "::set-output name=file_url::${FILE_URL}"
 
       - name: Setup gcloud CLI
@@ -38,10 +38,10 @@ jobs:
 
       - name: Upload file to storage
         if: ${{ ! steps.file_exists.outputs.file_exists }}
-        run: gsutil cp VMs/ue-jenkins-agent-docker-vms/linux-gce-cos/ue-jenkins-inbound-agent-docker-vm-cloud-config.yaml ${{ steps.parameters.outputs.file_url }}
+        run: gsutil cp VMs/ue-jenkins-docker-agent-vms/linux-gce-cos/ue-jenkins-docker-ssh-agent-vm-cloud-config.yaml ${{ steps.parameters.outputs.file_url }}
 
   build-windows:
-    name: Windows - ue-jenkins-inbound-agent-docker-vm
+    name: Windows - ue-jenkins-docker-ssh-agent-vm
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -51,7 +51,7 @@ jobs:
         id: parameters
         run: |
           SHORT_SHA=$(git rev-parse --short ${{ github.sha }})
-          IMAGE_NAME=ue-jenkins-inbound-agent-docker-vm-${SHORT_SHA}-windows
+          IMAGE_NAME=ue-jenkins-docker-ssh-agent-vm-${SHORT_SHA}-windows
           echo "::set-output name=image_name::${IMAGE_NAME}"
 
       - name: Setup gcloud CLI
@@ -73,7 +73,7 @@ jobs:
         if: ${{ ! steps.image_exists.outputs.image_exists }}
         run: |
           ./Scripts/Linux/windows-vm-image-builder.sh \
-            VMs/ue-jenkins-agent-docker-vms/windows/ue-jenkins-inbound-agent-docker-vm-windows.pkr.hcl \
+            VMs/ue-jenkins-docker-agent-vms/windows/ue-jenkins-docker-ssh-agent-vm-windows.pkr.hcl \
             ${{ secrets.GOOGLE_CLOUD_PROJECT_ID }} \
             ${{ secrets.GOOGLE_CLOUD_ZONE }} \
             ${{ steps.parameters.outputs.image_name }}

@@ -74,15 +74,10 @@ build {
   }
 
   provisioner "powershell" {
-    inline = [ "try { & C:\\VMs\\ue-jenkins-agent-docker-vms\\windows\\InstallSoftware-DockerSwarmAgent.ps1 } catch { Write-Error $_; exit 1 }" ]
+    inline = [ "try { & C:\\VMs\\ue-jenkins-docker-agent-vms\\windows\\InstallSoftware-DockerSshAgent.ps1 } catch { Write-Error $_; exit 1 }" ]
   }
-
   provisioner "powershell" {
-    inline = [ "exit (Invoke-Pester -Script C:\\VMs\\ue-jenkins-agent-docker-vms\\windows\\VerifyInstance.ps1 -PassThru).FailedCount" ]
-  }
-
-  provisioner "powershell" {
-    inline = [ "Remove-Item -Force -Recurse C:\\VMs -ErrorAction Stop" ]
+    inline = [ "exit (Invoke-Pester -Script C:\\VMs\\ue-jenkins-docker-agent-vms\\windows\\VerifyInstance.ps1 -PassThru).FailedCount" ]
   }
 
   provisioner "powershell" {
