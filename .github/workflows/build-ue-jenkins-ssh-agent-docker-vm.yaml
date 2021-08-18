@@ -73,7 +73,7 @@ jobs:
         if: ${{ ! steps.image_exists.outputs.image_exists }}
         run: |
           ./Scripts/Linux/windows-vm-image-builder.sh \
-            VMs/ue-jekins-agent-docker-vms/ue-jenkins-ssh-agent-docker-vm-windows.pkr.hcl \
+            VMs/ue-jekins-agent-docker-vms/windows/ue-jenkins-ssh-agent-docker-vm-windows.pkr.hcl \
             ${{ secrets.GOOGLE_CLOUD_PROJECT_ID }} \
             ${{ secrets.GOOGLE_CLOUD_ZONE }} \
             ${{ steps.parameters.outputs.image_name }}
