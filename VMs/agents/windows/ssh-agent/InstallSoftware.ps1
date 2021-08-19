@@ -18,6 +18,8 @@
 
 ########
 
+. ${PSScriptRoot}\..\..\..\..\Scripts\Windows\CommonInstallSteps\Install-SCMTools.ps1
+
 $ServiceWrapperLogsFolder = "C:\Logs"
 $JenkinsAgentFolder = "C:\J"
 $JenkinsWorkspaceFolder = "C:\W"
@@ -38,10 +40,6 @@ Write-Host "Creating folders for Jenkins..."
 
 New-Item -ItemType Directory -Path $JenkinsAgentFolder -ErrorAction Stop | Out-Null
 New-Item -ItemType Directory -Path $JenkinsWorkspaceFolder -ErrorAction Stop | Out-Null
-
-Write-Host "Creating config folder for Plastic SCM..."
-
-New-Item -ItemType Directory -Path $PlasticConfigFolder -ErrorAction Stop | Out-Null
 
 Write-Host "Adding Windows Defender exclusion rule for Jenkins-related folders..."
 
@@ -83,10 +81,8 @@ Write-Host "Installing Adoptium OpenJDK..."
 
 Install-AdoptiumOpenJDK
 
-Write-Host "Installing Git for Windows..."
-
-Install-Git
-
 ########
+
+Install-SCMTools
 
 Write-Host "Done."

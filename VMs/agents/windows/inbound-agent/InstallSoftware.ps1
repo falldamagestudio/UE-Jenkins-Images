@@ -10,10 +10,11 @@
 ######## Installation steps from the Jenkins Inbound Agent
 
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Applications\Install-AdoptiumOpenJDK.ps1
-. ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Applications\Install-Git.ps1
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Applications\Install-JenkinsRemotingAgent.ps1
 
 ########
+
+. ${PSScriptRoot}\..\..\..\..\Scripts\Windows\CommonInstallSteps\Install-SCMTools.ps1
 
 $ServiceWrapperLogsFolder = "C:\Logs"
 $JenkinsAgentFolder = "C:\J"
@@ -35,10 +36,6 @@ Write-Host "Creating folders for Jenkins..."
 
 New-Item -ItemType Directory -Path $JenkinsAgentFolder -ErrorAction Stop | Out-Null
 New-Item -ItemType Directory -Path $JenkinsWorkspaceFolder -ErrorAction Stop | Out-Null
-
-Write-Host "Creating config folder for Plastic SCM..."
-
-New-Item -ItemType Directory -Path $PlasticConfigFolder -ErrorAction Stop | Out-Null
 
 Write-Host "Adding Windows Defender exclusion rule for Jenkins-related folders..."
 
@@ -68,14 +65,12 @@ Write-Host "Installing Adoptium OpenJDK..."
 
 Install-AdoptiumOpenJDK
 
-Write-Host "Installing Git for Windows..."
-
-Install-Git
-
 Write-Host "Installing Jenkins Remoting Agent..."
 
 Install-JenkinsRemotingAgent -Path $JenkinsAgentFolder
 
 ########
+
+Install-SCMTools
 
 Write-Host "Done."
