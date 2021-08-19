@@ -72,7 +72,7 @@ Write-Host "Installing Git for Windows..."
 
 Install-Git
 
-Write-Host "Installing Jenkins Remoting Agent..."
+Write-Host "Installing Jenkins Swarm Agent..."
 
 Install-JenkinsSwarmAgent -Location $JenkinsAgentFolder
 
