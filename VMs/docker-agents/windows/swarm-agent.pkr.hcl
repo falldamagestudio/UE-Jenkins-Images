@@ -82,10 +82,6 @@ build {
   }
 
   provisioner "powershell" {
-    inline = [ "Remove-Item -Force -Recurse C:\\VMs -ErrorAction Stop" ]
-  }
-
-  provisioner "powershell" {
     inline = [
       "Remove-Item -Force -Recurse C:\\VMs -ErrorAction Stop",
       "Remove-Item -Force -Recurse C:\\builder-files -ErrorAction Stop"
