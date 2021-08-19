@@ -18,7 +18,7 @@ function Install-JenkinsRemotingAgent {
     Invoke-WebRequest -UseBasicParsing -Uri $DownloadUrl -OutFile $TargetFile
 
     # Validate content hash for remoting agent jar
-    $ExpectedHash = (Invoke-WebRequest -UseBasicParsing -Uri "${DownloadURL}.sha1").Content
+    $ExpectedHash = Invoke-RestMethod -Uri "${DownloadURL}.sha1"
     $ActualHash = (Get-FileHash $TargetFile -Algorithm SHA1).Hash
 
     if ($ExpectedHash -ne $ActualHash) {
