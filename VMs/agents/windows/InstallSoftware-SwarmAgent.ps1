@@ -74,7 +74,7 @@ Install-Git
 
 Write-Host "Installing Jenkins Swarm Agent..."
 
-Install-JenkinsSwarmAgent -Location $JenkinsAgentFolder
+Install-JenkinsSwarmAgent -Path $JenkinsAgentFolder
 
 ########
 
