@@ -2,7 +2,7 @@
 
 BeforeAll {
 
-	. ${PSScriptRoot}\..\..\SystemConfiguration\Register-AutoStartService.ps1
+	. ${PSScriptRoot}\Register-AutoStartService-JenkinsAgent.ps1
 
 }
 
@@ -26,7 +26,7 @@ Describe 'Register-AutoStartService-JenkinsAgent' {
 
 		$ScriptLocation = "C:\MyScript.ps1"
 
-		Mock Test-Path { true }
+		Mock Test-Path { $true }
 		Mock Register-AutoStartService { throw "Failed registering service" }
 
 		{ Register-AutoStartService-JenkinsAgent -ScriptLocation $ScriptLocation } |
@@ -40,7 +40,7 @@ Describe 'Register-AutoStartService-JenkinsAgent' {
 
 		$ScriptLocation = "C:\MyScript.ps1"
 
-		Mock Test-Path { true }
+		Mock Test-Path { $true }
 		Mock Register-AutoStartService { }
 
 		{ Register-AutoStartService-JenkinsAgent -ScriptLocation $ScriptLocation } |
