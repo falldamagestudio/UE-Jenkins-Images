@@ -9,7 +9,7 @@
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Applications\Install-Chocolatey.ps1
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Applications\Install-OpenSSHServer.ps1
 
-. ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Agents\Services\GCERegisterService-DockerSshAgent-Startup.ps1
+. ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Agents\Services\Register-AutoStartService-JenkinsAgent.ps1
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Agents\Services\Install-JavaShim-DockerSshAgent.ps1
 
 $ServiceWrapperLogsFolder = "C:\Logs"
@@ -17,6 +17,9 @@ $JenkinsAgentFolder = "C:\J"
 $JenkinsWorkspaceFolder = "C:\W"
 
 $PlasticConfigFolder = "C:\PlasticConfig"
+
+$ScriptLocation = "${PSScriptRoot}\..\..\..\Scripts\Windows\Agents\Services\GCEService-DockerSshAgent-Startup.ps1"
+
 
 Write-Host "Enabling Win32 Long Paths..."
 
@@ -67,7 +70,7 @@ Install-OpenSSHServer
 
 Write-Host "Registering Jenkins Agent script as autostarting..."
 
-GCERegisterService-DockerSshAgent-Startup
+Register-AutoStartService-JenkinsAgent -ScriptLocation $ScriptLocation
 
 Write-Host "Installing Java shim for Docker SSH agent..."
 

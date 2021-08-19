@@ -5,7 +5,7 @@
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Applications\Install-GCELoggingAgentSource-ServiceWrapper.ps1
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Applications\Install-GCELoggingAgentSource-JenkinsAgentRemoting.ps1
 
-. ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Agents\Services\GCERegisterService-DockerInboundAgent.ps1
+. ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Agents\Services\Register-AutoStartService-JenkinsAgent.ps1
 
 ######## Installation steps from the Jenkins Inbound Agent
 
@@ -20,6 +20,8 @@ $JenkinsAgentFolder = "C:\J"
 $JenkinsWorkspaceFolder = "C:\W"
 
 $PlasticConfigFolder = "C:\PlasticConfig"
+
+$ScriptLocation = "${PSScriptRoot}\..\..\..\Scripts\Windows\Agents\Services\GCEService-InboundAgent.ps1"
 
 Write-Host "Enabling Win32 Long Paths..."
 
@@ -58,7 +60,7 @@ Install-GCELoggingAgentSource-JenkinsAgentRemoting -JenkinsAgentFolder $JenkinsA
 
 Write-Host "Registering Jenkins Agent script as autostarting..."
 
-GCERegisterService-DockerInboundAgent
+Register-AutoStartService-JenkinsAgent -ScriptLocation $ScriptLocation
 
 ######## Installation steps from the Jenkins Inbound Agent
 
