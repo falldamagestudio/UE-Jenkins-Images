@@ -1,13 +1,13 @@
 
-. ${PSScriptRoot}\..\Helpers\Ensure-TestToolVersions.ps1
+. ${PSScriptRoot}\..\..\Helpers\Ensure-TestToolVersions.ps1
 
 BeforeAll {
-	. ${PSScriptRoot}\..\SystemConfiguration\Get-GCESecret.ps1
-	. ${PSScriptRoot}\Run\Run-DockerSshAgent.ps1
-	. ${PSScriptRoot}\..\Applications\Authenticate-DockerForGoogleArtifactRegistry.ps1
+	. ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESecret.ps1
+	. ${PSScriptRoot}\..\Run\Run-DockerSshAgent.ps1
+	. ${PSScriptRoot}\..\..\Applications\Authenticate-DockerForGoogleArtifactRegistry.ps1
 }
 
-Describe 'Run-DockerSshAgentWrapper' {
+Describe 'Run-JavaShim-DockerSshAgent' {
 
 	It "Succeeds when launched with -fullversion" {
 
@@ -34,7 +34,7 @@ Describe 'Run-DockerSshAgentWrapper' {
 
 		Mock Run-DockerSshAgent { throw "Run-DockerSshAgent should not be called" }
 
-		{ & ${PSScriptRoot}\Run-DockerSshAgentWrapper.ps1 -fullversion } |
+		{ & ${PSScriptRoot}\Run-JavaShim-DockerSshAgent.ps1 -fullversion } |
 			Should -Not -Throw
 	}
 
@@ -63,7 +63,7 @@ Describe 'Run-DockerSshAgentWrapper' {
 
 		Mock Run-DockerSshAgent { throw "Run-DockerSshAgent should not be called" }
 
-		{ & ${PSScriptRoot}\Run-DockerSshAgentWrapper.ps1 } |
+		{ & ${PSScriptRoot}\Run-JavaShim-DockerSshAgent.ps1 } |
 			Should -Throw
 	}
 
@@ -105,7 +105,7 @@ Describe 'Run-DockerSshAgentWrapper' {
 
 		Mock Start-Sleep { if ($script:SleepCount -lt 10) { $script:SleepCount++ } else { throw "Infinite loop detected when waiting for GCE secrets to be set" } }
 
-		{ & ${PSScriptRoot}\Run-DockerSshAgentWrapper.ps1 -jar "C:\AgentJarDownloadLocation\agent.jar" } |
+		{ & ${PSScriptRoot}\Run-JavaShim-DockerSshAgent.ps1 -jar "C:\AgentJarDownloadLocation\agent.jar" } |
 			Should -Not -Throw
 
 		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "agent-key-file" }

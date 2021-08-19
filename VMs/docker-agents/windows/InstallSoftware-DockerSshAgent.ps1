@@ -10,6 +10,7 @@
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Applications\Install-OpenSSHServer.ps1
 
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Agents\Services\GCERegisterService-DockerSshAgent-Startup.ps1
+. ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Agents\Services\Install-JavaShim-DockerSshAgent.ps1
 
 $ServiceWrapperLogsFolder = "C:\Logs"
 $JenkinsAgentFolder = "C:\J"
@@ -67,5 +68,9 @@ Install-OpenSSHServer
 Write-Host "Registering Jenkins Agent script as autostarting..."
 
 GCERegisterService-DockerSshAgent-Startup
+
+Write-Host "Installing Java shim for Docker SSH agent..."
+
+Install-JavaShim-DockerSshAgent
 
 Write-Host "Done."

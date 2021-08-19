@@ -7,13 +7,13 @@ param (
 # This enables post-mortem inspection of the script's activities via log files
 # It also allows GCE's logging agent to pick up the activity and forward it to Google's Cloud Logging
 # TODO: decide on a better path for logs
-Start-Transcript -LiteralPath "C:\Logs\Run-DockerSshAgentWrapper-$(Get-Date -Format "yyyyMMdd-HHmmss").txt"
+Start-Transcript -LiteralPath "C:\Logs\Run-JavaShim-DockerSshAgent-$(Get-Date -Format "yyyyMMdd-HHmmss").txt"
 
 try {
 
-    . ${PSScriptRoot}\..\SystemConfiguration\Get-GCESecret.ps1
-    . ${PSScriptRoot}\..\Applications\Authenticate-DockerForGoogleArtifactRegistry.ps1
-    . ${PSScriptRoot}\Run\Run-DockerSshAgent.ps1
+    . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESecret.ps1
+    . ${PSScriptRoot}\..\..\Applications\Authenticate-DockerForGoogleArtifactRegistry.ps1
+    . ${PSScriptRoot}\..\Run\Run-DockerSshAgent.ps1
 
     # Respond to version query; the GCE plugin does this to verify that the java executable is present, and doesn't care about the actual version number
     if ($fullversion) {
@@ -23,8 +23,8 @@ try {
 
     # If it isn't a version query, then we require it to be a launch command
     if (!$jar) {
-        Write-Host "Error: java-to-docker shim should be executed like this: /run/jenkins-agent-wrapper.sh -jar <path to agent.jar>"
-        throw "Error: java-to-docker shim should be executed like this: /run/jenkins-agent-wrapper.sh -jar <path to agent.jar>"
+        Write-Host "Error: java-to-docker shim should be executed like this: java -jar <path to agent.jar>"
+        throw "Error: java-to-docker shim should be executed like this: java -jar <path to agent.jar>"
     }
 
     $JenkinsAgentFolder = "C:\J"
