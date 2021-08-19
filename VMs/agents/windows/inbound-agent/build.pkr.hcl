@@ -74,8 +74,9 @@ build {
   }
 
   provisioner "powershell" {
-    inline = [ "try { & C:\\VMs\\agents\\windows\\InstallSoftware-SshAgent.ps1 } catch { Write-Error $_; exit 1 }" ]
+    inline = [ "try { & C:\\VMs\\agents\\windows\\inbound-agent\\InstallSoftware.ps1 } catch { Write-Error $_; exit 1 }" ]
   }
+
   provisioner "powershell" {
     inline = [ "exit (Invoke-Pester -Script C:\\VMs\\agents\\windows\\VerifyInstance.ps1 -PassThru).FailedCount" ]
   }

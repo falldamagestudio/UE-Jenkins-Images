@@ -42,7 +42,7 @@ jobs:
         if: ${{ ! steps.image_exists.outputs.image_exists }}
         run: |
           ./Scripts/Linux/windows-vm-image-builder.sh \
-            VMs/agents/windows/ssh-agent.pkr.hcl \
+            VMs/agents/windows/ssh-agent/build.pkr.hcl \
             ${{ secrets.GOOGLE_CLOUD_PROJECT_ID }} \
             ${{ secrets.GOOGLE_CLOUD_ZONE }} \
             ${{ steps.parameters.outputs.image_name }}

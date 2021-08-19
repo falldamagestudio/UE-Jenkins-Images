@@ -74,7 +74,7 @@ build {
   }
 
   provisioner "powershell" {
-    inline = [ "try { & C:\\VMs\\agents\\windows\\InstallSoftware-InboundAgent.ps1 } catch { Write-Error $_; exit 1 }" ]
+    inline = [ "try { & C:\\VMs\\agents\\windows\\swarm-agent\\InstallSoftware.ps1 } catch { Write-Error $_; exit 1 }" ]
   }
 
   provisioner "powershell" {

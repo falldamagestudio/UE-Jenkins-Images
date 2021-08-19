@@ -74,9 +74,8 @@ build {
   }
 
   provisioner "powershell" {
-    inline = [ "try { & C:\\VMs\\docker-agents\\windows\\InstallSoftware-DockerSwarmAgent.ps1 } catch { Write-Error $_; exit 1 }" ]
+    inline = [ "try { & C:\\VMs\\docker-agents\\windows\\ssh-agent\\InstallSoftware.ps1 } catch { Write-Error $_; exit 1 }" ]
   }
-
   provisioner "powershell" {
     inline = [ "exit (Invoke-Pester -Script C:\\VMs\\docker-agents\\windows\\VerifyInstance.ps1 -PassThru).FailedCount" ]
   }

@@ -73,7 +73,7 @@ jobs:
         if: ${{ ! steps.image_exists.outputs.image_exists }}
         run: |
           ./Scripts/Linux/windows-vm-image-builder.sh \
-            VMs/docker-agents/windows/swarm-agent.pkr.hcl \
+            VMs/docker-agents/windows/swarm-agent/build.pkr.hcl \
             ${{ secrets.GOOGLE_CLOUD_PROJECT_ID }} \
             ${{ secrets.GOOGLE_CLOUD_ZONE }} \
             ${{ steps.parameters.outputs.image_name }}

@@ -74,7 +74,7 @@ build {
   }
 
   provisioner "powershell" {
-    inline = [ "try { & C:\\VMs\\docker-agents\\windows\\InstallSoftware-DockerInboundAgent.ps1 } catch { Write-Error $_; exit 1 }" ]
+    inline = [ "try { & C:\\VMs\\docker-agents\\windows\\inbound-agent\\InstallSoftware.ps1 } catch { Write-Error $_; exit 1 }" ]
   }
 
   provisioner "powershell" {
