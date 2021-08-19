@@ -1,0 +1,48 @@
+name: inbound-agent-vm
+
+on:
+  push:
+    branches:
+      - 'main'
+
+  workflow_dispatch:
+
+jobs:
+
+  build-windows:
+    name: Windows - inbound-agent-vm
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set parameters
+        id: parameters
+        run: |
+          SHORT_SHA=$(git rev-parse --short ${{ github.sha }})
+          IMAGE_NAME=inbound-agent-${SHORT_SHA}-windows
+          echo "::set-output name=image_name::${IMAGE_NAME}"
+
+      - name: Setup gcloud CLI
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          project_id: ${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}
+          service_account_key: ${{ secrets.GOOGLE_CLOUD_IMAGE_BUILDER_INSTANCE_CONTROLLER_SERVICE_ACCOUNT_KEY }}
+          export_default_credentials: true
+
+      - name: Test if image already exists
+        id: image_exists
+        run: |
+          # Detect whether the image already exists
+          # If it does exist, it sets the 'image_exists' output
+          # It it doesn't exist, it leaves the 'image_exists' output unset
+          gcloud compute images describe ${{ steps.parameters.outputs.image_name }} > /dev/null 2>&1 && echo "::set-output name=image_exists::true" || true
+
+      - name: "Build image"
+        if: ${{ ! steps.image_exists.outputs.image_exists }}
+        run: |
+          ./Scripts/Linux/windows-vm-image-builder.sh \
+            VMs/agents/windows/inbound-agent.pkr.hcl \
+            ${{ secrets.GOOGLE_CLOUD_PROJECT_ID }} \
+            ${{ secrets.GOOGLE_CLOUD_ZONE }} \
+            ${{ steps.parameters.outputs.image_name }}
