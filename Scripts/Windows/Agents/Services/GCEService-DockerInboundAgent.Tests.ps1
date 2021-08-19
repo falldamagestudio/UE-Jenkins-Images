@@ -37,7 +37,7 @@ Describe 'GCEService-DockerInboundAgent' {
 		Mock Get-GCESecret -ParameterFilter { $Key -eq "jenkins-url" } { $JenkinsURLRef }
 		Mock Get-GCESecret -ParameterFilter { $Key -eq "agent-key-file" } { $AgentKeyFileRef }
 		Mock Get-GCESecret -ParameterFilter { $Key -eq "inbound-agent-image-url-windows" } { $AgentImageURLRef }
-		Mock Get-GCESecret -ParameterFilter { $Key -eq "inbound-agent-secret-${AgentNameRef}" } { if ($script:LoopCount -lt 3) { $script:LoopCount++; $null } else { $JenkinsSecretRef } }
+		Mock Get-GCESecret -ParameterFilter { $Key -eq "inbound-agent-secret-${AgentNameRef}" } { $script:LoopCount++; if ($script:LoopCount -lt 3) { $null } else { $JenkinsSecretRef } }
 		Mock Get-GCESecret -ParameterFilter { $Key -eq "plastic-config-zip" } { $PlasticConfigZipRef }
 		Mock Get-GCESecret { throw "Invalid invocation of Get-GCESecret" }
 
@@ -54,18 +54,18 @@ Describe 'GCEService-DockerInboundAgent' {
 		{ & ${PSScriptRoot}\GCEService-DockerInboundAgent.ps1 } |
 			Should -Not -Throw
 
-		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "jenkins-url" }
-		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "agent-key-file" }
-		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "inbound-agent-image-url-windows" }
-		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "inbound-agent-secret-${AgentNameRef}" }
-		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "plastic-config-zip" }
+		Assert-MockCalled -Exactly -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "jenkins-url" }
+		Assert-MockCalled -Exactly -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "agent-key-file" }
+		Assert-MockCalled -Exactly -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "inbound-agent-image-url-windows" }
+		Assert-MockCalled -Exactly -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "inbound-agent-secret-${AgentNameRef}" }
+		Assert-MockCalled -Exactly -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "plastic-config-zip" }
 
-		Assert-MockCalled -Times 2 Start-Sleep
+		Assert-MockCalled -Exactly -Times 2 Start-Sleep
 
-		Assert-MockCalled -Times 1 Expand-Archive
+		Assert-MockCalled -Exactly -Times 1 Expand-Archive
 
-		Assert-MockCalled -Times 1 Authenticate-DockerForGoogleArtifactRegistry
+		Assert-MockCalled -Exactly -Times 1 Authenticate-DockerForGoogleArtifactRegistry
 
-		Assert-MockCalled -Times 1 Run-DockerInboundAgent
+		Assert-MockCalled -Exactly -Times 1 Run-DockerInboundAgent
 	}
 }

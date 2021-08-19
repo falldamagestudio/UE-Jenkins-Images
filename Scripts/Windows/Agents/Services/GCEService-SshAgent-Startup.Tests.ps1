@@ -23,7 +23,7 @@ Describe 'GCEService-SshAgent-Startup' {
 
 		Mock Resize-PartitionToMaxSize { }
 
-		Mock Get-GCESecret -ParameterFilter { $Key -eq "ssh-vm-public-key-windows" } { if ($script:LoopCount -lt 3) { $script:LoopCount++; $null } else { $PublicKeyRef } }
+		Mock Get-GCESecret -ParameterFilter { $Key -eq "ssh-vm-public-key-windows" } { $script:LoopCount++; if ($script:LoopCount -lt 3) { $null } else { $PublicKeyRef } }
 		Mock Get-GCESecret { throw "Invalid invocation of Get-GCESecret" }
 
 		Mock Set-Content -ParameterFilter { $Path -eq "${env:PROGRAMDATA}\ssh\administrators_authorized_keys" } { }

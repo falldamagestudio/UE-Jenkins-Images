@@ -32,7 +32,7 @@ Describe 'GCEService-InboundAgent' {
 		Mock Get-GCEInstanceHostname { "${AgentNameRef}.c.testproject.internal" }
 
 		Mock Get-GCESecret -ParameterFilter { $Key -eq "jenkins-url" } { $JenkinsURLRef }
-		Mock Get-GCESecret -ParameterFilter { $Key -eq "inbound-agent-secret-${AgentNameRef}" } { if ($script:LoopCount -lt 3) { $script:LoopCount++; $null } else { $JenkinsSecretRef } }
+		Mock Get-GCESecret -ParameterFilter { $Key -eq "inbound-agent-secret-${AgentNameRef}" } { $script:LoopCount++; if ($script:LoopCount -lt 3) { $null } else { $JenkinsSecretRef } }
 		Mock Get-GCESecret -ParameterFilter { $Key -eq "plastic-config-zip" } { $PlasticConfigZipRef }
 		Mock Get-GCESecret { throw "Invalid invocation of Get-GCESecret" }
 

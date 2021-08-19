@@ -23,7 +23,7 @@ Describe 'GCEService-DockerSshAgent-Startup' {
 
 		Mock Resize-PartitionToMaxSize { }
 
-		Mock Get-GCESecret -ParameterFilter { $Key -eq "ssh-vm-public-key-windows" } { if ($script:LoopCount -lt 3) { $script:LoopCount++; $null } else { $PublicKeyRef } }
+		Mock Get-GCESecret -ParameterFilter { $Key -eq "ssh-vm-public-key-windows" } { $script:LoopCount++; if ($script:LoopCount -lt 3) { $null } else { $PublicKeyRef } }
 		Mock Get-GCESecret { throw "Invalid invocation of Get-GCESecret" }
 
 		Mock Set-Content -ParameterFilter { $Path -eq "${env:PROGRAMDATA}\ssh\administrators_authorized_keys" } { }
@@ -42,13 +42,13 @@ Describe 'GCEService-DockerSshAgent-Startup' {
 		{ & ${PSScriptRoot}\GCEService-DockerSshAgent-Startup.ps1 } |
 			Should -Not -Throw
 
-		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "ssh-vm-public-key-windows" }
+		Assert-MockCalled -Exactly -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "ssh-vm-public-key-windows" }
 
-		Assert-MockCalled -Times 2 Start-Sleep
+		Assert-MockCalled -Exactly -Times 2 Start-Sleep
 
-		Assert-MockCalled -Times 1 Set-Content
+		Assert-MockCalled -Exactly -Times 1 Set-Content
 
-		Assert-MockCalled -Times 1 Start-Service
-		Assert-MockCalled -Times 1 Get-Service
+		Assert-MockCalled -Exactly -Times 1 Start-Service
+		Assert-MockCalled -Exactly -Times 1 Get-Service
 	}
 }

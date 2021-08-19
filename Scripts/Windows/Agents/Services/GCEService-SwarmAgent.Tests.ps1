@@ -37,7 +37,7 @@ Describe 'GCEService-SwarmAgent' {
 
 		Mock Get-GCESecret -ParameterFilter { $Key -eq "jenkins-url" } { $JenkinsURLRef }
 		Mock Get-GCESecret -ParameterFilter { $Key -eq "swarm-agent-username" } { $AgentUsernameRef }
-		Mock Get-GCESecret -ParameterFilter { $Key -eq "swarm-agent-api-token" } { if ($script:LoopCount -lt 3) { $script:LoopCount++; $null } else { $AgentAPITokenRef } }
+		Mock Get-GCESecret -ParameterFilter { $Key -eq "swarm-agent-api-token" } { $script:LoopCount++; if ($script:LoopCount -lt 3) { $null } else { $AgentAPITokenRef } }
 		Mock Get-GCESecret -ParameterFilter { $Key -eq "plastic-config-zip" } { $PlasticConfigZipRef }
 		Mock Get-GCESecret { throw "Invalid invocation of Get-GCESecret" }
 		Mock Get-GCEInstanceMetadata -ParameterFilter { $Key -eq "jenkins-labels" } { $LabelsRef }
@@ -63,8 +63,6 @@ Describe 'GCEService-SwarmAgent' {
 		Assert-MockCalled -Exactly -Times 2 Start-Sleep
 
 		Assert-MockCalled -Exactly -Times 1 Expand-Archive
-
-		Assert-MockCalled -Exactly -Times 1 Authenticate-ForGoogleArtifactRegistry
 
 		Assert-MockCalled -Exactly -Times 1 Run-SwarmAgent
 	}

@@ -42,7 +42,7 @@ Describe 'GCEService-DockerSwarmAgent' {
 		Mock Get-GCESecret -ParameterFilter { $Key -eq "agent-key-file" } { $AgentKeyFileRef }
 		Mock Get-GCESecret -ParameterFilter { $Key -eq "swarm-agent-image-url-windows" } { $AgentImageURLRef }
 		Mock Get-GCESecret -ParameterFilter { $Key -eq "swarm-agent-username" } { $AgentUsernameRef }
-		Mock Get-GCESecret -ParameterFilter { $Key -eq "swarm-agent-api-token" } { if ($script:LoopCount -lt 3) { $script:LoopCount++; $null } else { $AgentAPITokenRef } }
+		Mock Get-GCESecret -ParameterFilter { $Key -eq "swarm-agent-api-token" } { $script:LoopCount++; if ($script:LoopCount -lt 3) { $null } else { $AgentAPITokenRef } }
 		Mock Get-GCESecret -ParameterFilter { $Key -eq "plastic-config-zip" } { $PlasticConfigZipRef }
 		Mock Get-GCESecret { throw "Invalid invocation of Get-GCESecret" }
 		Mock Get-GCEInstanceMetadata -ParameterFilter { $Key -eq "jenkins-labels" } { $LabelsRef }
@@ -62,20 +62,20 @@ Describe 'GCEService-DockerSwarmAgent' {
 		{ & ${PSScriptRoot}\GCEService-DockerSwarmAgent.ps1 } |
 			Should -Not -Throw
 
-		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "jenkins-url" }
-		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "agent-key-file" }
-		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "swarm-agent-image-url-windows" }
-		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "swarm-agent-username" }
-		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "swarm-agent-api-token" }
-		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "plastic-config-zip" }
-		Assert-MockCalled -Times 3 Get-GCEInstanceMetadata -ParameterFilter { $Key -eq "jenkins-labels" }
+		Assert-MockCalled -Exactly -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "jenkins-url" }
+		Assert-MockCalled -Exactly -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "agent-key-file" }
+		Assert-MockCalled -Exactly -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "swarm-agent-image-url-windows" }
+		Assert-MockCalled -Exactly -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "swarm-agent-username" }
+		Assert-MockCalled -Exactly -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "swarm-agent-api-token" }
+		Assert-MockCalled -Exactly -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "plastic-config-zip" }
+		Assert-MockCalled -Exactly -Times 3 Get-GCEInstanceMetadata -ParameterFilter { $Key -eq "jenkins-labels" }
 
-		Assert-MockCalled -Times 2 Start-Sleep
+		Assert-MockCalled -Exactly -Times 2 Start-Sleep
 
-		Assert-MockCalled -Times 1 Expand-Archive
+		Assert-MockCalled -Exactly -Times 1 Expand-Archive
 
-		Assert-MockCalled -Times 1 Authenticate-DockerForGoogleArtifactRegistry
+		Assert-MockCalled -Exactly -Times 1 Authenticate-DockerForGoogleArtifactRegistry
 
-		Assert-MockCalled -Times 1 Run-DockerSwarmAgent
+		Assert-MockCalled -Exactly -Times 1 Run-DockerSwarmAgent
 	}
 }
