@@ -36,8 +36,8 @@ function Install-OpenSSHServer {
     #
     #  1. The SSH server will determine that it's being used non-interactively, and will therefore
     #     not create a PTY.
-    #  2. Jenkins logs in to the machine and runs Run-SshAgentWrapper.ps1.
-    #  3. Run-SshAgentWrapper.ps1 issues some commands that want to show progress (Copy-Item, Expand-Archive. ...)
+    #  2. Jenkins logs in to the machine and runs 'java <options>'. This invokes the Java shim, which forwards to Run-JavaShim-DockerSshAgent.ps1.
+    #  3. Run-JavaShim-DockerSshAgent.ps1 issues some commands that want to show progress (Copy-Item, Expand-Archive. ...)
     #  4. Powershell's progress display logic attempts to read from stdout.
     #  5. Since there is no PTY, reading from stdout results in a Win32-level access denied.
     #  6. The Powershell command in question fails. (Setting progress preference to "SilentlyContinue" makes
