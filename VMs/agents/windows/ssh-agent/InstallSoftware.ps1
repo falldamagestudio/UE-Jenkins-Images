@@ -24,7 +24,7 @@ $JenkinsWorkspaceFolder = "C:\W"
 
 $PlasticConfigFolder = "C:\PlasticConfig"
 
-$ScriptLocation = "${PSScriptRoot}\..\..\..\Scripts\Windows\Agents\Services\GCEService-SshAgent-Startup.ps1"
+$ScriptLocation = "${PSScriptRoot}\..\..\..\..\Scripts\Windows\Agents\Services\GCEService-SshAgent-Startup.ps1"
 
 Write-Host "Enabling Win32 Long Paths..."
 

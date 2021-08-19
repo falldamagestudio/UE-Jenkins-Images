@@ -13,7 +13,7 @@ $JenkinsWorkspaceFolder = "C:\W"
 
 $PlasticConfigFolder = "C:\PlasticConfig"
 
-$ScriptLocation = "${PSScriptRoot}\..\..\..\Scripts\Windows\Agents\Services\GCEService-DockerSwarmAgent.ps1"
+$ScriptLocation = "${PSScriptRoot}\..\..\..\..\Scripts\Windows\Agents\Services\GCEService-DockerSwarmAgent.ps1"
 
 Write-Host "Enabling Win32 Long Paths..."
 
