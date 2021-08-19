@@ -6,7 +6,7 @@ ROOT_DIR="${SCRIPTS_DIR}/../.."
 PACKER_SCRIPT="$1"
 PROJECT_ID="$2"
 ZONE="$3"
-IMAGE_NAME="$6"
+IMAGE_NAME="$4"
 
 if [ $# -ne 4 ]; then
 	1>&2 echo "Usage: windows-vm-image-builder.sh <packer script> <project ID> <zone> <image name>"
