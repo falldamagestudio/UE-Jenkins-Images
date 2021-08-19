@@ -7,8 +7,12 @@ class JenkinsRemotingAgentContentHashException : Exception {
 
 function Install-JenkinsRemotingAgent {
 
+    param (
+		[Parameter(Mandatory)] [string] $Path
+    )
+
     $DownloadUrl = "https://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/4.7/remoting-4.7.jar"
-    $TargetFile = "C:\ProgramData\Jenkins\agent.jar"
+    $TargetFile = "${Path}\agent.jar"
 
     # Download Jenkins remoting agent jar, and place it in a default location
     Invoke-WebRequest -UseBasicParsing -Uri $DownloadUrl -OutFile $TargetFile

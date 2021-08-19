@@ -13,7 +13,7 @@ Describe 'Install-JenkinsRemotingAgent' {
 		Mock Invoke-WebRequest { throw "Invoke-WebRequest failed" }
 		Mock Get-FileHash { throw "Get-FileHash should not be called" }
 
-		{ Install-JenkinsRemotingAgent } |
+		{ Install-JenkinsRemotingAgent -Path "C:\Jenkins" } |
 			Should -Throw "Invoke-WebRequest failed"
 
 		Assert-MockCalled -Exactly -Times 1 Invoke-WebRequest
@@ -27,7 +27,7 @@ Describe 'Install-JenkinsRemotingAgent' {
 		Mock Invoke-WebRequest { throw "Invalid invocation of Invoke-WebRequest" }
 		Mock Get-FileHash { throw "Get-FileHash should not be called" }
 
-		{ Install-JenkinsRemotingAgent } |
+		{ Install-JenkinsRemotingAgent -Path "C:\Jenkins" } |
 			Should -Throw "Invoke-WebRequest for sha1 hash failed"
 
 		Assert-MockCalled -Exactly -Times 2 Invoke-WebRequest
@@ -41,7 +41,7 @@ Describe 'Install-JenkinsRemotingAgent' {
 		Mock Invoke-WebRequest { throw "Invalid invocation of Invoke-WebRequest" }
 		Mock Get-FileHash { throw "Get-FileHash failed" }
 
-		{ Install-JenkinsRemotingAgent } |
+		{ Install-JenkinsRemotingAgent -Path "C:\Jenkins" } |
 			Should -Throw "Get-FileHash failed"
 
 		Assert-MockCalled -Exactly -Times 2 Invoke-WebRequest
@@ -55,7 +55,7 @@ Describe 'Install-JenkinsRemotingAgent' {
 		Mock Invoke-WebRequest { throw "Invalid invocation of Invoke-WebRequest" }
 		Mock Get-FileHash { return @{ Hash = "hassh 2"} }
 
-		{ Install-JenkinsRemotingAgent } |
+		{ Install-JenkinsRemotingAgent -Path "C:\Jenkins" } |
 			Should -Throw
 
 		Assert-MockCalled -Exactly -Times 2 Invoke-WebRequest
@@ -69,7 +69,7 @@ Describe 'Install-JenkinsRemotingAgent' {
 		Mock Invoke-WebRequest { throw "Invalid invocation of Invoke-WebRequest" }
 		Mock Get-FileHash { return @{ Hash = "hash 1"} }
 
-		{ Install-JenkinsRemotingAgent } |
+		{ Install-JenkinsRemotingAgent -Path "C:\Jenkins" } |
 			Should -Not -Throw
 
 		Assert-MockCalled -Exactly -Times 2 Invoke-WebRequest

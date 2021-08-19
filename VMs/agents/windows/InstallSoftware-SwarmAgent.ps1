@@ -11,6 +11,7 @@
 
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Applications\Install-AdoptiumOpenJDK.ps1
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Applications\Install-Git.ps1
+. ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Applications\Install-JenkinsSwarmAgent.ps1
 
 ########
 
@@ -68,6 +69,10 @@ Install-AdoptiumOpenJDK
 Write-Host "Installing Git for Windows..."
 
 Install-Git
+
+Write-Host "Installing Jenkins Remoting Agent..."
+
+Install-JenkinsSwarmAgent -Location $JenkinsAgentFolder
 
 ########
 

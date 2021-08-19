@@ -72,7 +72,7 @@ Install-Git
 
 Write-Host "Installing Jenkins Remoting Agent..."
 
-Install-JenkinsRemotingAgent
+Install-JenkinsRemotingAgent -Location $JenkinsAgentFolder
 
 ########
 
