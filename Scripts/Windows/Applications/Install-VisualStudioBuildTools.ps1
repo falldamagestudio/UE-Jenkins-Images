@@ -6,6 +6,8 @@ class VSBuildToolsInstallerException : Exception {
 
 function Install-VisualStudioBuildTools {
 
+	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1"
+
 	$TempFolder = "C:\Temp"
 	$BuildToolsExeName = "vs_buildtools.exe"
 	$InstalledFolder = "C:\BuildTools"
@@ -19,21 +21,13 @@ function Install-VisualStudioBuildTools {
 		$InstallerLocation = (Join-Path -Path $TempFolder -ChildPath $BuildToolsExeName -ErrorAction Stop)
 
 		# Download installer
-		Invoke-WebRequest -UseBasicParsing -Uri "https://aka.ms/vs/16/release/vs_buildtools.exe" -OutFile $InstallerLocation -ErrorAction Stop
+		Invoke-WebRequest -UseBasicParsing -Uri $ToolsAndVersions.VisualStudioBuildTools.InstallerUrl -OutFile $InstallerLocation -ErrorAction Stop
 
 		# Invoke installer
-		$WorkloadsAndComponents = @(
-			"Microsoft.VisualStudio.Workload.VCTools"
-			"Microsoft.VisualStudio.Component.VC.Tools.x86.x64"
-			"Microsoft.VisualStudio.Workload.ManagedDesktopBuildTools"	# Required to get PDBCOPY.EXE, which in turn is applied to all PDB files
-			"Microsoft.VisualStudio.Component.Windows10SDK.18362"
-			"Microsoft.Net.Component.4.6.2.TargetingPack"	# Required when building AutomationTool
-			"Microsoft.Net.Component.4.5.TargetingPack"	# Required when building SwarmCoordinator
-		)
 
 		$Args = @("--quiet", "--wait", "--norestart", "--nocache", "--installpath", $InstalledFolder)
 		
-		foreach ($WorkloadOrComponent in $WorkloadsAndComponents) {
+		foreach ($WorkloadOrComponent in $ToolsAndVersions.VisualStudioBuildTools.WorkloadsAndComponents) {
 			$Args += "--add"
 			$Args += $WorkloadOrComponent
 		}

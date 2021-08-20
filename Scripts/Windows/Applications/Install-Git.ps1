@@ -6,7 +6,9 @@ class GitInstallerException : Exception {
 
 function Install-Git {
 
-	$TempFolder = "C:\Temp"
+	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1"
+
+    $TempFolder = "C:\Temp"
 	$InstallerName = "GitInstaller.exe"
 
 	# Create temp folder
@@ -18,7 +20,7 @@ function Install-Git {
 		$InstallerLocation = (Join-Path -Path $TempFolder -ChildPath $InstallerName -ErrorAction Stop)
 
 		# Download Git for Windows Installer
-		Invoke-WebRequest -UseBasicParsing -Uri "https://github.com/git-for-windows/git/releases/download/v2.33.0.windows.1/Git-2.33.0-64-bit.exe" -OutFile $InstallerLocation -ErrorAction Stop
+		Invoke-WebRequest -UseBasicParsing -Uri $ToolsAndVersions.GitInstallerUrl -OutFile $InstallerLocation -ErrorAction Stop
 	
 		$Process = Start-Process -FilePath $InstallerLocation -ArgumentList @("/SILENT", "/SUPPRESSMSGBOXES", "/NORESTART") -NoNewWindow -Wait -PassThru
 	

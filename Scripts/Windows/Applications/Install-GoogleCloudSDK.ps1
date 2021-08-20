@@ -6,6 +6,8 @@ class GoogleCloudSDKInstallerException : Exception {
 
 function Install-GoogleCloudSDK {
 
+	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1"
+
 	$TempFolder = "C:\Temp"
 	$ArchiveName = "google-cloud-sdk.zip"
 	$InstallFolder = "C:\Program Files" # The Google Cloud SDK will install into a folder named 'google-cloud-sdk' within thie folder
@@ -19,7 +21,7 @@ function Install-GoogleCloudSDK {
 		$ArchiveLocation = (Join-Path -Path $TempFolder -ChildPath $ArchiveName -ErrorAction Stop)
 
 		# Download Google Cloud SDK package
-		Invoke-WebRequest -UseBasicParsing -Uri "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-336.0.0-windows-x86_64-bundled-python.zip" -OutFile $ArchiveLocation -ErrorAction Stop
+		Invoke-WebRequest -UseBasicParsing -Uri $ToolsAndVersions.GoogleCloudSDKInstallerUrl -OutFile $ArchiveLocation -ErrorAction Stop
 
         # Unpack SDK to installation folder
 		# Note that the Google Cloud SDK is placed within a folder called 'google-cloud-sdk' within the archive,

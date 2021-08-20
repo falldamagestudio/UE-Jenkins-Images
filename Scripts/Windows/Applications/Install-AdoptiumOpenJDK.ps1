@@ -6,6 +6,8 @@ class AdoptiumOpenJDKInstallerException : Exception {
 
 function Install-AdoptiumOpenJDK {
 
+	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1"
+
 	$TempFolder = "C:\Temp"
 	$InstallerName = "AdoptiumOpenJdk.msi"
 
@@ -18,7 +20,7 @@ function Install-AdoptiumOpenJDK {
 		$InstallerLocation = (Join-Path -Path $TempFolder -ChildPath $InstallerName -ErrorAction Stop)
 
 		# Download Adoptium JDK MSI
-		Invoke-WebRequest -UseBasicParsing -Uri "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.12%2B7/OpenJDK11U-jdk_x64_windows_hotspot_11.0.12_7.msi" -OutFile $InstallerLocation -ErrorAction Stop
+		Invoke-WebRequest -UseBasicParsing -Uri $ToolsAndVersions.AdoptiumOpenJDKInstallerUrl -OutFile $InstallerLocation -ErrorAction Stop
 	
 		$Process = Start-Process -FilePath "msiexec" -ArgumentList @("/I", $InstallerLocation, "INSTALLLEVEL=1", "/quiet") -NoNewWindow -Wait -PassThru
 	

@@ -11,9 +11,9 @@ function Install-GCELoggingAgent {
 		Downloads and installs the GCE Logging Agent.
 	#>
 
-	$TempFolder = "C:\Temp"
-	$LoggingAgentDownloadURI = "https://dl.google.com/cloudagents/windows/StackdriverLogging-v1-15.exe"
+	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1"
 
+	$TempFolder = "C:\Temp"
 	$LoggingAgentInstallerExeName = "LoggingAgent.exe"
 
 	New-Item $TempFolder -ItemType Directory -ErrorAction Stop | Out-Null
@@ -27,7 +27,7 @@ function Install-GCELoggingAgent {
 		# There is also an "install latest-available version" flow.
 		# It might also be possible to handle installation & upgrades via Agent Policies in the future.
 
-		Invoke-WebRequest -UseBasicParsing -Uri $LoggingAgentDownloadURI -OutFile $InstallerLocation -ErrorAction Stop
+		Invoke-WebRequest -UseBasicParsing -Uri $ToolsAndVersions.GCELoggingAgentInstallerUrl -OutFile $InstallerLocation -ErrorAction Stop
 
 		$Process = Start-Process -FilePath $InstallerLocation -ArgumentList "/S" -NoNewWindow -Wait -PassThru
 

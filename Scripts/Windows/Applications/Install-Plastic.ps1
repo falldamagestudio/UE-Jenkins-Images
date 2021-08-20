@@ -6,6 +6,8 @@ class PlasticInstallerException : Exception {
 
 function Install-Plastic {
 
+	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1"
+
 	$TempFolder = "C:\Temp"
 	$InstallerExeName = "plasticinstaller.exe"
 
@@ -18,7 +20,7 @@ function Install-Plastic {
 		$InstallerLocation = (Join-Path -Path $TempFolder -ChildPath $InstallerExeName -ErrorAction Stop)
 
 		# Download Plastic SCM Client Installer
-		Invoke-WebRequest -UseBasicParsing -Uri "https://www.plasticscm.com/download/downloadinstaller/10.0.16.5882/plasticscm/windows/client" -OutFile $InstallerLocation -ErrorAction Stop
+		Invoke-WebRequest -UseBasicParsing -Uri $ToolsAndVersions.PlasticInstallerUrl -OutFile $InstallerLocation -ErrorAction Stop
 
 		# Run installer
 		$Process = Start-Process -FilePath $InstallerLocation -ArgumentList "--mode","unattended" -NoNewWindow -Wait -PassThru

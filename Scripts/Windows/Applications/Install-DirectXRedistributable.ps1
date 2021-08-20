@@ -6,6 +6,8 @@ class DirectXRedistributableInstallerException : Exception {
 
 function Install-DirectXRedistributable {
 
+	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1"
+
 	$TempFolder = "C:\Temp"
 	$RedistExeName = "dxwebsetup.exe"
 
@@ -18,7 +20,7 @@ function Install-DirectXRedistributable {
 		$InstallerLocation = (Join-Path -Path $TempFolder -ChildPath $RedistExeName -ErrorAction Stop)
 
 		# Download DirectX End-User Runtime Web Installer
-		Invoke-WebRequest -UseBasicParsing -Uri "https://download.microsoft.com/download/1/7/1/1718CCC4-6315-4D8E-9543-8E28A4E18C4C/dxwebsetup.exe" -OutFile $InstallerLocation -ErrorAction Stop
+		Invoke-WebRequest -UseBasicParsing -Uri $ToolsAndVersions.DirectXRedistributableInstallerUrl -OutFile $InstallerLocation -ErrorAction Stop
 	
 		$Process = Start-Process -FilePath $InstallerLocation -ArgumentList "/q" -NoNewWindow -Wait -PassThru
 	

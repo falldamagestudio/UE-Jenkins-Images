@@ -11,11 +11,12 @@ function Install-JenkinsRemotingAgent {
 		[Parameter(Mandatory)] [string] $Path
     )
 
-    $DownloadUrl = "https://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/4.7/remoting-4.7.jar"
+	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1"
+
     $TargetFile = "${Path}\agent.jar"
 
     # Download Jenkins remoting agent jar, and place it in a default location
-    Invoke-WebRequest -UseBasicParsing -Uri $DownloadUrl -OutFile $TargetFile
+    Invoke-WebRequest -UseBasicParsing -Uri $ToolsAndVersions.JenkinsRemotingAgentDownloadUrl -OutFile $TargetFile
 
     # Validate content hash for remoting agent jar
     $ExpectedHash = Invoke-RestMethod -Uri "${DownloadURL}.sha1"
