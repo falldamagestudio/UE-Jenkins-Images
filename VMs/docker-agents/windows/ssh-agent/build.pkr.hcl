@@ -4,6 +4,11 @@ variable "image_name" {
   default = ""
 }
 
+variable "machine_type" {
+  type    = string
+  default = ""
+}
+
 variable "network" {
   type    = string
   default = ""
@@ -44,6 +49,7 @@ source "googlecompute" "build_machine" {
   disk_size                       = "50"
   disk_type                       = "pd-ssd"
   image_name                      = "${var.image_name}"
+  machine_type                    = "${var.machine_type}"
   metadata = {
     windows-startup-script-cmd = "winrm quickconfig -quiet & net user /add packer_user & net localgroup administrators packer_user /add & winrm set winrm/config/service/auth @{Basic=\"true\"}"
   }
