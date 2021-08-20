@@ -26,7 +26,7 @@ packer build \
     -var "zone=${ZONE}" \
     -var "network=image-builder-network" \
     -var "subnetwork=image-builder-subnetwork" \
-    -var "machine_type=n1-standard-4" \
+    -var "machine_type=n1-standard-2" \
     -var "source_image=${SOURCE_IMAGE}" \
     -var "image_name=${IMAGE_NAME}" \
     "${PACKER_SCRIPT}"
