@@ -4,9 +4,9 @@
 # In order to enable repeatability of building the Dockerfile, we want to manually lock all plugin
 #  versions we use. This script accomplishes that.
 
-JENKINS_IMAGE=`head -n 1 Dockerfile | sed 's/FROM //'`
+JENKINS_IMAGE=$(head -n 1 Dockerfile | sed 's/FROM //')
 
-HOST_WORKDIR=`realpath .`
+HOST_WORKDIR=$(realpath .)
 
 # Run jenkins-plugin-cli and retrieve a full list of plugins including dependencies
 #
@@ -20,10 +20,10 @@ HOST_WORKDIR=`realpath .`
 # To work around this, we expect that plugins.txt contents have been bumped recently,
 #  and freeze all plugin versions at what is currently latest.
 
-docker run --rm --name jenkins --volume $HOST_WORKDIR:/workdir:ro $JENKINS_IMAGE jenkins-plugin-cli --plugin-file /workdir/plugins.txt --no-download --list >list_stdout.txt 2>list_stderr.txt
+docker run --rm --name jenkins --volume "${HOST_WORKDIR}:/workdir:ro" "$JENKINS_IMAGE" jenkins-plugin-cli --plugin-file /workdir/plugins.txt --no-download --list >list_stdout.txt 2>list_stderr.txt
 LIST_EXITCODE=$?
-LIST_STDOUT=`cat list_stdout.txt`
-LIST_STDERR=`cat list_stderr.txt`
+LIST_STDOUT=$(cat list_stdout.txt)
+LIST_STDERR=$(cat list_stderr.txt)
 rm list_stdout.txt list_stderr.txt
 
 if [[ $LIST_EXITCODE -ne 0 ]]; then
@@ -50,7 +50,7 @@ else
   # git-4.4.5
   # ...
 
-  PLUGINS_WITH_DEPENDENCIES=`echo "$LIST_STDOUT" | sed -n '1,/Resulting plugin list:/d;/Done/q;s/ /:/g;p'`
+  PLUGINS_WITH_DEPENDENCIES=$(echo "$LIST_STDOUT" | sed -n '1,/Resulting plugin list:/d;/Done/q;s/ /:/g;p')
 
   # Write plugin list including dependencies to text file
 
