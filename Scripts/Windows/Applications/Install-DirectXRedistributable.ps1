@@ -1,7 +1,13 @@
+class DirectXRedistributableArchiveException : Exception {
+	$ExitCode
+
+	DirectXRedistributableArchiveException([int] $exitCode) : base("Archive-package exited with code ${exitCode}") { $this.ExitCode = $exitCode }
+}
+
 class DirectXRedistributableInstallerException : Exception {
 	$ExitCode
 
-	DirectXRedistributableInstallerException([int] $exitCode) : base("dxwebsetup.exe exited with code ${exitCode}") { $this.ExitCode = $exitCode }
+	DirectXRedistributableInstallerException([int] $exitCode) : base("dxsetup.exe exited with code ${exitCode}") { $this.ExitCode = $exitCode }
 }
 
 function Install-DirectXRedistributable {
@@ -9,20 +15,31 @@ function Install-DirectXRedistributable {
 	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1"
 
 	$TempFolder = "C:\Temp"
-	$RedistExeName = "dxwebsetup.exe"
+	$ArchiveExeName = "dxarchive.exe"
+	$SetupExeName = "dxsetup.exe"
 
 	# Create temp folder
 	New-Item $TempFolder -ItemType Directory -Force -ErrorAction Stop | Out-Null
 	
 	try {
 	
-		# Determine installer download location
-		$InstallerLocation = (Join-Path -Path $TempFolder -ChildPath $RedistExeName -ErrorAction Stop)
+		# Determine archive download location
+		$ArchiveLocation = (Join-Path -Path $TempFolder -ChildPath $ArchiveExeName -ErrorAction Stop)
 
-		# Download DirectX End-User Runtime Web Installer
-		Invoke-WebRequest -UseBasicParsing -Uri $ToolsAndVersions.DirectXRedistributableInstallerUrl -OutFile $InstallerLocation -ErrorAction Stop
-	
-		$Process = Start-Process -FilePath $InstallerLocation -ArgumentList "/q" -NoNewWindow -Wait -PassThru
+		# Download DirectX End-User Installer (archive)
+		Invoke-WebRequest -UseBasicParsing -Uri $ToolsAndVersions.DirectXRedistributableInstallerUrl -OutFile $ArchiveLocation -ErrorAction Stop
+
+		# Unpack archive
+		$Process = Start-Process -FilePath $ArchiveLocation -ArgumentList @("/q","/t:${TempFolder}") -NoNewWindow -Wait -PassThru
+
+		if ($Process.ExitCode -ne 0) {
+			throw [DirectXRedistributableArchiveException]::new($Process.ExitCode)
+		}
+
+		$InstallerLocation = (Join-Path -Path $TempFolder -ChildPath $SetupExeName -ErrorAction Stop)
+
+		# Run installer
+		$Process = Start-Process -FilePath $InstallerLocation -ArgumentList @("/silent") -NoNewWindow -Wait -PassThru
 	
 		if ($Process.ExitCode -ne 0) {
 			throw [DirectXRedistributableInstallerException]::new($Process.ExitCode)
@@ -34,4 +51,3 @@ function Install-DirectXRedistributable {
 		Remove-Item -Recurse $TempFolder -Force -ErrorAction Ignore
 	}
 }
-
