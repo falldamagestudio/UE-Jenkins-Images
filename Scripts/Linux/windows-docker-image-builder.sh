@@ -18,7 +18,7 @@ if [ $# -ne 9 ]; then
 	exit 1
 fi
 
-HOST_IMAGE="windows-cloud/global/images/windows-server-2019-dc-for-containers-v20210212"
+HOST_IMAGE=$(jq -r ".docker_image_builder_host_image" "${SCRIPTS_DIR}/tools-and-versions.json")
 
 SERVICE_ACCOUNT="build-artifact-uploader@${PROJECT_ID}.iam.gserviceaccount.com"
 
