@@ -12,7 +12,7 @@ param (
 . ${PSScriptRoot}\..\..\..\Scripts\Windows\ImageBuilder\Host\Build-DockerImage.ps1
 . ${PSScriptRoot}\..\..\..\Scripts\Windows\ImageBuilder\Host\Push-DockerImage.ps1
 . ${PSScriptRoot}\..\..\..\Scripts\Windows\ImageBuilder\Host\Setup-DockerRegistryAuthentication.ps1
-. ${PSScriptRoot}\..\..\..\Scripts\Windows\Applications\Install-DirectXRedistributable.ps1
+. ${PSScriptRoot}\..\..\..\Scripts\Windows\BuildSteps\BuildStep-InstallBuildTools-Container.ps1
 . ${PSScriptRoot}\..\..\..\Scripts\Windows\ImageBuilder\Copy-SystemDLLs.ps1
 
 Write-Host "Resizing C: partition to use all available disk space..."
@@ -43,15 +43,7 @@ Write-Host "Setting up Docker authentication..."
 #  has proven to work.
 Setup-DockerRegistryAuthentication -AgentKeyFile $AgentKeyFile -GceRegion $GceRegion
 
-Write-Host "Installing DirectX redistributable..."
-
-# Install DirectX Redistributable
-# This is the only officially supported way to get hold of DirectX DLLs
-#  (the .DLL files need to be present within the container, but the redist installer cannot
-#   be executed within the container - so we run the installer on the host OS, and we can then
-#   fetch the DLLs from the host filesystem, and provide them to the container build process)
-
-Install-DirectXRedistributable
+BuildStep-InstallBuildTools-Host
 
 # Provide DirectX related DLLs from host OS to the container build process
 # Provide opengl32.dll & glu32.dll from host OS to the container build process

@@ -1,7 +1,7 @@
 . ${PSScriptRoot}\..\..\..\Scripts\Windows\SystemConfiguration\Enable-Win32LongPaths.ps1
 . ${PSScriptRoot}\..\..\..\Scripts\Windows\Applications\Install-DockerCLI.ps1
 . ${PSScriptRoot}\..\..\..\Scripts\Windows\Applications\Install-GoogleCloudSDK.ps1
-. ${PSScriptRoot}\..\..\..\Scripts\Windows\CommonInstallSteps\Install-SCMTools.ps1
+. ${PSScriptRoot}\..\..\..\Scripts\Windows\BuildSteps\BuildStep-InstallSCMTools.ps1
 
 Write-Host "Enabling Win32 Long Paths..."
 
@@ -15,6 +15,6 @@ Write-Host "Installing Google Cloud SDK..."
 
 Install-GoogleCloudSDK
 
-Install-SCMTools
+BuildStep-InstallSCMTools
 
 Write-Host "Done."

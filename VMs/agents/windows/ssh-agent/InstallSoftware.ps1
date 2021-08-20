@@ -18,7 +18,9 @@
 
 ########
 
-. ${PSScriptRoot}\..\..\..\..\Scripts\Windows\CommonInstallSteps\Install-SCMTools.ps1
+. ${PSScriptRoot}\..\..\..\..\Scripts\Windows\BuildSteps\BuildStep-InstallBuildTools-Host.ps1
+. ${PSScriptRoot}\..\....\\..\Scripts\Windows\BuildSteps\BuildStep-InstallBuildTools-Container.ps1
+. ${PSScriptRoot}\..\..\..\..\Scripts\Windows\BuildSteps\BuildStep-InstallSCMTools.ps1
 
 $ServiceWrapperLogsFolder = "C:\Logs"
 $JenkinsAgentFolder = "C:\J"
@@ -83,6 +85,8 @@ Install-AdoptiumOpenJDK
 
 ########
 
-Install-SCMTools
+BuildStep-InstallBuildTools-Host
+BuildStep-InstallBuildTools-Container
+BuildStep-InstallSCMTools
 
 Write-Host "Done."

@@ -2,7 +2,7 @@
 . ${PSScriptRoot}\..\Applications\Install-Plastic.ps1
 . ${PSScriptRoot}\..\Applications\Create-PlasticClientConfigLinks.ps1
 
-function Install-SCMTools {
+function BuildStep-InstallSCMTools {
 
     $PlasticConfigFolder = "C:\PlasticConfig"
 
