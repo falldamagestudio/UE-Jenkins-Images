@@ -1,13 +1,16 @@
 . ${PSScriptRoot}\..\..\..\Scripts\Windows\SystemConfiguration\Enable-Win32LongPaths.ps1
-. ${PSScriptRoot}\..\..\..\Scripts\Windows\ImageBuilder\Copy-SystemDLLs.ps1
-. ${PSScriptRoot}\..\..\..\Scripts\Windows\BuildSteps\BuildStep-InstallSCMTools.ps1
+
 . ${PSScriptRoot}\..\..\..\Scripts\Windows\BuildSteps\BuildStep-InstallBuildTools-Container.ps1
+. ${PSScriptRoot}\..\..\..\Scripts\Windows\BuildSteps\BuildStep-InstallSCMTools.ps1
+
+. ${PSScriptRoot}\..\..\..\Scripts\Windows\ImageBuilder\Copy-SystemDLLs.ps1
 
 Write-Host "Enabling Win32 Long Paths..."
 
 Enable-Win32LongPaths
 
 BuildStep-InstallBuildTools-Container
+BuildStep-InstallSCMTools
 
 Write-Host "Installing additional system DLLs..."
     
@@ -17,7 +20,5 @@ Write-Host "Installing additional system DLLs..."
 #  explicitly provided from the host OS side.
 Copy-SystemDLLs -SourceFolder $PSScriptRoot -TargetFolder "C:\Windows\System32"
 # Install-DirectXRedistributable
-
-BuildStep-InstallSCMTools
 
 Write-Host "Done."

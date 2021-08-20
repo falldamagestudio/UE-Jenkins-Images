@@ -4,7 +4,7 @@
 
 function BuildStep-InstallSCMTools {
 
-    $PlasticConfigFolder = "C:\PlasticConfig"
+    $DefaultFolders = Import-PowerShellDataFile "${PSScriptRoot}\DefaultFolders.psd1"
 
     Write-Host "Installing Git for Windows..."
 
@@ -16,7 +16,7 @@ function BuildStep-InstallSCMTools {
 
     Write-Host "Creating config folder for Plastic SCM..."
 
-    New-Item -ItemType Directory -Path $PlasticConfigFolder -ErrorAction Stop | Out-Null
+    New-Item -ItemType Directory -Path $DefaultFolders.PlasticConfigFolder -ErrorAction Stop | Out-Null
 
     Write-Host "Creating symlinks for plastic client config files..."
 

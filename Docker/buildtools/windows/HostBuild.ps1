@@ -7,13 +7,17 @@ param (
 )
 
 . ${PSScriptRoot}\..\..\..\Scripts\Windows\SystemConfiguration\Resize-PartitionToMaxSize.ps1
-. ${PSScriptRoot}\..\..\..\Scripts\Windows\Helpers\Run-Tests.ps1
+
 . ${PSScriptRoot}\..\..\..\Scripts\Windows\ImageBuilder\Host\Install-TestDependencies.ps1
-. ${PSScriptRoot}\..\..\..\Scripts\Windows\ImageBuilder\Host\Build-DockerImage.ps1
-. ${PSScriptRoot}\..\..\..\Scripts\Windows\ImageBuilder\Host\Push-DockerImage.ps1
+. ${PSScriptRoot}\..\..\..\Scripts\Windows\Helpers\Run-Tests.ps1
+
 . ${PSScriptRoot}\..\..\..\Scripts\Windows\ImageBuilder\Host\Setup-DockerRegistryAuthentication.ps1
+
 . ${PSScriptRoot}\..\..\..\Scripts\Windows\BuildSteps\BuildStep-InstallBuildTools-Host.ps1
 . ${PSScriptRoot}\..\..\..\Scripts\Windows\ImageBuilder\Copy-SystemDLLs.ps1
+
+. ${PSScriptRoot}\..\..\..\Scripts\Windows\ImageBuilder\Host\Build-DockerImage.ps1
+. ${PSScriptRoot}\..\..\..\Scripts\Windows\ImageBuilder\Host\Push-DockerImage.ps1
 
 Write-Host "Resizing C: partition to use all available disk space..."
 
