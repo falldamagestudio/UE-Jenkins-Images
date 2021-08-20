@@ -10,7 +10,7 @@ function Create-PlasticClientConfigLinks {
     #>
 
     param (
-        [Parameter(Mandatory=$true)][string]$Path,
+        [Parameter(Mandatory=$true)][string]$Path
     )
 
     class CreateSymlinkException : Exception {
