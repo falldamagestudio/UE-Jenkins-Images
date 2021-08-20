@@ -19,7 +19,7 @@
 ########
 
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\BuildSteps\BuildStep-InstallBuildTools-Host.ps1
-. ${PSScriptRoot}\..\....\\..\Scripts\Windows\BuildSteps\BuildStep-InstallBuildTools-Container.ps1
+. ${PSScriptRoot}\..\..\..\..\Scripts\Windows\BuildSteps\BuildStep-InstallBuildTools-Container.ps1
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\BuildSteps\BuildStep-InstallSCMTools.ps1
 
 $ServiceWrapperLogsFolder = "C:\Logs"
