@@ -14,10 +14,6 @@ function BuildStep-InstallSCMTools {
 
     Install-Plastic
 
-    Write-Host "Creating config folder for Plastic SCM..."
-
-    New-Item -ItemType Directory -Path $DefaultFolders.PlasticConfigFolder -ErrorAction Stop | Out-Null
-
     Write-Host "Creating symlinks for plastic client config files..."
 
     Create-PlasticClientConfigLinks -Path $DefaultFolders.PlasticConfigFolder
