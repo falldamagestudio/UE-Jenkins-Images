@@ -9,6 +9,10 @@ function Create-PlasticClientConfigLinks {
           still allowing cm.exe to write to other files within the config folder
     #>
 
+    param (
+        [Parameter(Mandatory=$true)][string]$Path,
+    )
+
     class CreateSymlinkException : Exception {
         $SourceLocation
         $TargetLocation
@@ -30,7 +34,7 @@ function Create-PlasticClientConfigLinks {
     }
 
     $SourceFolder = "${env:LOCALAPPDATA}\plastic4"
-    $TargetFolder = "C:\PlasticConfig"
+    $TargetFolder = $Path
 
     # Create folder for config files
     New-Item -ItemType Directory -Path $SourceFolder | Out-Null

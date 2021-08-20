@@ -20,5 +20,5 @@ function BuildStep-InstallSCMTools {
 
     Write-Host "Creating symlinks for plastic client config files..."
 
-    Create-PlasticClientConfigLinks
+    Create-PlasticClientConfigLinks -Path $DefaultFolders.PlasticConfigFolder
 }
