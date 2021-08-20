@@ -13,6 +13,8 @@ if [ $# -ne 4 ]; then
 	exit 1
 fi
 
+SOURCE_IMAGE="windows-server-2019-dc-for-containers-v20210212"
+
 (mkdir "${ROOT_DIR}/builder-files" \
 	&& cd "${ROOT_DIR}" \
 	&& zip -r builder-files/builder-files.zip . -i "Scripts/*" -i "VMs/*")
@@ -24,6 +26,7 @@ packer build \
     -var "zone=${ZONE}" \
     -var "network=image-builder-network" \
     -var "subnetwork=image-builder-subnetwork" \
+    -var "source_image=${SOURCE_IMAGE}" \
     -var "image_name=${IMAGE_NAME}" \
     "${PACKER_SCRIPT}"
 

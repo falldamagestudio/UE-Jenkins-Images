@@ -16,7 +16,7 @@ variable "project_id" {
 
 variable "source_image" {
   type    = string
-  default = "windows-server-2019-dc-core-for-containers-v20210309"
+  default = ""
 }
 
 variable "subnetwork" {
