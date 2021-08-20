@@ -31,7 +31,7 @@ Install-AdoptiumOpenJDK
 
 Write-Host "Installing Jenkins Remoting Agent..."
 
-Install-JenkinsRemotingAgent -Path $JenkinsAgentFolder
+Install-JenkinsRemotingAgent -Path $DefaultFolders.JenkinsAgentFolder
 
 Write-Host "Registering Jenkins Agent script as autostarting..."
 
