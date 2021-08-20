@@ -15,6 +15,8 @@ try {
     . ${PSScriptRoot}\..\..\Applications\Authenticate-DockerForGoogleArtifactRegistry.ps1
     . ${PSScriptRoot}\..\Run\Run-DockerSshAgent.ps1
 
+    $DefaultFolders = Import-PowerShellDataFile "${PSScriptRoot}\..\..\BuildSteps\DefaultFolders.psd1"
+
     # Respond to version query; the GCE plugin does this to verify that the java executable is present, and doesn't care about the actual version number
     if ($fullversion) {
         Write-Host "java-to-docker shim"
@@ -26,10 +28,6 @@ try {
         Write-Host "Error: java-to-docker shim should be executed like this: java -jar <path to agent.jar>"
         throw "Error: java-to-docker shim should be executed like this: java -jar <path to agent.jar>"
     }
-
-    $JenkinsAgentFolder = "C:\J"
-    $JenkinsWorkspaceFolder = "C:\W"
-    $PlasticConfigFolder = "C:\PlasticConfig"
 
     $AgentJarFolder = "C:\AgentJar"
     $AgentJarFile = "C:\AgentJar\agent.jar"
@@ -63,7 +61,7 @@ try {
         $PlasticConfigZipLocation = "${PSScriptRoot}\plastic-config.zip"
         try {
             [IO.File]::WriteAllBytes($PlasticConfigZipLocation, $PlasticConfigZip)
-            Expand-Archive -LiteralPath $PlasticConfigZipLocation -DestinationPath "C:\PlasticConfig" -Force -ErrorAction Stop
+            Expand-Archive -LiteralPath $PlasticConfigZipLocation -DestinationPath $DefaultFolders.PlasticConfigFolder -Force -ErrorAction Stop
         } finally {
             Remove-Item $PlasticConfigZipLocation -ErrorAction SilentlyContinue
         }
@@ -85,9 +83,9 @@ try {
     Write-Host "Running Jenkins Agent..."
 
     $ServiceParams = @{
-        JenkinsAgentFolder = $JenkinsAgentFolder
-        JenkinsWorkspaceFolder = $JenkinsWorkspaceFolder
-        PlasticConfigFolder = $PlasticConfigFolder
+        JenkinsAgentFolder = $DefaultFolders.JenkinsAgentFolder
+        JenkinsWorkspaceFolder = $DefaultFolders.JenkinsWorkspaceFolder
+        PlasticConfigFolder = $DefaultFolders.PlasticConfigFolder
         AgentImageURL = $AgentImageURL
         AgentJarFolder = $AgentJarFolder
         AgentJarFile = $AgentJarFile

@@ -11,9 +11,7 @@ try {
     . ${PSScriptRoot}\..\..\Applications\Authenticate-DockerForGoogleArtifactRegistry.ps1
     . ${PSScriptRoot}\..\Run\Run-DockerInboundAgent.ps1
 
-    $JenkinsAgentFolder = "C:\J"
-    $JenkinsWorkspaceFolder = "C:\W"
-    $PlasticConfigFolder = "C:\PlasticConfig"
+    $DefaultFolders = Import-PowerShellDataFile "${PSScriptRoot}\..\..\BuildSteps\DefaultFolders.psd1"
 
     Write-Host "Ensuring that the boot partition uses the entire boot disk..."
 
@@ -59,7 +57,7 @@ try {
         $PlasticConfigZipLocation = "${PSScriptRoot}\plastic-config.zip"
         try {
             [IO.File]::WriteAllBytes($PlasticConfigZipLocation, $PlasticConfigZip)
-            Expand-Archive -LiteralPath $PlasticConfigZipLocation -DestinationPath "C:\PlasticConfig" -Force -ErrorAction Stop
+            Expand-Archive -LiteralPath $PlasticConfigZipLocation -DestinationPath $DefaultFolders.PlasticConfigFolder -Force -ErrorAction Stop
         } finally {
             Remove-Item $PlasticConfigZipLocation -ErrorAction SilentlyContinue
         }
@@ -76,9 +74,9 @@ try {
     Write-Host "Running Jenkins Agent..."
 
     $ServiceParams = @{
-        JenkinsAgentFolder = $JenkinsAgentFolder
-        JenkinsWorkspaceFolder = $JenkinsWorkspaceFolder
-        PlasticConfigFolder = $PlasticConfigFolder
+        JenkinsAgentFolder = $DefaultFolders.JenkinsAgentFolder
+        JenkinsWorkspaceFolder = $DefaultFolders.JenkinsWorkspaceFolder
+        PlasticConfigFolder = $DefaultFolders.PlasticConfigFolder
         JenkinsURL = $JenkinsURL
         JenkinsSecret = $JenkinsSecret
         AgentImageURL = $AgentImageURL
