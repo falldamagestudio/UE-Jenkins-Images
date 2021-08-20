@@ -36,5 +36,5 @@ function Run-InboundAgent {
 		$JAVA_BIN = "$JavaHome/bin/java.exe"
 	}
 
-    Start-Process -FilePath $JAVA_BIN -Wait -NoNewWindow -ArgumentList $AgentArguments
+    Start-Process -FilePath $JAVA_BIN -Wait -NoNewWindow -ArgumentList $Arguments
 }

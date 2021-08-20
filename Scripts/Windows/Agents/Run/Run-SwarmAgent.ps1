@@ -23,13 +23,14 @@ function Run-SwarmAgent {
 	$Arguments = @(
 		"-jar"
 		$AgentJarLocation
-		"-url",$JenkinsUrl
+		"-master",$JenkinsUrl
 		"-workDir",$JenkinsAgentFolder
 		"-username",$AgentUsername
 		"-password",$AgentAPIToken
 		"-executors",$NumExecutors
 		"-labels","""${Labels}"""
 		"-webSocket"
+		"-disableClientsUniqueId"
 		"-name",$AgentName)
 
 	$JavaHome = $env:JAVA_HOME
@@ -40,5 +41,7 @@ function Run-SwarmAgent {
 		$JAVA_BIN = "$JavaHome/bin/java.exe"
 	}
 
-    Start-Process -FilePath $JAVA_BIN -Wait -NoNewWindow -ArgumentList $AgentArguments
+	Write-Host $JAVA_BIN $Arguments
+
+    Start-Process -FilePath $JAVA_BIN -Wait -NoNewWindow -ArgumentList $Arguments
 }
