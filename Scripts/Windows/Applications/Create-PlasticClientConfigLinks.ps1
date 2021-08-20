@@ -3,10 +3,16 @@
 function Create-PlasticClientConfigLinks {
 
     <#
-        Create symlinks for some of the Plastic client config files, to a nonexistent folder
+        Create a config folder for the current user + symlinks for some of the Plastic client config files, from the current user's config folder
+        to a folder in a fixed location that is not user-specific
         Those config files should be made present somehow (for example, via a volume mount) before using cm.exe
-        This allows the volume mount to provide those files via a read-only file system, while
-          still allowing cm.exe to write to other files within the config folder
+        
+        This solves several problems:
+        - The host side can easily make the config files available within the container, without knowing
+            the username (and home folder location) of the container user
+        - The container side can read the config files from the user-specific config directory
+        - The container side can write other files to the user-specific config directory (cm.exe wants to do this) side-by-side
+            with the symlinks, even though the symlink target folder may be read-only (the volume mounted folder will be read-only)
     #>
 
     param (
