@@ -6,7 +6,7 @@ Start-Transcript -LiteralPath "C:\Logs\GCEService-DockerInboundAgent-$(Get-Date 
 try {
 
     . ${PSScriptRoot}\..\..\SystemConfiguration\Resize-PartitionToMaxSize.ps1
-    . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESecrets.ps1
+    . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESettings.ps1
     . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCEInstanceHostname.ps1
     . ${PSScriptRoot}\..\..\Applications\Deploy-PlasticClientConfig.ps1
     . ${PSScriptRoot}\..\..\Applications\Authenticate-DockerForGoogleArtifactRegistry.ps1
@@ -25,24 +25,24 @@ try {
 
     $AgentName = (Get-GCEInstanceHostname).Split(".")[0]
 
-    Write-Host "Waiting for required settings to be available in Secrets Manager..."
+    Write-Host "Waiting for required settings to be available in Secrets Manager / Instance Metadata..."
 
     $RequiredSettingsSpec = @{
-        JenkinsURL = @{ Name = "jenkins-url" }
-        AgentKey = @{ Name = "agent-key" }
-        AgentImageURL = @{ Name = "inbound-agent-image-url-windows" }
-        JenkinsSecret = @{ Name = "inbound-agent-secret-${AgentName}" }
+        JenkinsURL = @{ Name = "jenkins-url"; Source = [GCESettingSource]::Secret }
+        AgentKey = @{ Name = "agent-key"; Source = [GCESettingSource]::Secret }
+        AgentImageURL = @{ Name = "inbound-agent-image-url-windows"; Source = [GCESettingSource]::Secret }
+        JenkinsSecret = @{ Name = "inbound-agent-secret-${AgentName}"; Source = [GCESettingSource]::Secret }
     }
 
-    $RequiredSettings = Get-GCESecrets $RequiredSettingsSpec -Wait -PrintProgress
+    $RequiredSettings = Get-GCESettings $RequiredSettingsSpec -Wait -PrintProgress
 
-    Write-Host "Fetching optional settings from Secrets Manager..."
+    Write-Host "Fetching optional settings from Secrets Manager / Instance Metadata..."
 
     $OptionalSettingsSpec = @{
-        PlasticConfigZip = @{ Name = "plastic-config-zip"; Binary = $true }
+        PlasticConfigZip = @{ Name = "plastic-config-zip"; Source = [GCESettingSource]::Secret; Binary = $true }
     }
 
-    $OptionalSettings = Get-GCESecrets $OptionalSettingsSpec -PrintProgress
+    $OptionalSettings = Get-GCESettings $OptionalSettingsSpec -PrintProgress
 
     if ($OptionalSettings.PlasticConfigZip) {
         Write-Host "Deploying Plastic SCM client configuration..."

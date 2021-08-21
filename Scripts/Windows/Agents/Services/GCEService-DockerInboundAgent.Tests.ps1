@@ -2,7 +2,7 @@
 
 BeforeAll {
 	. ${PSScriptRoot}\..\..\SystemConfiguration\Resize-PartitionToMaxSize.ps1
-	. ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESecrets.ps1
+	. ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESettings.ps1
 	. ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCEInstanceHostname.ps1
 	. ${PSScriptRoot}\..\..\Applications\Deploy-PlasticClientConfig.ps1
 	. ${PSScriptRoot}\..\..\Applications\Authenticate-DockerForGoogleArtifactRegistry.ps1
@@ -20,14 +20,14 @@ Describe 'GCEService-DockerInboundAgent' {
 		$JenkinsSecretRef = "5678"
 		[byte[]] $PlasticConfigZipRef = 72, 101, 108, 108, 111 # "Hello"
 	
-		$RequiredSecretsResponse = @{
+		$RequiredSettingsResponse = @{
 			JenkinsUrl = $JenkinsURLRef
 			AgentKey = $AgentKeyFileRef
 			AgentImageURL = $AgentImageURLRef
 			JenkinsSecret = $JenkinsSecretRef
 		}
 	
-		$OptionalSecretsResponse = @{
+		$OptionalSettingsResponse = @{
 			PlasticConfigZip = $PlasticConfigZipRef
 		}
 	}
@@ -42,7 +42,7 @@ Describe 'GCEService-DockerInboundAgent' {
 		Mock Write-Host { throw "Write-Host should not be called" }
 		Mock Resize-PartitionToMaxSize { throw "Resize-PartitionToMaxSize should not be called" }
 		Mock Get-GCEInstanceHostname { throw "Get-GCEInstanceHostname should not be called" }
-		Mock Get-GCESecrets { throw "Get-GCESecrets should not be called" }
+		Mock Get-GCESettings { throw "Get-GCESettings should not be called" }
 		Mock Deploy-PlasticClientConfig { throw "Deploy-PlasticClientConfig should not be called" }
 		Mock Authenticate-DockerForGoogleArtifactRegistry { throw "Authenticate-DockerForGoogleArtifactRegistry should not be called" }
 
@@ -57,7 +57,7 @@ Describe 'GCEService-DockerInboundAgent' {
 		Assert-MockCalled -Exactly -Times 0 Write-Host
 		Assert-MockCalled -Exactly -Times 0 Resize-PartitionToMaxSize
 		Assert-MockCalled -Exactly -Times 0 Get-GCEInstanceHostname
-		Assert-MockCalled -Exactly -Times 0 Get-GCESecrets
+		Assert-MockCalled -Exactly -Times 0 Get-GCESettings
 		Assert-MockCalled -Exactly -Times 0 Deploy-PlasticClientConfig
 		Assert-MockCalled -Exactly -Times 0 Authenticate-DockerForGoogleArtifactRegistry
 		Assert-MockCalled -Exactly -Times 0 Run-DockerInboundAgent
@@ -75,7 +75,7 @@ Describe 'GCEService-DockerInboundAgent' {
 		Mock Write-Host { throw "Write-Host should not be called" }
 		Mock Resize-PartitionToMaxSize { throw "Resize-PartitionToMaxSize should not be called" }
 		Mock Get-GCEInstanceHostname { throw "Get-GCEInstanceHostname should not be called" }
-		Mock Get-GCESecrets { throw "Get-GCESecrets should not be called" }
+		Mock Get-GCESettings { throw "Get-GCESettings should not be called" }
 		Mock Deploy-PlasticClientConfig { throw "Deploy-PlasticClientConfig should not be called" }
 		Mock Authenticate-DockerForGoogleArtifactRegistry { throw "Authenticate-DockerForGoogleArtifactRegistry should not be called" }
 
@@ -91,7 +91,7 @@ Describe 'GCEService-DockerInboundAgent' {
 		Assert-MockCalled -Exactly -Times 0 Write-Host
 		Assert-MockCalled -Exactly -Times 0 Resize-PartitionToMaxSize
 		Assert-MockCalled -Exactly -Times 0 Get-GCEInstanceHostname
-		Assert-MockCalled -Exactly -Times 0 Get-GCESecrets
+		Assert-MockCalled -Exactly -Times 0 Get-GCESettings
 		Assert-MockCalled -Exactly -Times 0 Deploy-PlasticClientConfig
 		Assert-MockCalled -Exactly -Times 0 Authenticate-DockerForGoogleArtifactRegistry
 		Assert-MockCalled -Exactly -Times 0 Run-DockerInboundAgent
@@ -109,7 +109,7 @@ Describe 'GCEService-DockerInboundAgent' {
 		Mock Write-Host { throw "Write-Host should not be called" }
 		Mock Resize-PartitionToMaxSize { throw "Resize-PartitionToMaxSize should not be called" }
 		Mock Get-GCEInstanceHostname { throw "Get-GCEInstanceHostname should not be called" }
-		Mock Get-GCESecrets { throw "Get-GCESecrets should not be called" }
+		Mock Get-GCESettings { throw "Get-GCESettings should not be called" }
 		Mock Deploy-PlasticClientConfig { throw "Deploy-PlasticClientConfig should not be called" }
 		Mock Authenticate-DockerForGoogleArtifactRegistry { throw "Authenticate-DockerForGoogleArtifactRegistry should not be called" }
 
@@ -125,7 +125,7 @@ Describe 'GCEService-DockerInboundAgent' {
 		Assert-MockCalled -Exactly -Times 0 Write-Host
 		Assert-MockCalled -Exactly -Times 0 Resize-PartitionToMaxSize
 		Assert-MockCalled -Exactly -Times 0 Get-GCEInstanceHostname
-		Assert-MockCalled -Exactly -Times 0 Get-GCESecrets
+		Assert-MockCalled -Exactly -Times 0 Get-GCESettings
 		Assert-MockCalled -Exactly -Times 0 Deploy-PlasticClientConfig
 		Assert-MockCalled -Exactly -Times 0 Authenticate-DockerForGoogleArtifactRegistry
 		Assert-MockCalled -Exactly -Times 0 Run-DockerInboundAgent
@@ -144,7 +144,7 @@ Describe 'GCEService-DockerInboundAgent' {
 		Mock Write-Host { }
 		Mock Resize-PartitionToMaxSize { throw "Resize-PartitionToMaxSize failed" }
 		Mock Get-GCEInstanceHostname { throw "Get-GCEInstanceHostname should not be called" }
-		Mock Get-GCESecrets { throw "Get-GCESecrets should not be called" }
+		Mock Get-GCESettings { throw "Get-GCESettings should not be called" }
 		Mock Deploy-PlasticClientConfig { throw "Deploy-PlasticClientConfig should not be called" }
 		Mock Authenticate-DockerForGoogleArtifactRegistry { throw "Authenticate-DockerForGoogleArtifactRegistry should not be called" }
 
@@ -160,7 +160,7 @@ Describe 'GCEService-DockerInboundAgent' {
 		Assert-MockCalled -Exactly -Times 1 Resolve-Path
 		Assert-MockCalled -Exactly -Times 1 Resize-PartitionToMaxSize
 		Assert-MockCalled -Exactly -Times 0 Get-GCEInstanceHostname
-		Assert-MockCalled -Exactly -Times 0 Get-GCESecrets
+		Assert-MockCalled -Exactly -Times 0 Get-GCESettings
 		Assert-MockCalled -Exactly -Times 0 Deploy-PlasticClientConfig
 		Assert-MockCalled -Exactly -Times 0 Authenticate-DockerForGoogleArtifactRegistry
 		Assert-MockCalled -Exactly -Times 0 Run-DockerInboundAgent
@@ -179,7 +179,7 @@ Describe 'GCEService-DockerInboundAgent' {
 		Mock Write-Host { }
 		Mock Resize-PartitionToMaxSize { }
 		Mock Get-GCEInstanceHostname { throw "Get-GCEInstanceHostname failed" }
-		Mock Get-GCESecrets { throw "Get-GCESecrets should not be called" }
+		Mock Get-GCESettings { throw "Get-GCESettings should not be called" }
 		Mock Deploy-PlasticClientConfig { throw "Deploy-PlasticClientConfig should not be called" }
 		Mock Authenticate-DockerForGoogleArtifactRegistry { throw "Authenticate-DockerForGoogleArtifactRegistry should not be called" }
 
@@ -195,14 +195,14 @@ Describe 'GCEService-DockerInboundAgent' {
 		Assert-MockCalled -Exactly -Times 1 Resolve-Path
 		Assert-MockCalled -Exactly -Times 1 Resize-PartitionToMaxSize
 		Assert-MockCalled -Exactly -Times 1 Get-GCEInstanceHostname
-		Assert-MockCalled -Exactly -Times 0 Get-GCESecrets
+		Assert-MockCalled -Exactly -Times 0 Get-GCESettings
 		Assert-MockCalled -Exactly -Times 0 Deploy-PlasticClientConfig
 		Assert-MockCalled -Exactly -Times 0 Authenticate-DockerForGoogleArtifactRegistry
 		Assert-MockCalled -Exactly -Times 0 Run-DockerInboundAgent
 		Assert-MockCalled -Exactly -Times 1 Stop-Transcript
 	}
 
-	It "Fails if Get-GCESecrets for required secrets fails; stops transcript" {
+	It "Fails if Get-GCESettings for required settings fails; stops transcript" {
 
 		Mock Start-Transcript { }
 		Mock Get-Date { "some date" }
@@ -214,16 +214,16 @@ Describe 'GCEService-DockerInboundAgent' {
 		Mock Write-Host { }
 		Mock Resize-PartitionToMaxSize { }
 		Mock Get-GCEInstanceHostname { "host" }
-		Mock Get-GCESecrets -ParameterFilter { $Secrets.ContainsKey("JenkinsURL") } { throw "Get-GCESecrets for required secrets failed" }
-		Mock Get-GCESecrets -ParameterFilter { $Secrets.ContainsKey("PlasticConfigZip") } { throw "Get-GCESecrets for optional secrets should not be called" }
-		Mock Get-GCESecrets { throw "Invalid invocation of Get-GCESecrets" }
+		Mock Get-GCESettings -ParameterFilter { $Settings.ContainsKey("JenkinsURL") } { throw "Get-GCESettings for required settings failed" }
+		Mock Get-GCESettings -ParameterFilter { $Settings.ContainsKey("PlasticConfigZip") } { throw "Get-GCESettings for optional settings should not be called" }
+		Mock Get-GCESettings { throw "Invalid invocation of Get-GCESettings" }
 		Mock Deploy-PlasticClientConfig { throw "Deploy-PlasticClientConfig should not be called" }
 		Mock Authenticate-DockerForGoogleArtifactRegistry { throw "Authenticate-DockerForGoogleArtifactRegistry should not be called" }
 
 		Mock Run-DockerInboundAgent { throw "Run-DockerInboundAgent should not be called" }
 
 		{ & ${PSScriptRoot}\GCEService-DockerInboundAgent.ps1 } |
-			Should -Throw "Get-GCESecrets for required secrets failed"
+			Should -Throw "Get-GCESettings for required settings failed"
 
 		Assert-MockCalled -Exactly -Times 1 Get-Date
 		Assert-MockCalled -Exactly -Times 1 Start-Transcript
@@ -232,16 +232,16 @@ Describe 'GCEService-DockerInboundAgent' {
 		Assert-MockCalled -Exactly -Times 1 Resolve-Path
 		Assert-MockCalled -Exactly -Times 1 Resize-PartitionToMaxSize
 		Assert-MockCalled -Exactly -Times 1 Get-GCEInstanceHostname
-		Assert-MockCalled -Exactly -Times 1 Get-GCESecrets -ParameterFilter { $Secrets.ContainsKey("JenkinsURL") }
-		Assert-MockCalled -Exactly -Times 0 Get-GCESecrets -ParameterFilter { $Secrets.ContainsKey("PlasticConfigZip") }
-		Assert-MockCalled -Exactly -Times 1 Get-GCESecrets
+		Assert-MockCalled -Exactly -Times 1 Get-GCESettings -ParameterFilter { $Settings.ContainsKey("JenkinsURL") }
+		Assert-MockCalled -Exactly -Times 0 Get-GCESettings -ParameterFilter { $Settings.ContainsKey("PlasticConfigZip") }
+		Assert-MockCalled -Exactly -Times 1 Get-GCESettings
 		Assert-MockCalled -Exactly -Times 0 Deploy-PlasticClientConfig
 		Assert-MockCalled -Exactly -Times 0 Authenticate-DockerForGoogleArtifactRegistry
 		Assert-MockCalled -Exactly -Times 0 Run-DockerInboundAgent
 		Assert-MockCalled -Exactly -Times 1 Stop-Transcript
 	}
 
-	It "Fails if Get-GCESecrets for required secrets fails; stops transcript" {
+	It "Fails if Get-GCESettings for required settings fails; stops transcript" {
 
 		Mock Start-Transcript { }
 		Mock Get-Date { "some date" }
@@ -253,16 +253,16 @@ Describe 'GCEService-DockerInboundAgent' {
 		Mock Write-Host { }
 		Mock Resize-PartitionToMaxSize { }
 		Mock Get-GCEInstanceHostname { "host" }
-		Mock Get-GCESecrets -ParameterFilter { $Secrets.ContainsKey("JenkinsURL") } { $RequiredSecretsResponse }
-		Mock Get-GCESecrets -ParameterFilter { $Secrets.ContainsKey("PlasticConfigZip") } { throw "Get-GCESecrets for optional secrets failed" }
-		Mock Get-GCESecrets { throw "Invalid invocation of Get-GCESecrets" }
+		Mock Get-GCESettings -ParameterFilter { $Settings.ContainsKey("JenkinsURL") } { $RequiredSettingsResponse }
+		Mock Get-GCESettings -ParameterFilter { $Settings.ContainsKey("PlasticConfigZip") } { throw "Get-GCESettings for optional settings failed" }
+		Mock Get-GCESettings { throw "Invalid invocation of Get-GCESettings" }
 		Mock Deploy-PlasticClientConfig { throw "Deploy-PlasticClientConfig should not be called" }
 		Mock Authenticate-DockerForGoogleArtifactRegistry { throw "Authenticate-DockerForGoogleArtifactRegistry should not be called" }
 
 		Mock Run-DockerInboundAgent { throw "Run-DockerInboundAgent should not be called" }
 
 		{ & ${PSScriptRoot}\GCEService-DockerInboundAgent.ps1 } |
-			Should -Throw "Get-GCESecrets for optional secrets failed"
+			Should -Throw "Get-GCESettings for optional settings failed"
 
 		Assert-MockCalled -Exactly -Times 1 Get-Date
 		Assert-MockCalled -Exactly -Times 1 Start-Transcript
@@ -271,9 +271,9 @@ Describe 'GCEService-DockerInboundAgent' {
 		Assert-MockCalled -Exactly -Times 1 Resolve-Path
 		Assert-MockCalled -Exactly -Times 1 Resize-PartitionToMaxSize
 		Assert-MockCalled -Exactly -Times 1 Get-GCEInstanceHostname
-		Assert-MockCalled -Exactly -Times 1 Get-GCESecrets -ParameterFilter { $Secrets.ContainsKey("JenkinsURL") }
-		Assert-MockCalled -Exactly -Times 1 Get-GCESecrets -ParameterFilter { $Secrets.ContainsKey("PlasticConfigZip") }
-		Assert-MockCalled -Exactly -Times 2 Get-GCESecrets
+		Assert-MockCalled -Exactly -Times 1 Get-GCESettings -ParameterFilter { $Settings.ContainsKey("JenkinsURL") }
+		Assert-MockCalled -Exactly -Times 1 Get-GCESettings -ParameterFilter { $Settings.ContainsKey("PlasticConfigZip") }
+		Assert-MockCalled -Exactly -Times 2 Get-GCESettings
 		Assert-MockCalled -Exactly -Times 0 Deploy-PlasticClientConfig
 		Assert-MockCalled -Exactly -Times 0 Authenticate-DockerForGoogleArtifactRegistry
 		Assert-MockCalled -Exactly -Times 0 Run-DockerInboundAgent
@@ -292,9 +292,9 @@ Describe 'GCEService-DockerInboundAgent' {
 		Mock Write-Host { }
 		Mock Resize-PartitionToMaxSize { }
 		Mock Get-GCEInstanceHostname { "host" }
-		Mock Get-GCESecrets -ParameterFilter { $Secrets.ContainsKey("JenkinsURL") } { $RequiredSecretsResponse }
-		Mock Get-GCESecrets -ParameterFilter { $Secrets.ContainsKey("PlasticConfigZip") } { $OptionalSecretsResponse }
-		Mock Get-GCESecrets { throw "Invalid invocation of Get-GCESecrets" }
+		Mock Get-GCESettings -ParameterFilter { $Settings.ContainsKey("JenkinsURL") } { $RequiredSettingsResponse }
+		Mock Get-GCESettings -ParameterFilter { $Settings.ContainsKey("PlasticConfigZip") } { $OptionalSettingsResponse }
+		Mock Get-GCESettings { throw "Invalid invocation of Get-GCESettings" }
 		Mock Deploy-PlasticClientConfig { throw "Deploy-PlasticClientConfig failed" }
 		Mock Authenticate-DockerForGoogleArtifactRegistry { throw "Authenticate-DockerForGoogleArtifactRegistry should not be called" }
 
@@ -310,9 +310,9 @@ Describe 'GCEService-DockerInboundAgent' {
 		Assert-MockCalled -Exactly -Times 1 Resolve-Path
 		Assert-MockCalled -Exactly -Times 1 Resize-PartitionToMaxSize
 		Assert-MockCalled -Exactly -Times 1 Get-GCEInstanceHostname
-		Assert-MockCalled -Exactly -Times 1 Get-GCESecrets -ParameterFilter { $Secrets.ContainsKey("JenkinsURL") }
-		Assert-MockCalled -Exactly -Times 1 Get-GCESecrets -ParameterFilter { $Secrets.ContainsKey("PlasticConfigZip") }
-		Assert-MockCalled -Exactly -Times 2 Get-GCESecrets
+		Assert-MockCalled -Exactly -Times 1 Get-GCESettings -ParameterFilter { $Settings.ContainsKey("JenkinsURL") }
+		Assert-MockCalled -Exactly -Times 1 Get-GCESettings -ParameterFilter { $Settings.ContainsKey("PlasticConfigZip") }
+		Assert-MockCalled -Exactly -Times 2 Get-GCESettings
 		Assert-MockCalled -Exactly -Times 1 Deploy-PlasticClientConfig
 		Assert-MockCalled -Exactly -Times 0 Authenticate-DockerForGoogleArtifactRegistry
 		Assert-MockCalled -Exactly -Times 0 Run-DockerInboundAgent
@@ -331,9 +331,9 @@ Describe 'GCEService-DockerInboundAgent' {
 		Mock Write-Host { }
 		Mock Resize-PartitionToMaxSize { }
 		Mock Get-GCEInstanceHostname { "host" }
-		Mock Get-GCESecrets -ParameterFilter { $Secrets.ContainsKey("JenkinsURL") } { $RequiredSecretsResponse }
-		Mock Get-GCESecrets -ParameterFilter { $Secrets.ContainsKey("PlasticConfigZip") } { $OptionalSecretsResponse }
-		Mock Get-GCESecrets { throw "Invalid invocation of Get-GCESecrets" }
+		Mock Get-GCESettings -ParameterFilter { $Settings.ContainsKey("JenkinsURL") } { $RequiredSettingsResponse }
+		Mock Get-GCESettings -ParameterFilter { $Settings.ContainsKey("PlasticConfigZip") } { $OptionalSettingsResponse }
+		Mock Get-GCESettings { throw "Invalid invocation of Get-GCESettings" }
 		Mock Deploy-PlasticClientConfig { }
 		Mock Authenticate-DockerForGoogleArtifactRegistry { throw "Authenticate-DockerForGoogleArtifactRegistry failed" }
 
@@ -349,9 +349,9 @@ Describe 'GCEService-DockerInboundAgent' {
 		Assert-MockCalled -Exactly -Times 1 Resolve-Path
 		Assert-MockCalled -Exactly -Times 1 Resize-PartitionToMaxSize
 		Assert-MockCalled -Exactly -Times 1 Get-GCEInstanceHostname
-		Assert-MockCalled -Exactly -Times 1 Get-GCESecrets -ParameterFilter { $Secrets.ContainsKey("JenkinsURL") }
-		Assert-MockCalled -Exactly -Times 1 Get-GCESecrets -ParameterFilter { $Secrets.ContainsKey("PlasticConfigZip") }
-		Assert-MockCalled -Exactly -Times 2 Get-GCESecrets
+		Assert-MockCalled -Exactly -Times 1 Get-GCESettings -ParameterFilter { $Settings.ContainsKey("JenkinsURL") }
+		Assert-MockCalled -Exactly -Times 1 Get-GCESettings -ParameterFilter { $Settings.ContainsKey("PlasticConfigZip") }
+		Assert-MockCalled -Exactly -Times 2 Get-GCESettings
 		Assert-MockCalled -Exactly -Times 1 Deploy-PlasticClientConfig
 		Assert-MockCalled -Exactly -Times 1 Authenticate-DockerForGoogleArtifactRegistry
 		Assert-MockCalled -Exactly -Times 0 Run-DockerInboundAgent
@@ -370,9 +370,9 @@ Describe 'GCEService-DockerInboundAgent' {
 		Mock Write-Host { }
 		Mock Resize-PartitionToMaxSize { }
 		Mock Get-GCEInstanceHostname { "host" }
-		Mock Get-GCESecrets -ParameterFilter { $Secrets.ContainsKey("JenkinsURL") } { $RequiredSecretsResponse }
-		Mock Get-GCESecrets -ParameterFilter { $Secrets.ContainsKey("PlasticConfigZip") } { $OptionalSecretsResponse }
-		Mock Get-GCESecrets { throw "Invalid invocation of Get-GCESecrets" }
+		Mock Get-GCESettings -ParameterFilter { $Settings.ContainsKey("JenkinsURL") } { $RequiredSettingsResponse }
+		Mock Get-GCESettings -ParameterFilter { $Settings.ContainsKey("PlasticConfigZip") } { $OptionalSettingsResponse }
+		Mock Get-GCESettings { throw "Invalid invocation of Get-GCESettings" }
 		Mock Deploy-PlasticClientConfig { }
 		Mock Authenticate-DockerForGoogleArtifactRegistry { }
 
@@ -388,9 +388,9 @@ Describe 'GCEService-DockerInboundAgent' {
 		Assert-MockCalled -Exactly -Times 1 Resolve-Path
 		Assert-MockCalled -Exactly -Times 1 Resize-PartitionToMaxSize
 		Assert-MockCalled -Exactly -Times 1 Get-GCEInstanceHostname
-		Assert-MockCalled -Exactly -Times 1 Get-GCESecrets -ParameterFilter { $Secrets.ContainsKey("JenkinsURL") }
-		Assert-MockCalled -Exactly -Times 1 Get-GCESecrets -ParameterFilter { $Secrets.ContainsKey("PlasticConfigZip") }
-		Assert-MockCalled -Exactly -Times 2 Get-GCESecrets
+		Assert-MockCalled -Exactly -Times 1 Get-GCESettings -ParameterFilter { $Settings.ContainsKey("JenkinsURL") }
+		Assert-MockCalled -Exactly -Times 1 Get-GCESettings -ParameterFilter { $Settings.ContainsKey("PlasticConfigZip") }
+		Assert-MockCalled -Exactly -Times 2 Get-GCESettings
 		Assert-MockCalled -Exactly -Times 1 Deploy-PlasticClientConfig
 		Assert-MockCalled -Exactly -Times 1 Authenticate-DockerForGoogleArtifactRegistry
 		Assert-MockCalled -Exactly -Times 1 Run-DockerInboundAgent
@@ -409,9 +409,9 @@ Describe 'GCEService-DockerInboundAgent' {
 		Mock Write-Host { }
 		Mock Resize-PartitionToMaxSize { }
 		Mock Get-GCEInstanceHostname { "host" }
-		Mock Get-GCESecrets -ParameterFilter { $Secrets.ContainsKey("JenkinsURL") } { $RequiredSecretsResponse }
-		Mock Get-GCESecrets -ParameterFilter { $Secrets.ContainsKey("PlasticConfigZip") } { $OptionalSecretsResponse }
-		Mock Get-GCESecrets { throw "Invalid invocation of Get-GCESecrets" }
+		Mock Get-GCESettings -ParameterFilter { $Settings.ContainsKey("JenkinsURL") } { $RequiredSettingsResponse }
+		Mock Get-GCESettings -ParameterFilter { $Settings.ContainsKey("PlasticConfigZip") } { $OptionalSettingsResponse }
+		Mock Get-GCESettings { throw "Invalid invocation of Get-GCESettings" }
 		Mock Deploy-PlasticClientConfig { }
 		Mock Authenticate-DockerForGoogleArtifactRegistry { }
 
@@ -427,9 +427,9 @@ Describe 'GCEService-DockerInboundAgent' {
 		Assert-MockCalled -Exactly -Times 1 Resolve-Path
 		Assert-MockCalled -Exactly -Times 1 Resize-PartitionToMaxSize
 		Assert-MockCalled -Exactly -Times 1 Get-GCEInstanceHostname
-		Assert-MockCalled -Exactly -Times 1 Get-GCESecrets -ParameterFilter { $Secrets.ContainsKey("JenkinsURL") }
-		Assert-MockCalled -Exactly -Times 1 Get-GCESecrets -ParameterFilter { $Secrets.ContainsKey("PlasticConfigZip") }
-		Assert-MockCalled -Exactly -Times 2 Get-GCESecrets
+		Assert-MockCalled -Exactly -Times 1 Get-GCESettings -ParameterFilter { $Settings.ContainsKey("JenkinsURL") }
+		Assert-MockCalled -Exactly -Times 1 Get-GCESettings -ParameterFilter { $Settings.ContainsKey("PlasticConfigZip") }
+		Assert-MockCalled -Exactly -Times 2 Get-GCESettings
 		Assert-MockCalled -Exactly -Times 1 Deploy-PlasticClientConfig
 		Assert-MockCalled -Exactly -Times 1 Authenticate-DockerForGoogleArtifactRegistry
 		Assert-MockCalled -Exactly -Times 1 Run-DockerInboundAgent
@@ -448,9 +448,9 @@ Describe 'GCEService-DockerInboundAgent' {
 		Mock Write-Host { }
 		Mock Resize-PartitionToMaxSize { }
 		Mock Get-GCEInstanceHostname { "host" }
-		Mock Get-GCESecrets -ParameterFilter { $Secrets.ContainsKey("JenkinsURL") } { $RequiredSecretsResponse }
-		Mock Get-GCESecrets -ParameterFilter { $Secrets.ContainsKey("PlasticConfigZip") } { $OptionalSecretsResponse }
-		Mock Get-GCESecrets { throw "Invalid invocation of Get-GCESecrets" }
+		Mock Get-GCESettings -ParameterFilter { $Settings.ContainsKey("JenkinsURL") } { $RequiredSettingsResponse }
+		Mock Get-GCESettings -ParameterFilter { $Settings.ContainsKey("PlasticConfigZip") } { $OptionalSettingsResponse }
+		Mock Get-GCESettings { throw "Invalid invocation of Get-GCESettings" }
 		Mock Deploy-PlasticClientConfig { }
 		Mock Authenticate-DockerForGoogleArtifactRegistry { }
 
@@ -466,9 +466,9 @@ Describe 'GCEService-DockerInboundAgent' {
 		Assert-MockCalled -Exactly -Times 1 Resolve-Path
 		Assert-MockCalled -Exactly -Times 1 Resize-PartitionToMaxSize
 		Assert-MockCalled -Exactly -Times 1 Get-GCEInstanceHostname
-		Assert-MockCalled -Exactly -Times 1 Get-GCESecrets -ParameterFilter { $Secrets.ContainsKey("JenkinsURL") -and $Secrets.ContainsKey("AgentKey") -and $Secrets.ContainsKey("AgentImageURL") -and $Secrets.ContainsKey("JenkinsSecret") }
-		Assert-MockCalled -Exactly -Times 1 Get-GCESecrets -ParameterFilter { $Secrets.ContainsKey("PlasticConfigZip") }
-		Assert-MockCalled -Exactly -Times 2 Get-GCESecrets
+		Assert-MockCalled -Exactly -Times 1 Get-GCESettings -ParameterFilter { $Settings.ContainsKey("JenkinsURL") -and $Settings.ContainsKey("AgentKey") -and $Settings.ContainsKey("AgentImageURL") -and $Settings.ContainsKey("JenkinsSecret") }
+		Assert-MockCalled -Exactly -Times 1 Get-GCESettings -ParameterFilter { $Settings.ContainsKey("PlasticConfigZip") }
+		Assert-MockCalled -Exactly -Times 2 Get-GCESettings
 		Assert-MockCalled -Exactly -Times 1 Deploy-PlasticClientConfig -ParameterFilter { !(Compare-Object -ReferenceObject $PlasticConfigZipRef -DifferenceObject $ZipContent) }
 		Assert-MockCalled -Exactly -Times 1 Authenticate-DockerForGoogleArtifactRegistry -ParameterFilter { ($AgentKey -eq $AgentKeyFileRef) -and ($Region -eq $RegionRef) }
 		Assert-MockCalled -Exactly -Times 1 Run-DockerInboundAgent -ParameterFilter { ($JenkinsUrl -eq $JenkinsUrlRef) -and ($JenkinsSecret -eq $JenkinsSecretRef) -and ($AgentImageURL -eq $AgentImageURLRef)}
