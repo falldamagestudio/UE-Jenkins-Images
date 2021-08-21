@@ -454,7 +454,7 @@ Describe 'GCEService-DockerInboundAgent' {
 			$Settings.ContainsKey("AgentKey") | Should -BeTrue
 			$Settings.ContainsKey("AgentImageURL") | Should -BeTrue
 			$Settings.ContainsKey("JenkinsSecret") | Should -BeTrue
-			 $RequiredSettingsResponse 
+			$RequiredSettingsResponse 
 		}
 		Mock Get-GCESettings -ParameterFilter { $Settings.ContainsKey("PlasticConfigZip") } { $OptionalSettingsResponse }
 		Mock Get-GCESettings { throw "Invalid invocation of Get-GCESettings" }

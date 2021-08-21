@@ -1,17 +1,17 @@
 # Log all output to file (in addition to console output, when run manually )
 # This enables post-mortem inspection of the script's activities via log files
 # It also allows GCE's logging agent to pick up the activity and forward it to Google's Cloud Logging
-Start-Transcript -LiteralPath "C:\Logs\GCEService-SwarmAgent-$(Get-Date -Format "yyyyMMdd-HHmmss").txt"
+Start-Transcript -LiteralPath "C:\Logs\GCEService-SwarmAgent-$(Get-Date -Format "yyyyMMdd-HHmmss" -ErrorAction Stop).txt" -ErrorAction Stop
 
 try {
 
     . ${PSScriptRoot}\..\..\SystemConfiguration\Resize-PartitionToMaxSize.ps1
-    . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESecret.ps1
+    . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESettings.ps1
     . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCEInstanceHostname.ps1
-    . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCEInstanceMetadata.ps1
+    . ${PSScriptRoot}\..\..\Applications\Deploy-PlasticClientConfig.ps1
     . ${PSScriptRoot}\..\Run\Run-SwarmAgent.ps1
 
-    $DefaultFolders = Import-PowerShellDataFile "${PSScriptRoot}\..\..\BuildSteps\DefaultFolders.psd1"
+    $DefaultFolders = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\BuildSteps\DefaultFolders.psd1" -ErrorAction Stop
 
     Write-Host "Ensuring that the boot partition uses the entire boot disk..."
 
@@ -24,43 +24,29 @@ try {
 
     $AgentName = (Get-GCEInstanceHostname).Split(".")[0]
 
-    # Fetch configuration parameters repeatedly, until all are available
-    while ($true) {
+    Write-Host "Waiting for required settings to be available in Secrets Manager / Instance Metadata..."
 
-        Write-Host "Retrieving configuration from Secrets Manager..."
-
-        $JenkinsURL = Get-GCESecret -Key "jenkins-url"
-        $AgentUsername = Get-GCESecret -Key "swarm-agent-username"
-        $AgentAPIToken = Get-GCESecret -Key "swarm-agent-api-token"
-        $PlasticConfigZip = Get-GCESecret -Key "plastic-config-zip" -Binary $true
-        $Labels = Get-GCEInstanceMetadata -Key "jenkins-labels"
-
-        Write-Host "Required settings:"
-        Write-Host "Secret jenkins-url: $(if ($JenkinsURL -ne $null) { "found" } else { "not found" })"
-        Write-Host "Secret swarm-agent-username: $(if ($AgentUsername -ne $null) { "found" } else { "not found" })"
-        Write-Host "Secret swarm-agent-api-token: $(if ($AgentAPIToken -ne $null) { "found" } else { "not found" })"
-        Write-Host "Instance metadata jenkins-labels: $(if ($Labels -ne $null) { "found" } else { "not found" })"
-        Write-Host "Optional settings:"
-        Write-Host "Secret plastic-config-zip: $(if ($PlasticConfigZip -ne $null) { "found" } else { "not found" })"
-
-        if (($JenkinsURL -ne $null) -and ($AgentUsername -ne $null) -and ($AgentAPIToken -ne $null) -and ($Labels -ne $null)) {
-            break
-        } else {
-            Write-Host "Some required secrets/instance metadata are missing. Sleeping, then retrying..."
-            Start-Sleep 10
-        }
+    $RequiredSettingsSpec = @{
+        JenkinsURL = @{ Name = "jenkins-url"; Source = [GCESettingSource]::Secret }
+        AgentUsername = @{ Name = "swarm-agent-username"; Source = [GCESettingSource]::Secret }
+        AgentAPIToken = @{ Name = "swarm-agent-api-token"; Source = [GCESettingSource]::Secret }
+        Labels = @{ Name = "jenkins-labels"; Source = [GCESettingSource]::InstanceMetadata }
     }
 
-    if ($PlasticConfigZip) {
+    $RequiredSettings = Get-GCESettings $RequiredSettingsSpec -Wait -PrintProgress
+
+    Write-Host "Fetching optional settings from Secrets Manager / Instance Metadata..."
+
+    $OptionalSettingsSpec = @{
+        PlasticConfigZip = @{ Name = "plastic-config-zip"; Source = [GCESettingSource]::Secret; Binary = $true }
+    }
+
+    $OptionalSettings = Get-GCESettings $OptionalSettingsSpec -PrintProgress
+
+    if ($OptionalSettings.PlasticConfigZip) {
         Write-Host "Deploying Plastic SCM client configuration..."
 
-        $PlasticConfigZipLocation = "${PSScriptRoot}\plastic-config.zip"
-        try {
-            [IO.File]::WriteAllBytes($PlasticConfigZipLocation, $PlasticConfigZip)
-            Expand-Archive -LiteralPath $PlasticConfigZipLocation -DestinationPath $DefaultFolders.PlasticConfigFolder -Force -ErrorAction Stop
-        } finally {
-            Remove-Item $PlasticConfigZipLocation -ErrorAction SilentlyContinue
-        }
+        Deploy-PlasticClientConfig -ZipContent $OptionalSettings.PlasticConfigZip -ConfigFolder $DefaultFolders.PlasticConfigFolder
     }
 
     Write-Host "Running Jenkins Agent..."
@@ -68,11 +54,11 @@ try {
     $ServiceParams = @{
         JenkinsAgentFolder = $DefaultFolders.JenkinsAgentFolder
         JenkinsWorkspaceFolder = $DefaultFolders.JenkinsWorkspaceFolder
-        JenkinsURL = $JenkinsURL
-        AgentUsername = $AgentUsername
-        AgentAPIToken = $AgentAPIToken
+        JenkinsURL = $RequiredSettings.JenkinsURL
+        AgentUsername = $RequiredSettings.AgentUsername
+        AgentAPIToken = $RequiredSettings.AgentAPIToken
         NumExecutors = 1
-        Labels = $Labels
+        Labels = $RequiredSettings.Labels
         AgentName = $AgentName
     }
 

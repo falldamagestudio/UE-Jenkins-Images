@@ -1,16 +1,17 @@
 # Log all output to file (in addition to console output, when run manually )
 # This enables post-mortem inspection of the script's activities via log files
 # It also allows GCE's logging agent to pick up the activity and forward it to Google's Cloud Logging
-Start-Transcript -LiteralPath "C:\Logs\GCEService-InboundAgent-$(Get-Date -Format "yyyyMMdd-HHmmss").txt"
+Start-Transcript -LiteralPath "C:\Logs\GCEService-InboundAgent-$(Get-Date -Format "yyyyMMdd-HHmmss" -ErrorAction Stop).txt" -ErrorAction Stop
 
 try {
 
     . ${PSScriptRoot}\..\..\SystemConfiguration\Resize-PartitionToMaxSize.ps1
-    . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESecret.ps1
+    . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESettings.ps1
     . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCEInstanceHostname.ps1
+    . ${PSScriptRoot}\..\..\Applications\Deploy-PlasticClientConfig.ps1
     . ${PSScriptRoot}\..\Run\Run-InboundAgent.ps1
 
-    $DefaultFolders = Import-PowerShellDataFile "${PSScriptRoot}\..\..\BuildSteps\DefaultFolders.psd1"
+    $DefaultFolders = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\BuildSteps\DefaultFolders.psd1" -ErrorAction Stop
 
     Write-Host "Ensuring that the boot partition uses the entire boot disk..."
 
@@ -23,39 +24,27 @@ try {
 
     $AgentName = (Get-GCEInstanceHostname).Split(".")[0]
 
-    # Fetch configuration parameters repeatedly, until all are available
-    while ($true) {
+    Write-Host "Waiting for required settings to be available in Secrets Manager / Instance Metadata..."
 
-        Write-Host "Retrieving configuration from Secrets Manager..."
-
-        $JenkinsURL = Get-GCESecret -Key "jenkins-url"
-        $JenkinsSecret = Get-GCESecret -Key "inbound-agent-secret-${AgentName}"
-        $PlasticConfigZip = Get-GCESecret -Key "plastic-config-zip" -Binary $true
-
-        Write-Host "Required settings:"
-        Write-Host "Secret jenkins-url: $(if ($JenkinsURL -ne $null) { "found" } else { "not found" })"
-        Write-Host "Secret inbound-agent-secret-${AgentName}: $(if ($JenkinsSecret -ne $null) { "found" } else { "not found" })"
-        Write-Host "Optional settings:"
-        Write-Host "Secret plastic-config-zip: $(if ($PlasticConfigZip -ne $null) { "found" } else { "not found" })"
-
-        if (($JenkinsURL -ne $null) -and ($JenkinsSecret -ne $null)) {
-            break
-        } else {
-            Write-Host "Some required secrets are missing. Sleeping, then retrying..."
-            Start-Sleep 10
-        }
+    $RequiredSettingsSpec = @{
+        JenkinsURL = @{ Name = "jenkins-url"; Source = [GCESettingSource]::Secret }
+        JenkinsSecret = @{ Name = "inbound-agent-secret-${AgentName}"; Source = [GCESettingSource]::Secret }
     }
 
-    if ($PlasticConfigZip) {
+    $RequiredSettings = Get-GCESettings $RequiredSettingsSpec -Wait -PrintProgress
+
+    Write-Host "Fetching optional settings from Secrets Manager / Instance Metadata..."
+
+    $OptionalSettingsSpec = @{
+        PlasticConfigZip = @{ Name = "plastic-config-zip"; Source = [GCESettingSource]::Secret; Binary = $true }
+    }
+
+    $OptionalSettings = Get-GCESettings $OptionalSettingsSpec -PrintProgress
+
+    if ($OptionalSettings.PlasticConfigZip) {
         Write-Host "Deploying Plastic SCM client configuration..."
 
-        $PlasticConfigZipLocation = "${PSScriptRoot}\plastic-config.zip"
-        try {
-            [IO.File]::WriteAllBytes($PlasticConfigZipLocation, $PlasticConfigZip)
-            Expand-Archive -LiteralPath $PlasticConfigZipLocation -DestinationPath $DefaultFolders.PlasticConfigFolder -Force -ErrorAction Stop
-        } finally {
-            Remove-Item $PlasticConfigZipLocation -ErrorAction SilentlyContinue
-        }
+        Deploy-PlasticClientConfig -ZipContent $OptionalSettings.PlasticConfigZip -ConfigFolder $DefaultFolders.PlasticConfigFolder
     }
 
     Write-Host "Running Jenkins Agent..."
@@ -63,8 +52,8 @@ try {
     $ServiceParams = @{
         JenkinsAgentFolder = $DefaultFolders.JenkinsAgentFolder
         JenkinsWorkspaceFolder = $DefaultFolders.JenkinsWorkspaceFolder
-        JenkinsURL = $JenkinsURL
-        JenkinsSecret = $JenkinsSecret
+        JenkinsURL = $RequiredSettings.JenkinsURL
+        JenkinsSecret = $RequiredSettings.JenkinsSecret
         AgentName = $AgentName
     }
 
