@@ -6,12 +6,13 @@ Start-Transcript -LiteralPath "C:\Logs\GCEService-DockerInboundAgent-$(Get-Date 
 try {
 
     . ${PSScriptRoot}\..\..\SystemConfiguration\Resize-PartitionToMaxSize.ps1
-    . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESecret.ps1
+    . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESecrets.ps1
     . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCEInstanceHostname.ps1
+    . ${PSScriptRoot}\..\..\Applications\Deploy-PlasticClientConfig.ps1
     . ${PSScriptRoot}\..\..\Applications\Authenticate-DockerForGoogleArtifactRegistry.ps1
     . ${PSScriptRoot}\..\Run\Run-DockerInboundAgent.ps1
 
-    $DefaultFolders = Import-PowerShellDataFile "${PSScriptRoot}\..\..\BuildSteps\DefaultFolders.psd1"
+    $DefaultFolders = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\BuildSteps\DefaultFolders.psd1" -ErrorAction Stop
 
     Write-Host "Ensuring that the boot partition uses the entire boot disk..."
 
@@ -24,52 +25,38 @@ try {
 
     $AgentName = (Get-GCEInstanceHostname).Split(".")[0]
 
-    # Fetch configuration parameters repeatedly, until all are available
-    while ($true) {
+    Write-Host "Waiting for required settings to be available in Secrets Manager..."
 
-        Write-Host "Retrieving configuration from Secrets Manager..."
-
-        $JenkinsURL = Get-GCESecret -Key "jenkins-url"
-        $AgentKey = Get-GCESecret -Key "agent-key-file"
-        $AgentImageURL = Get-GCESecret -Key "inbound-agent-image-url-windows"
-        $JenkinsSecret = Get-GCESecret -Key "inbound-agent-secret-${AgentName}"
-        $PlasticConfigZip = Get-GCESecret -Key "plastic-config-zip" -Binary $true
-
-        Write-Host "Required settings:"
-        Write-Host "Secret jenkins-url: $(if ($JenkinsURL -ne $null) { "found" } else { "not found" })"
-        Write-Host "Secret agent-key-file: $(if ($AgentKey -ne $null) { "found" } else { "not found" })"
-        Write-Host "Secret inbound-agent-image-url-windows: $(if ($AgentImageURL -ne $null) { "found" } else { "not found" })"
-        Write-Host "Secret inbound-agent-secret-${AgentName}: $(if ($JenkinsSecret -ne $null) { "found" } else { "not found" })"
-        Write-Host "Optional settings:"
-        Write-Host "Secret plastic-config-zip: $(if ($PlasticConfigZip -ne $null) { "found" } else { "not found" })"
-
-        if (($JenkinsURL -ne $null) -and ($AgentImageURL -ne $null) -and ($AgentKey -ne $null) -and ($JenkinsSecret -ne $null)) {
-            break
-        } else {
-            Write-Host "Some required secrets are missing. Sleeping, then retrying..."
-            Start-Sleep 10
-        }
+    $RequiredSettingsSpec = @{
+        JenkinsURL = @{ Name = "jenkins-url" }
+        AgentKey = @{ Name = "agent-key" }
+        AgentImageURL = @{ Name = "inbound-agent-image-url-windows" }
+        JenkinsSecret = @{ Name = "inbound-agent-secret-${AgentName}" }
     }
 
-    if ($PlasticConfigZip) {
+    $RequiredSettings = Get-GCESecrets $RequiredSettingsSpec -Wait -PrintProgress
+
+    Write-Host "Fetching optional settings from Secrets Manager..."
+
+    $OptionalSettingsSpec = @{
+        PlasticConfigZip = @{ Name = "plastic-config-zip"; Binary = $true }
+    }
+
+    $OptionalSettings = Get-GCESecrets $OptionalSettingsSpec -PrintProgress
+
+    if ($OptionalSettings.PlasticConfigZip) {
         Write-Host "Deploying Plastic SCM client configuration..."
 
-        $PlasticConfigZipLocation = "${PSScriptRoot}\plastic-config.zip"
-        try {
-            [IO.File]::WriteAllBytes($PlasticConfigZipLocation, $PlasticConfigZip)
-            Expand-Archive -LiteralPath $PlasticConfigZipLocation -DestinationPath $DefaultFolders.PlasticConfigFolder -Force -ErrorAction Stop
-        } finally {
-            Remove-Item $PlasticConfigZipLocation -ErrorAction SilentlyContinue
-        }
+        Deploy-PlasticClientConfig -ZipContent $OptionalSettings.PlasticConfigZip -ConfigFolder $DefaultFolders.PlasticConfigFolder
     }
 
     # Extract region from docker image URL
     # Example: europe-west1-docker.pkg.dev/<projectname>/<reponame>/<imagename>:<tag> => europe-west1
-    $Region = ($AgentImageURL -Split "-docker.pkg.dev")[0]
+    $Region = ($RequiredSettings.AgentImageURL -Split "-docker.pkg.dev")[0]
 
     Write-Host "Authenticating Docker for Google Artifact Registry..."
 
-    Authenticate-DockerForGoogleArtifactRegistry -AgentKey $AgentKey -Region $Region
+    Authenticate-DockerForGoogleArtifactRegistry -AgentKey $RequiredSettings.AgentKey -Region $Region
 
     Write-Host "Running Jenkins Agent..."
 
@@ -77,9 +64,9 @@ try {
         JenkinsAgentFolder = $DefaultFolders.JenkinsAgentFolder
         JenkinsWorkspaceFolder = $DefaultFolders.JenkinsWorkspaceFolder
         PlasticConfigFolder = $DefaultFolders.PlasticConfigFolder
-        JenkinsURL = $JenkinsURL
-        JenkinsSecret = $JenkinsSecret
-        AgentImageURL = $AgentImageURL
+        JenkinsURL = $RequiredSettings.JenkinsURL
+        JenkinsSecret = $RequiredSettings.JenkinsSecret
+        AgentImageURL = $RequiredSettings.AgentImageURL
         AgentName = $AgentName
     }
 
