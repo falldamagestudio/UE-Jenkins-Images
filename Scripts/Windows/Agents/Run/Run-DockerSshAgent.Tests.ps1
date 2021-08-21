@@ -14,7 +14,7 @@ Describe 'Run-DockerSshAgent' {
 		Mock Run-Dockeragent -ParameterFilter { ($AgentImageUrl -eq "agent-image") -and ($AgentRunArguments[0] -eq "--rm") } { throw "Run-DockerAgent failed" }
 		Mock Run-DockerAgent { throw "Invalid invocation of Run-DockerAgent" }
 
-		{ Run-DockerSshAgent -AgentJarFolder "C:\AgentJar" -AgentJarFile "C:\AgentJar\agent.jar" -JenkinsAgentFolder "C:\JenkinsAgent" -JenkinsWorkspaceFolder "C:\JenkinsWorkspace" -PlasticConfigFolder "C:\PlasticConfig" -AgentImageURL "agent-image" } |
+		{ Run-DockerSshAgent -AgentJarFile "C:\JenkinsAgent\agent.jar" -JenkinsAgentFolder "C:\JenkinsAgent" -JenkinsWorkspaceFolder "C:\JenkinsWorkspace" -PlasticConfigFolder "C:\PlasticConfig" -AgentImageURL "agent-image" } |
 			Should -Throw
 
 		Assert-MockCalled -Times 1 -Exactly Run-Dockeragent -ParameterFilter { ($AgentImageUrl -eq "agent-image") -and ($AgentRunArguments[0] -eq "--rm") }
@@ -26,7 +26,7 @@ Describe 'Run-DockerSshAgent' {
 		Mock Run-Dockeragent -ParameterFilter { ($AgentImageUrl -eq "agent-image") -and ($AgentRunArguments[0] -eq "--rm") } { }
 		Mock Run-DockerAgent { throw "Invalid invocation of Run-DockerAgent" }
 
-		{ Run-DockerSshAgent -AgentJarFolder "C:\AgentJar" -AgentJarFile "C:\AgentJar\agent.jar" -JenkinsAgentFolder "C:\JenkinsAgent" -JenkinsWorkspaceFolder "C:\JenkinsWorkspace" -PlasticConfigFolder "C:\PlasticConfig" -AgentImageURL "agent-image" } |
+		{ Run-DockerSshAgent -AgentJarFile "C:\JenkinsAgent\agent.jar" -JenkinsAgentFolder "C:\JenkinsAgent" -JenkinsWorkspaceFolder "C:\JenkinsWorkspace" -PlasticConfigFolder "C:\PlasticConfig" -AgentImageURL "agent-image" } |
 			Should -Not -Throw
 
 		Assert-MockCalled -Times 1 -Exactly Run-Dockeragent -ParameterFilter { ($AgentImageUrl -eq "agent-image") -and ($AgentRunArguments[0] -eq "--rm") }

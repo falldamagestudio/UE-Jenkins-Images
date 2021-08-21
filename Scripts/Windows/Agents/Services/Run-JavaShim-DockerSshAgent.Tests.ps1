@@ -2,37 +2,44 @@
 . ${PSScriptRoot}\..\..\Helpers\Ensure-TestToolVersions.ps1
 
 BeforeAll {
-	. ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESecret.ps1
+	. ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESettings.ps1
+	. ${PSScriptRoot}\..\..\Applications\Deploy-PlasticClientConfig.ps1
 	. ${PSScriptRoot}\..\Run\Run-DockerSshAgent.ps1
 	. ${PSScriptRoot}\..\..\Applications\Authenticate-DockerForGoogleArtifactRegistry.ps1
 }
 
 Describe 'Run-JavaShim-DockerSshAgent' {
 
+	BeforeEach {
+		$AgentHostNameRef = "test-host.domain.internal"
+		$AgentNameRef = "test-host"
+		$RegionRef = "europe-west1"
+		$AgentImageURLRef = "${RegionRef}-docker.pkg.dev/someproject/somerepo/inbound-agent:latest"
+		$AgentKeyFileRef = "1234"
+		[byte[]] $PlasticConfigZipRef = 72, 101, 108, 108, 111 # "Hello"
+	
+		$RequiredSettingsResponse = @{
+			AgentKey = $AgentKeyFileRef
+			AgentImageURL = $AgentImageURLRef
+		}
+	
+		$OptionalSettingsResponse = @{
+			PlasticConfigZip = $PlasticConfigZipRef
+		}
+	}
+
 	It "Succeeds when launched with -fullversion" {
 
 		Mock Start-Transcript { }
-		Mock Resolve-Path { "invalid path" }
 		Mock Get-Date { "invalid date" }
-		Mock Stop-Transcript { }
-
 		Mock Write-Host { }
-
-		Mock Get-GCESecret { throw "Get-GCESecret should not be called" }
-
-		Mock Expand-Archive { throw "Expand-Archive should not be called" }
-		Mock Remove-Item { throw "Remove-Item should not be called" }
-
+		Mock Import-PowerShellDataFile { & (Get-Command Import-PowerShellDataFile -CommandType Function) -Path $Path }
+		Mock Get-GCESettings { throw "Get-GCESettings should not be called" }
+		Mock Deploy-PlasticClientConfig { throw "Deploy-PlasticClientConfig should not be called" }
 		Mock Authenticate-DockerForGoogleArtifactRegistry { throw "Authenticate-DockerForGoogleArtifactRegistry should not be called" }
-
-		Mock Run-DockerSshAgent { throw "Run-DockerSshAgent should not be called" }
-
-		Mock Start-Sleep { throw "Start-Sleep should not be called" }
-
-		Mock New-Item { throw "New-Item should not be called" }
 		Mock Copy-Item { throw "Copy-Item should not be called" }
-
 		Mock Run-DockerSshAgent { throw "Run-DockerSshAgent should not be called" }
+		Mock Stop-Transcript { }
 
 		{ & ${PSScriptRoot}\Run-JavaShim-DockerSshAgent.ps1 -fullversion } |
 			Should -Not -Throw
@@ -41,87 +48,63 @@ Describe 'Run-JavaShim-DockerSshAgent' {
 	It "Fails when launched without any options" {
 
 		Mock Start-Transcript { }
-		Mock Resolve-Path { "invalid path" }
 		Mock Get-Date { "invalid date" }
-		Mock Stop-Transcript { }
-
 		Mock Write-Host { }
-
-		Mock Get-GCESecret { throw "Get-GCESecret should not be called" }
-
-		Mock Expand-Archive { throw "Expand-Archive should not be called" }
-		Mock Remove-Item { throw "Remove-Item should not be called" }
-
+		Mock Import-PowerShellDataFile { & (Get-Command Import-PowerShellDataFile -CommandType Function) -Path $Path }
+		Mock Get-GCESettings { throw "Get-GCESettings should not be called" }
+		Mock Deploy-PlasticClientConfig { throw "Deploy-PlasticClientConfig should not be called" }
 		Mock Authenticate-DockerForGoogleArtifactRegistry { throw "Authenticate-DockerForGoogleArtifactRegistry should not be called" }
-
-		Mock Run-DockerSshAgent { throw "Run-DockerSshAgent should not be called" }
-
-		Mock Start-Sleep { throw "Start-Sleep should not be called" }
-
-		Mock New-Item { throw "New-Item should not be called" }
 		Mock Copy-Item { throw "Copy-Item should not be called" }
-
 		Mock Run-DockerSshAgent { throw "Run-DockerSshAgent should not be called" }
+		Mock Stop-Transcript { }
 
 		{ & ${PSScriptRoot}\Run-JavaShim-DockerSshAgent.ps1 } |
 			Should -Throw
 	}
 
-	It "Succeeds when launched with -jar <jarfile>; retries settings fetch until parameters are available before launching SshAgent" {
-
-		$RegionRef = "europe-west1"
-		$AgentImageURLRef = "${RegionRef}-docker.pkg.dev/someproject/somerepo/swarm-agent:latest"
-		$AgentKeyFileRef = "1234"
-		$PlasticConfigZipRef = @(72, 101, 108, 108, 111) # "Hello"
-
-		$script:LoopCount = 0
-		$script:SleepCount = 0
+	It "Succeeds when launched with -jar <jarfile>" {
 
 		Mock Start-Transcript { }
-		Mock Resolve-Path { "invalid path" }
 		Mock Get-Date { "invalid date" }
-		Mock Stop-Transcript { }
-
 		Mock Write-Host { }
-
-		Mock Get-GCESecret -ParameterFilter { $Key -eq "agent-key-file" } { $AgentKeyFileRef }
-		Mock Get-GCESecret -ParameterFilter { $Key -eq "ssh-agent-image-url-windows" } { if ($script:LoopCount -lt 3) { $script:LoopCount++; $null } else { $AgentImageURLRef } }
-		Mock Get-GCESecret -ParameterFilter { $Key -eq "plastic-config-zip" } { $PlasticConfigZipRef }
-		Mock Get-GCESecret { throw "Invalid invocation of Get-GCESecret" }
-
-		Mock Expand-Archive { }
-		Mock Remove-Item { }
-
-		Mock Authenticate-DockerForGoogleArtifactRegistry -ParameterFilter { ($AgentKey -eq $AgentKeyFileRef) -and ($Region -eq $RegionRef) } {}
-		Mock Authenticate-DockerForGoogleArtifactRegistry { throw "Invalid invocation of Authenticate-DockerForGoogleArtifactRegistry" }
-
-		Mock New-Item -ParameterFilter { ($ItemType -eq "Directory") } { }
-		Mock New-Item { throw "Invalid invocation of New-Item" }
-
+		Mock Import-PowerShellDataFile { & (Get-Command Import-PowerShellDataFile -CommandType Function) -Path $Path }
+		Mock Resolve-Path -ParameterFilter { $Path.EndsWith("DefaultFolders.psd1") } { & (Get-Command Resolve-Path -CommandType Cmdlet) -Path $Path }
+		Mock Resolve-Path { throw "Invalid invocation of Resolve-Path" }
+		Mock Get-GCESettings -ParameterFilter { $Settings.ContainsKey("AgentKey") } {
+			$Settings.ContainsKey("AgentKey") | Should -BeTrue
+			$Settings.ContainsKey("AgentImageURL") | Should -BeTrue
+			$RequiredSettingsResponse 
+		}
+		Mock Get-GCESettings -ParameterFilter { $Settings.ContainsKey("PlasticConfigZip") } {
+			$Settings.ContainsKey("PlasticConfigZip") | Should -BeTrue
+			$OptionalSettingsResponse
+		}
+		Mock Get-GCESettings { throw "Invalid invocation of Get-GCESettings" }
+		Mock Deploy-PlasticClientConfig {
+			(Compare-Object -ReferenceObject $PlasticConfigZipRef -DifferenceObject $ZipContent) | Should -Be $null
+		}
+		Mock Authenticate-DockerForGoogleArtifactRegistry {
+			$AgentKey | Should -Be $AgentKeyFileRef
+			$Region | Should -Be $RegionRef
+		}
 		Mock Copy-Item { }
-
-		Mock Run-DockerSshAgent -ParameterFilter { ($AgentImageURL -eq $AgentImageURLRef) } { }
-		Mock Run-DockerSshAgent { throw "Invalid invocation of Run-DockerSshAgent" }
-
-		Mock Start-Sleep { if ($script:SleepCount -lt 10) { $script:SleepCount++ } else { throw "Infinite loop detected when waiting for GCE secrets to be set" } }
+		Mock Run-DockerSshAgent {
+			$AgentImageURL | Should -Be $AgentImageURLRef
+		}
+		Mock Stop-Transcript { }
 
 		{ & ${PSScriptRoot}\Run-JavaShim-DockerSshAgent.ps1 -jar "C:\AgentJarDownloadLocation\agent.jar" } |
 			Should -Not -Throw
 
-		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "agent-key-file" }
-		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "ssh-agent-image-url-windows" }
-		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "plastic-config-zip" }
-
-		Assert-MockCalled -Times 2 Start-Sleep
-
-		Assert-MockCalled -Times 1 Expand-Archive
-		Assert-MockCalled -Times 1 Remove-Item
-
-		Assert-MockCalled -Times 1 Authenticate-DockerForGoogleArtifactRegistry
-
-		Assert-MockCalled -Times 1 New-Item
-		Assert-MockCalled -Times 1 Copy-Item
-
-		Assert-MockCalled -Times 1 Run-DockerSshAgent
+		Assert-MockCalled -Exactly -Times 1 Get-Date
+		Assert-MockCalled -Exactly -Times 1 Start-Transcript
+		Assert-MockCalled -Exactly -Times 1 Import-PowerShellDataFile
+		Assert-MockCalled -Exactly -Times 1 Resolve-Path
+		Assert-MockCalled -Exactly -Times 2 Get-GCESettings
+		Assert-MockCalled -Exactly -Times 1 Deploy-PlasticClientConfig
+		Assert-MockCalled -Exactly -Times 1 Authenticate-DockerForGoogleArtifactRegistry
+		Assert-MockCalled -Exactly -Times 1 Copy-Item
+		Assert-MockCalled -Exactly -Times 1 Run-DockerSshAgent
+		Assert-MockCalled -Exactly -Times 1 Stop-Transcript
 	}
 }

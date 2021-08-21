@@ -12,7 +12,6 @@ function Run-DockerSshAgent {
 		[Parameter(Mandatory)] [string] $JenkinsWorkspaceFolder,
 		[Parameter(Mandatory)] [string] $PlasticConfigFolder,
 		[Parameter(Mandatory)] [string] $AgentImageURL,
-		[Parameter(Mandatory)] [string] $AgentJarFolder,
 		[Parameter(Mandatory)] [string] $AgentJarFile
 	)
 
@@ -20,8 +19,6 @@ function Run-DockerSshAgent {
 		"--rm"
 		"--name","jenkins-agent"
 		"-i"
-		# Share agent jar folder with containers
-		"--mount","type=bind,source=${AgentJarFolder},destination=${AgentJarFolder}"
 		# Share Jenkins agent work folder with containers
 		"--mount","type=bind,source=${JenkinsAgentFolder},destination=${JenkinsAgentFolder}"
 		# Share Jenkins workspace folder with containers
