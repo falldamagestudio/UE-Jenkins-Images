@@ -46,7 +46,7 @@ function Install-OpenSSHServer {
     #  Version 8.6.0-beta1 is new enough to allocate a PTY, and therefore avoid the above problem scenario.
     #  Reference: https://mangolassi.it/post/518620
 
-	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1"
+	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1" -ErrorAction Stop
 
     choco install -y openssh --version $ToolsAndVersions.OpenSSHVersion -params '"/SSHServerFeature /KeyBasedAuthenticationFeature"'
 }

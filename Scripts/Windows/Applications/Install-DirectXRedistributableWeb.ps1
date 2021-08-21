@@ -12,7 +12,7 @@ class DirectXRedistributableWebInstallerException : Exception {
 
 function Install-DirectXRedistributableWeb {
 
-	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1"
+	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1" -ErrorAction Stop
 
 	$TempFolder = "C:\Temp"
 	$RedistExeName = "dxwebsetup.exe"

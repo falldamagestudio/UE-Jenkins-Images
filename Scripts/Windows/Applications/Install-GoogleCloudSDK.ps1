@@ -6,7 +6,7 @@ class GoogleCloudSDKInstallerException : Exception {
 
 function Install-GoogleCloudSDK {
 
-	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1"
+	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1" -ErrorAction Stop
 
 	$TempFolder = "C:\Temp"
 	$ArchiveName = "google-cloud-sdk.zip"

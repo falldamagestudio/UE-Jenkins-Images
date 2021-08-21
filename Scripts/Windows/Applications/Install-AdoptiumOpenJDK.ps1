@@ -6,7 +6,7 @@ class AdoptiumOpenJDKInstallerException : Exception {
 
 function Install-AdoptiumOpenJDK {
 
-	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1"
+	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1" -ErrorAction Stop
 
 	$TempFolder = "C:\Temp"
 	$InstallerName = "AdoptiumOpenJdk.msi"

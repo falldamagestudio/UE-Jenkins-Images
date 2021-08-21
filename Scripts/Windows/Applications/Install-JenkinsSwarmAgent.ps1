@@ -4,7 +4,7 @@ function Install-JenkinsSwarmAgent {
 		[Parameter(Mandatory)] [string] $Path
     )
 
-	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1"
+	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1" -ErrorAction Stop
 
     $TargetFile = "${Path}\swarm-agent.jar"
 

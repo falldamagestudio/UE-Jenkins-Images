@@ -6,7 +6,7 @@ class DockerCLIInstallerException : Exception {
 
 function Install-DockerCLI {
 
-	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1"
+	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1" -ErrorAction Stop
 
     $InstallLocation = "C:\Program Files\Docker"
     $DockerExeLocation = (Join-Path -Path $InstallLocation -ChildPath "Docker.exe")

@@ -6,7 +6,7 @@ class VC2010RedistributableX64InstallerException : Exception {
 
 function Install-VC2010RedistributableX64 {
 
-	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1"
+	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1" -ErrorAction Stop
 
 	$TempFolder = "C:\Temp"
 	$RedistExeName = "vcredist_x64.exe"

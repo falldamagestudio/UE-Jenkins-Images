@@ -6,7 +6,7 @@ class VSBuildToolsInstallerException : Exception {
 
 function Install-VisualStudioBuildTools {
 
-	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1"
+	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1" -ErrorAction Stop
 
 	$TempFolder = "C:\Temp"
 	$BuildToolsExeName = "vs_buildtools.exe"

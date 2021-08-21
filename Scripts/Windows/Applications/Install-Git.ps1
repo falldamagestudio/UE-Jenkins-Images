@@ -6,7 +6,7 @@ class GitInstallerException : Exception {
 
 function Install-Git {
 
-	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1"
+	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1" -ErrorAction Stop
 
     $TempFolder = "C:\Temp"
 	$InstallerName = "GitInstaller.exe"

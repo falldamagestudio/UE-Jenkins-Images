@@ -11,7 +11,7 @@ function Install-GCELoggingAgent {
 		Downloads and installs the GCE Logging Agent.
 	#>
 
-	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1"
+	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1" -ErrorAction Stop
 
 	$TempFolder = "C:\Temp"
 	$LoggingAgentInstallerExeName = "LoggingAgent.exe"

@@ -6,7 +6,7 @@ class PlasticInstallerException : Exception {
 
 function Install-Plastic {
 
-	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1"
+	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1" -ErrorAction Stop
 
 	$TempFolder = "C:\Temp"
 	$InstallerExeName = "plasticinstaller.exe"

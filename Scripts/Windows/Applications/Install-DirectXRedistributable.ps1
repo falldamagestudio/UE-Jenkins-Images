@@ -12,7 +12,7 @@ class DirectXRedistributableInstallerException : Exception {
 
 function Install-DirectXRedistributable {
 
-	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1"
+	$ToolsAndVersions = Import-PowerShellDataFile -Path "${PSScriptRoot}\ToolsAndVersions.psd1" -ErrorAction Stop
 
 	$TempFolder = "C:\Temp"
 	$ArchiveExeName = "dxarchive.exe"
