@@ -8,7 +8,7 @@
     # We are no longer using the web installer. It is too finicky to get working in different situations.
     # It won't install within a Windows Server Core container.
     # It will install within a Windows Server Desktop VM, if driven by the windows-docker-image-builder ... but not by packer (dxwebsetup exits with exit code -9).
-    # DirectXRedistributableInstallerWebUrl = "https://download.microsoft.com/download/1/7/1/1718CCC4-6315-4D8E-9543-8E28A4E18C4C/dxwebsetup.exe"
+    DirectXRedistributableWebInstallerUrl = "https://download.microsoft.com/download/1/7/1/1718CCC4-6315-4D8E-9543-8E28A4E18C4C/dxwebsetup.exe"
 
     DockerCLIInstallerUrl = "https://github.com/StefanScherer/docker-cli-builder/releases/download/20.10.5/docker.exe"
 
