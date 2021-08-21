@@ -2,53 +2,133 @@
 
 BeforeAll {
 	. ${PSScriptRoot}\..\..\SystemConfiguration\Resize-PartitionToMaxSize.ps1
-	. ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESecret.ps1
+	. ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESettings.ps1
 }
 
 Describe 'GCEService-SshAgent-Startup' {
 
-	It "Retries settings fetch until parameters are available" {
+	BeforeEach {
+		$SshPublicKeyRef = "rsa-key abcd"
 
-		$PublicKeyRef = "rsa-key abcd"
+		$RequiredSettingsResponse = @{
+			SshPublicKey = $SshPublicKeyRef
+		}
+	}
 
-		$script:LoopCount = 0
-		$script:SleepCount = 0
+	It "Fails if Start-Transcript fails" {
+
+		Mock Get-Date { "some date" }
+		Mock Start-Transcript { throw "Start-Transcript failed" }
+		Mock Stop-Transcript { throw "Stop-Transcript should not be called" }
+
+		Mock Write-Host { throw "Write-Host should not be called" }
+		Mock Resize-PartitionToMaxSize { throw "Resize-PartitionToMaxSize should not be called" }
+		Mock Get-GCESettings { throw "Get-GCESettings should not be called" }
+		Mock Set-Content { throw "Set-Content should not be called" }
+		Mock Start-Service { throw "Start-Service should not be called" }
+		Mock Get-Service { throw "Get-Service should not be called" }
+
+		{ & ${PSScriptRoot}\GCEService-SshAgent-Startup.ps1 } |
+			Should -Throw "Start-Transcript failed"
+
+		Assert-MockCalled -Exactly -Times 1 Get-Date
+		Assert-MockCalled -Exactly -Times 1 Start-Transcript
+		Assert-MockCalled -Exactly -Times 0 Write-Host
+		Assert-MockCalled -Exactly -Times 0 Resize-PartitionToMaxSize
+		Assert-MockCalled -Exactly -Times 0 Get-GCESettings
+		Assert-MockCalled -Exactly -Times 0 Set-Content
+		Assert-MockCalled -Exactly -Times 0 Start-Service
+		Assert-MockCalled -Exactly -Times 0 Get-Service
+		Assert-MockCalled -Exactly -Times 0 Stop-Transcript
+	}
+
+	It "Fails if Resize-PartitionToMaxSize fails; stops transcript" {
 
 		Mock Start-Transcript { }
-		Mock Resolve-Path { "invalid path" }
-		Mock Get-Date { "invalid date" }
+		Mock Get-Date { "some date" }
 		Mock Stop-Transcript { }
 
 		Mock Write-Host { }
+		Mock Resize-PartitionToMaxSize { throw "Resize-PartitionToMaxSize failed" }
+		Mock Get-GCESettings { throw "Get-GCESettings should not be called" }
+		Mock Set-Content { throw "Set-Content should not be called" }
+		Mock Start-Service { throw "Start-Service should not be called" }
+		Mock Get-Service { throw "Get-Service should not be called" }
 
+		{ & ${PSScriptRoot}\GCEService-SshAgent-Startup.ps1 } |
+			Should -Throw "Resize-PartitionToMaxSize failed"
+
+		Assert-MockCalled -Exactly -Times 1 Get-Date
+		Assert-MockCalled -Exactly -Times 1 Start-Transcript
+		Assert-MockCalled -Exactly -Times 1 Resize-PartitionToMaxSize
+		Assert-MockCalled -Exactly -Times 0 Get-GCESettings
+		Assert-MockCalled -Exactly -Times 0 Set-Content
+		Assert-MockCalled -Exactly -Times 0 Start-Service
+		Assert-MockCalled -Exactly -Times 0 Get-Service
+		Assert-MockCalled -Exactly -Times 1 Stop-Transcript
+	}
+
+	It "Succeeds if Get-Service succeeds; stops transcript" {
+
+		Mock Start-Transcript { }
+		Mock Get-Date { "some date" }
+		Mock Stop-Transcript { }
+
+		Mock Write-Host { }
 		Mock Resize-PartitionToMaxSize { }
-
-		Mock Get-GCESecret -ParameterFilter { $Key -eq "ssh-vm-public-key-windows" } { $script:LoopCount++; if ($script:LoopCount -lt 3) { $null } else { $PublicKeyRef } }
-		Mock Get-GCESecret { throw "Invalid invocation of Get-GCESecret" }
-
-		Mock Set-Content -ParameterFilter { $Path -eq "${env:PROGRAMDATA}\ssh\administrators_authorized_keys" } { }
-		Mock Set-Content { throw "Invalid invocation of Set-Content" }
-
-		# TODO: mock 'icacls' calls somehow
-
-		Mock Start-Service -ParameterFilter { $Name -eq "sshd" } { }
-		Mock Start-Service { throw "Invalid invocation of Start-Service" }
-
-		Mock Get-Service -ParameterFilter { $Name -eq "sshd" } { $obj = New-Object -TypeName PSObject; $obj | Add-Member -Type ScriptMethod -Name WaitForStatus -Value { param ( [string]$Status ) }; $obj }
-		Mock Get-Service { throw "Invalid invocation of Get-Service" }
-
-		Mock Start-Sleep { if ($script:SleepCount -lt 10) { $script:SleepCount++ } else { throw "Infinite loop detected when waiting for GCE secrets to be set" } }
+		Mock Get-GCESettings { $RequiredSettingsResponse }
+		Mock Set-Content { }
+		Mock Start-Service { }
+		Mock Get-Service { $obj = New-Object -TypeName PSObject; $obj | Add-Member -Type ScriptMethod -Name WaitForStatus -Value { param ( [string]$Status ) }; $obj }
 
 		{ & ${PSScriptRoot}\GCEService-SshAgent-Startup.ps1 } |
 			Should -Not -Throw
 
-		Assert-MockCalled -Times 3 Get-GCESecret -ParameterFilter { $Key -eq "ssh-vm-public-key-windows" }
+		Assert-MockCalled -Exactly -Times 1 Get-Date
+		Assert-MockCalled -Exactly -Times 1 Start-Transcript
+		Assert-MockCalled -Exactly -Times 1 Resize-PartitionToMaxSize
+		Assert-MockCalled -Exactly -Times 1 Get-GCESettings
+		Assert-MockCalled -Exactly -Times 1 Set-Content
+		Assert-MockCalled -Exactly -Times 1 Start-Service
+		Assert-MockCalled -Exactly -Times 1 Get-Service
+		Assert-MockCalled -Exactly -Times 1 Stop-Transcript
+	}
 
-		Assert-MockCalled -Times 2 Start-Sleep
+	It "Calls functions correctly and passes arguments appropriately" {
 
-		Assert-MockCalled -Times 1 Set-Content
+		Mock Start-Transcript { }
+		Mock Get-Date { "some date" }
+		Mock Stop-Transcript { }
 
-		Assert-MockCalled -Times 1 Start-Service
-		Assert-MockCalled -Times 1 Get-Service
+		Mock Write-Host { }
+		Mock Resize-PartitionToMaxSize { }
+		Mock Get-GCESettings {
+			$Settings.ContainsKey("SshPublicKey") | Should -BeTrue
+			$RequiredSettingsResponse
+		}
+		Mock Set-Content {
+			$Value | Should -Be $SshPublicKeyRef
+		}
+		Mock Start-Service {
+			$Name | Should -Be "sshd"
+		}
+		Mock Get-Service {
+			$Name | Should -Be "sshd"
+			$obj = New-Object -TypeName PSObject
+			$obj | Add-Member -Type ScriptMethod -Name WaitForStatus -Value { param ( [string]$Status ) }
+			$obj
+		}
+
+		{ & ${PSScriptRoot}\GCEService-SshAgent-Startup.ps1 } |
+			Should -Not -Throw
+
+		Assert-MockCalled -Exactly -Times 1 Get-Date
+		Assert-MockCalled -Exactly -Times 1 Start-Transcript
+		Assert-MockCalled -Exactly -Times 1 Resize-PartitionToMaxSize
+		Assert-MockCalled -Exactly -Times 1 Get-GCESettings
+		Assert-MockCalled -Exactly -Times 1 Set-Content
+		Assert-MockCalled -Exactly -Times 1 Start-Service
+		Assert-MockCalled -Exactly -Times 1 Get-Service
+		Assert-MockCalled -Exactly -Times 1 Stop-Transcript
 	}
 }

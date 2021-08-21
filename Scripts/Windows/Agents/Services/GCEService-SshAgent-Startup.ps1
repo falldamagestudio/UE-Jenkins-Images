@@ -1,12 +1,12 @@
 # Log all output to file (in addition to console output, when run manually )
 # This enables post-mortem inspection of the script's activities via log files
 # It also allows GCE's logging agent to pick up the activity and forward it to Google's Cloud Logging
-Start-Transcript -LiteralPath "C:\Logs\GCEService-SshAgent-Startup-$(Get-Date -Format "yyyyMMdd-HHmmss").txt"
+Start-Transcript -LiteralPath "C:\Logs\GCEService-SshAgent-Startup-$(Get-Date -Format "yyyyMMdd-HHmmss" -ErrorAction Stop).txt" -ErrorAction Stop
 
 try {
 
     . ${PSScriptRoot}\..\..\SystemConfiguration\Resize-PartitionToMaxSize.ps1
-    . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESecret.ps1
+    . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESettings.ps1
 
     Write-Host "Ensuring that the boot partition uses the entire boot disk..."
 
@@ -17,26 +17,17 @@ try {
     #  ~5 seconds to each service start. We are doing it here to keep things simple.
     Resize-PartitionToMaxSize -DriveLetter "C"
 
-    # Fetch configuration parameters repeatedly, until all are available
-    while ($true) {
+    Write-Host "Waiting for required settings to be available in Secrets Manager / Instance Metadata..."
 
-        Write-Host "Retrieving sshd configuration from Secrets Manager..."
-
-        $SshPublicKey = Get-GCESecret -Key "ssh-vm-public-key-windows"
-
-        Write-Host "Secret ssh-vm-public-key-windows: $(if ($SshPublicKey -ne $null) { "found" } else { "not found" })"
-
-        if (($SshPublicKey -ne $null)) {
-            break
-        } else {
-            Write-Host "Some required secrets are missing. Sleeping, then retrying..."
-            Start-Sleep 10
-        }
+    $RequiredSettingsSpec = @{
+        SshPublicKey = @{ Name = "ssh-vm-public-key-windows"; Source = [GCESettingSource]::Secret }
     }
+
+    $RequiredSettings = Get-GCESettings $RequiredSettingsSpec -Wait -PrintProgress
 
     Write-Host "Setting up SSH public key..."
 
-    Set-Content -Path $env:PROGRAMDATA\ssh\administrators_authorized_keys -Value $SshPublicKey -ErrorAction Stop
+    Set-Content -Path $env:PROGRAMDATA\ssh\administrators_authorized_keys -Value $RequiredSettings.SshPublicKey -ErrorAction Stop
 
     # Fix up permissions on authorized_keys.
     # https://github.com/jenkinsci/google-compute-engine-plugin/blob/develop/windows-image-install.ps1
