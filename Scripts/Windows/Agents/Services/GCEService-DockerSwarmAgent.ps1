@@ -29,7 +29,7 @@ try {
 
     $RequiredSettingsSpec = @{
         JenkinsURL = @{ Name = "jenkins-url"; Source = [GCESettingSource]::Secret }
-        AgentKey = @{ Name = "agent-key"; Source = [GCESettingSource]::Secret }
+        AgentKey = @{ Name = "agent-key-file"; Source = [GCESettingSource]::Secret }
         AgentImageURL = @{ Name = "swarm-agent-image-url-windows"; Source = [GCESettingSource]::Secret }
         AgentUsername = @{ Name = "swarm-agent-username"; Source = [GCESettingSource]::Secret }
         AgentAPIToken = @{ Name = "swarm-agent-api-token"; Source = [GCESettingSource]::Secret }

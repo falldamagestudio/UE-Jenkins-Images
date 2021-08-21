@@ -29,7 +29,7 @@ try {
 
     $RequiredSettingsSpec = @{
         JenkinsURL = @{ Name = "jenkins-url"; Source = [GCESettingSource]::Secret }
-        AgentKey = @{ Name = "agent-key"; Source = [GCESettingSource]::Secret }
+        AgentKey = @{ Name = "agent-key-file"; Source = [GCESettingSource]::Secret }
         AgentImageURL = @{ Name = "inbound-agent-image-url-windows"; Source = [GCESettingSource]::Secret }
         JenkinsSecret = @{ Name = "inbound-agent-secret-${AgentName}"; Source = [GCESettingSource]::Secret }
     }
