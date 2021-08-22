@@ -1,14 +1,15 @@
-. ${PSScriptRoot}\..\..\Helpers\Ensure-TestToolVersions.ps1
+. ${PSScriptRoot}\..\Helpers\Ensure-TestToolVersions.ps1
 
 BeforeAll {
 
-	. ${PSScriptRoot}\Register-AutoStartService-JenkinsAgent.ps1
+	. ${PSScriptRoot}\Register-AutoStartService-PowerShell.ps1
 
 }
 
-Describe 'Register-AutoStartService-JenkinsAgent' {
+Describe 'Register-AutoStartService-PowerShell' {
 
 	BeforeEach {
+		$ServiceName = "TestService"
 		$ComputerName = "TestComputer"
 		$UserName = "TestUser"
 		$Password = "1234"		
@@ -23,12 +24,12 @@ Describe 'Register-AutoStartService-JenkinsAgent' {
 		Mock Test-Path { throw "ScriptLocation does not exist" }
 		Mock Register-AutoStartService { throw "Register-AutoStartService should not be called" }
 
-		{ Register-AutoStartService-JenkinsAgent -ScriptLocation $ScriptLocation -Credential $Credential } |
+		{ Register-AutoStartService-PowerShell -ServiceName $ServiceName -ScriptLocation $ScriptLocation -Credential $Credential } |
 			Should -Throw "ScriptLocation does not exist"
 
-			Assert-MockCalled -Exactly -Times 1 Test-Path
-			Assert-MockCalled -Exactly -Times 0 Register-AutoStartService
-		}
+		Assert-MockCalled -Exactly -Times 1 Test-Path
+		Assert-MockCalled -Exactly -Times 0 Register-AutoStartService
+	}
 
 	It "Reports an error if Register-AutoStartService fails" {
 
@@ -37,12 +38,12 @@ Describe 'Register-AutoStartService-JenkinsAgent' {
 		Mock Test-Path { $true }
 		Mock Register-AutoStartService { throw "Failed registering service" }
 
-		{ Register-AutoStartService-JenkinsAgent -ScriptLocation $ScriptLocation -Credential $Credential } |
+		{ Register-AutoStartService-PowerShell -ServiceName $ServiceName -ScriptLocation $ScriptLocation -Credential $Credential } |
 			Should -Throw "Failed registering service"
 
-			Assert-MockCalled -Exactly -Times 1 Test-Path
-			Assert-MockCalled -Exactly -Times 1 Register-AutoStartService
-		}
+		Assert-MockCalled -Exactly -Times 1 Test-Path
+		Assert-MockCalled -Exactly -Times 1 Register-AutoStartService
+	}
 
 	It "Succeeds if Register-AutoStartService succeeds" {
 
@@ -51,8 +52,7 @@ Describe 'Register-AutoStartService-JenkinsAgent' {
 		Mock Test-Path { $true }
 		Mock Register-AutoStartService { }
 
-		{ Register-AutoStartService-JenkinsAgent -ScriptLocation $ScriptLocation -Credential $Credential } |
-			Should -Not -Throw
+		Register-AutoStartService-PowerShell -ServiceName $ServiceName -ScriptLocation $ScriptLocation -Credential $Credential
 
 		Assert-MockCalled -Exactly -Times 1 Test-Path
 		Assert-MockCalled -Exactly -Times 1 Register-AutoStartService

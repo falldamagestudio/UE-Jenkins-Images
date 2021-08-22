@@ -5,22 +5,12 @@ Start-Transcript -LiteralPath "C:\Logs\GCEService-SwarmAgent-$(Get-Date -Format 
 
 try {
 
-    . ${PSScriptRoot}\..\..\SystemConfiguration\Resize-PartitionToMaxSize.ps1
     . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESettings.ps1
     . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCEInstanceHostname.ps1
     . ${PSScriptRoot}\..\..\Applications\Deploy-PlasticClientConfig.ps1
     . ${PSScriptRoot}\..\Run\Run-SwarmAgent.ps1
 
     $DefaultFolders = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\BuildSteps\DefaultBuildStepSettings.psd1" -ErrorAction Stop
-
-    Write-Host "Ensuring that the boot partition uses the entire boot disk..."
-
-    # If the instance has been created with a boot disk that is larger than the original machine image,
-    #  then the boot partition remains the original size; we must manually expand it
-    #
-    # This should ideally be done on instance start (as opposed to on service start) as this adds another
-    #  ~5 seconds to each service start. We are doing it here to keep things simple.
-     Resize-PartitionToMaxSize -DriveLetter "C"
 
     $AgentName = (Get-GCEInstanceHostname).Split(".")[0]
 
@@ -31,22 +21,6 @@ try {
         AgentUsername = @{ Name = "swarm-agent-username"; Source = [GCESettingSource]::Secret }
         AgentAPIToken = @{ Name = "swarm-agent-api-token"; Source = [GCESettingSource]::Secret }
         Labels = @{ Name = "jenkins-labels"; Source = [GCESettingSource]::InstanceMetadata }
-    }
-
-    $RequiredSettings = Get-GCESettings $RequiredSettingsSpec -Wait -PrintProgress
-
-    Write-Host "Fetching optional settings from Secrets Manager / Instance Metadata..."
-
-    $OptionalSettingsSpec = @{
-        PlasticConfigZip = @{ Name = "plastic-config-zip"; Source = [GCESettingSource]::Secret; Binary = $true }
-    }
-
-    $OptionalSettings = Get-GCESettings $OptionalSettingsSpec -PrintProgress
-
-    if ($OptionalSettings.PlasticConfigZip) {
-        Write-Host "Deploying Plastic SCM client configuration..."
-
-        Deploy-PlasticClientConfig -ZipContent $OptionalSettings.PlasticConfigZip -ConfigFolder $DefaultFolders.PlasticConfigFolder
     }
 
     Write-Host "Running Jenkins Agent..."

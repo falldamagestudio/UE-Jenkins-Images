@@ -5,46 +5,26 @@ Start-Transcript -LiteralPath "C:\Logs\GCEService-SshAgent-Startup-$(Get-Date -F
 
 try {
 
-    . ${PSScriptRoot}\..\..\SystemConfiguration\Resize-PartitionToMaxSize.ps1
     . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESettings.ps1
+    . ${PSScriptRoot}\..\..\Applications\Deploy-PlasticClientConfig.ps1
 
-    Write-Host "Ensuring that the boot partition uses the entire boot disk..."
+    $DefaultFolders = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\BuildSteps\DefaultBuildStepSettings.psd1" -ErrorAction Stop
 
-    # If the instance has been created with a boot disk that is larger than the original machine image,
-    #  then the boot partition remains the original size; we must manually expand it
-    #
-    # This should ideally be done on instance start (as opposed to on service start) as this adds another
-    #  ~5 seconds to each service start. We are doing it here to keep things simple.
-    Resize-PartitionToMaxSize -DriveLetter "C"
+    Write-Host "Fetching optional settings from Secrets Manager / Instance Metadata..."
 
-    Write-Host "Waiting for required settings to be available in Secrets Manager / Instance Metadata..."
-
-    $RequiredSettingsSpec = @{
-        SshPublicKey = @{ Name = "ssh-vm-public-key-windows"; Source = [GCESettingSource]::Secret }
+    $OptionalSettingsSpec = @{
+        PlasticConfigZip = @{ Name = "plastic-config-zip"; Source = [GCESettingSource]::Secret; Binary = $true }
     }
 
-    $RequiredSettings = Get-GCESettings $RequiredSettingsSpec -Wait -PrintProgress
+    $OptionalSettings = Get-GCESettings $OptionalSettingsSpec -PrintProgress
 
-    Write-Host "Setting up SSH public key..."
+    if ($OptionalSettings.PlasticConfigZip) {
+        Write-Host "Deploying Plastic SCM client configuration..."
 
-    Set-Content -Path $env:PROGRAMDATA\ssh\administrators_authorized_keys -Value $RequiredSettings.SshPublicKey -ErrorAction Stop
+        Deploy-PlasticClientConfig -ZipContent $OptionalSettings.PlasticConfigZip -ConfigFolder $DefaultFolders.PlasticConfigFolder
+    }
 
-    # Fix up permissions on authorized_keys.
-    # https://github.com/jenkinsci/google-compute-engine-plugin/blob/develop/windows-image-install.ps1
-    # https://www.concurrency.com/blog/may-2019/key-based-authentication-for-openssh-on-windows
-    icacls $env:PROGRAMDATA\ssh\administrators_authorized_keys /inheritance:r
-    icacls $env:PROGRAMDATA\ssh\administrators_authorized_keys /grant SYSTEM:`(F`)
-    icacls $env:PROGRAMDATA\ssh\administrators_authorized_keys /grant BUILTIN\Administrators:`(F`)
-
-    Write-Host "Starting SSH service..."
-
-    Start-Service -Name sshd -ErrorAction Stop
-
-    Write-Host "SSH service is accepting incoming connections."
-
-    (Get-Service -Name sshd -ErrorAction Stop).WaitForStatus('Stopped')
-
-    Write-Host "SSH service has been stopped."
+    Write-Host "Done."
 
 } finally {
 

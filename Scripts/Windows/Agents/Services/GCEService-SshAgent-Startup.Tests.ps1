@@ -1,17 +1,17 @@
 . ${PSScriptRoot}\..\..\Helpers\Ensure-TestToolVersions.ps1
 
 BeforeAll {
-	. ${PSScriptRoot}\..\..\SystemConfiguration\Resize-PartitionToMaxSize.ps1
 	. ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESettings.ps1
+	. ${PSScriptRoot}\..\..\Applications\Deploy-PlasticClientConfig.ps1
 }
 
 Describe 'GCEService-SshAgent-Startup' {
 
 	BeforeEach {
-		$SshPublicKeyRef = "rsa-key abcd"
-
-		$RequiredSettingsResponse = @{
-			SshPublicKey = $SshPublicKeyRef
+		[byte[]] $PlasticConfigZipRef = 72, 101, 108, 108, 111 # "Hello"
+	
+		$OptionalSettingsResponse = @{
+			PlasticConfigZip = $PlasticConfigZipRef
 		}
 	}
 
@@ -21,102 +21,120 @@ Describe 'GCEService-SshAgent-Startup' {
 		Mock Start-Transcript { throw "Start-Transcript failed" }
 		Mock Stop-Transcript { throw "Stop-Transcript should not be called" }
 
+		Mock Import-PowerShellDataFile { throw "Import-PowerShellDataFile should not be called" }
+		Mock Resolve-Path { throw "Resolve-Path should not be called" }
 		Mock Write-Host { throw "Write-Host should not be called" }
-		Mock Resize-PartitionToMaxSize { throw "Resize-PartitionToMaxSize should not be called" }
 		Mock Get-GCESettings { throw "Get-GCESettings should not be called" }
-		Mock Set-Content { throw "Set-Content should not be called" }
-		Mock Start-Service { throw "Start-Service should not be called" }
-		Mock Get-Service { throw "Get-Service should not be called" }
+		Mock Deploy-PlasticClientConfig { throw "Deploy-PlasticClientConfig should not be called" }
 
 		{ & ${PSScriptRoot}\GCEService-SshAgent-Startup.ps1 } |
 			Should -Throw "Start-Transcript failed"
 
 		Assert-MockCalled -Exactly -Times 1 Get-Date
 		Assert-MockCalled -Exactly -Times 1 Start-Transcript
+		Assert-MockCalled -Exactly -Times 0 Import-PowerShellDataFile
+		Assert-MockCalled -Exactly -Times 0 Resolve-Path
 		Assert-MockCalled -Exactly -Times 0 Write-Host
-		Assert-MockCalled -Exactly -Times 0 Resize-PartitionToMaxSize
 		Assert-MockCalled -Exactly -Times 0 Get-GCESettings
-		Assert-MockCalled -Exactly -Times 0 Set-Content
-		Assert-MockCalled -Exactly -Times 0 Start-Service
-		Assert-MockCalled -Exactly -Times 0 Get-Service
+		Assert-MockCalled -Exactly -Times 0 Deploy-PlasticClientConfig
 		Assert-MockCalled -Exactly -Times 0 Stop-Transcript
 	}
 
-	It "Fails if Resize-PartitionToMaxSize fails; stops transcript" {
+	It "Fails if Import-PowerShellDataFile fails; stops transcript" {
 
 		Mock Start-Transcript { }
 		Mock Get-Date { "some date" }
 		Mock Stop-Transcript { }
 
-		Mock Write-Host { }
-		Mock Resize-PartitionToMaxSize { throw "Resize-PartitionToMaxSize failed" }
+		Mock Import-PowerShellDataFile { throw "Import-PowerShellDataFile failed" }
+		Mock Resolve-Path { throw "Resolve-Path should not be called" }
+		Mock Write-Host { throw "Write-Host should not be called" }
 		Mock Get-GCESettings { throw "Get-GCESettings should not be called" }
-		Mock Set-Content { throw "Set-Content should not be called" }
-		Mock Start-Service { throw "Start-Service should not be called" }
-		Mock Get-Service { throw "Get-Service should not be called" }
+		Mock Deploy-PlasticClientConfig { throw "Deploy-PlasticClientConfig should not be called" }
 
 		{ & ${PSScriptRoot}\GCEService-SshAgent-Startup.ps1 } |
-			Should -Throw "Resize-PartitionToMaxSize failed"
+			Should -Throw "Import-PowerShellDataFile failed"
 
 		Assert-MockCalled -Exactly -Times 1 Get-Date
 		Assert-MockCalled -Exactly -Times 1 Start-Transcript
-		Assert-MockCalled -Exactly -Times 1 Resize-PartitionToMaxSize
+		Assert-MockCalled -Exactly -Times 1 Import-PowerShellDataFile
+		Assert-MockCalled -Exactly -Times 0 Resolve-Path
+		Assert-MockCalled -Exactly -Times 0 Write-Host
 		Assert-MockCalled -Exactly -Times 0 Get-GCESettings
-		Assert-MockCalled -Exactly -Times 0 Set-Content
-		Assert-MockCalled -Exactly -Times 0 Start-Service
-		Assert-MockCalled -Exactly -Times 0 Get-Service
+		Assert-MockCalled -Exactly -Times 0 Deploy-PlasticClientConfig
 		Assert-MockCalled -Exactly -Times 1 Stop-Transcript
 	}
 
-	It "Succeeds if Get-Service succeeds; stops transcript" {
+	It "Succeeds if Deploy-PlasticClientConfig succeeds; stops transcript" {
 
 		Mock Start-Transcript { }
 		Mock Get-Date { "some date" }
 		Mock Stop-Transcript { }
 
+		Mock Import-PowerShellDataFile { & (Get-Command Import-PowerShellDataFile -CommandType Function) -Path $Path }
+		Mock Resolve-Path -ParameterFilter { $Path.EndsWith("DefaultBuildStepSettings.psd1") } { & (Get-Command Resolve-Path -CommandType Cmdlet) -Path $Path }
+		Mock Resolve-Path { throw "Invalid invocation of Resolve-Path" }
 		Mock Write-Host { }
-		Mock Resize-PartitionToMaxSize { }
-		Mock Get-GCESettings { $RequiredSettingsResponse }
-		Mock Set-Content { }
-		Mock Start-Service { }
-		Mock Get-Service { $obj = New-Object -TypeName PSObject; $obj | Add-Member -Type ScriptMethod -Name WaitForStatus -Value { param ( [string]$Status ) }; $obj }
+		Mock Get-GCESettings -ParameterFilter { $Settings.ContainsKey("PlasticConfigZip") } { $OptionalSettingsResponse }
+		Mock Get-GCESettings { throw "Invalid invocation of Get-GCESettings" }
+		Mock Deploy-PlasticClientConfig { }
 
 		{ & ${PSScriptRoot}\GCEService-SshAgent-Startup.ps1 } |
 			Should -Not -Throw
 
 		Assert-MockCalled -Exactly -Times 1 Get-Date
 		Assert-MockCalled -Exactly -Times 1 Start-Transcript
-		Assert-MockCalled -Exactly -Times 1 Resize-PartitionToMaxSize
+		Assert-MockCalled -Exactly -Times 1 Import-PowerShellDataFile
+		Assert-MockCalled -Exactly -Times 1 Resolve-Path -ParameterFilter { $Path.EndsWith("DefaultBuildStepSettings.psd1") }
+		Assert-MockCalled -Exactly -Times 1 Resolve-Path
+		Assert-MockCalled -Exactly -Times 1 Get-GCESettings -ParameterFilter { $Settings.ContainsKey("PlasticConfigZip") }
 		Assert-MockCalled -Exactly -Times 1 Get-GCESettings
-		Assert-MockCalled -Exactly -Times 1 Set-Content
-		Assert-MockCalled -Exactly -Times 1 Start-Service
-		Assert-MockCalled -Exactly -Times 1 Get-Service
+		Assert-MockCalled -Exactly -Times 1 Deploy-PlasticClientConfig
 		Assert-MockCalled -Exactly -Times 1 Stop-Transcript
 	}
 
-	It "Calls functions correctly and passes arguments appropriately" {
+	It "Skips plastic configuration if the plastic config zip setting is not available" {
 
 		Mock Start-Transcript { }
 		Mock Get-Date { "some date" }
 		Mock Stop-Transcript { }
 
+		Mock Import-PowerShellDataFile { & (Get-Command Import-PowerShellDataFile -CommandType Function) -Path $Path }
+		Mock Resolve-Path -ParameterFilter { $Path.EndsWith("DefaultBuildStepSettings.psd1") } { & (Get-Command Resolve-Path -CommandType Cmdlet) -Path $Path }
+		Mock Resolve-Path { throw "Invalid invocation of Resolve-Path" }
 		Mock Write-Host { }
-		Mock Resize-PartitionToMaxSize { }
-		Mock Get-GCESettings {
-			$Settings.ContainsKey("SshPublicKey") | Should -BeTrue
-			$RequiredSettingsResponse
-		}
-		Mock Set-Content {
-			$Value | Should -Be $SshPublicKeyRef
-		}
-		Mock Start-Service {
-			$Name | Should -Be "sshd"
-		}
-		Mock Get-Service {
-			$Name | Should -Be "sshd"
-			$obj = New-Object -TypeName PSObject
-			$obj | Add-Member -Type ScriptMethod -Name WaitForStatus -Value { param ( [string]$Status ) }
-			$obj
+		Mock Get-GCESettings -ParameterFilter { $Settings.ContainsKey("PlasticConfigZip") } { @{ PlasticConfigZip = $null } }
+		Mock Get-GCESettings { throw "Invalid invocation of Get-GCESettings" }
+		Mock Deploy-PlasticClientConfig { throw "Deploy-PlasticClientConfig should not be called" }
+
+		{ & ${PSScriptRoot}\GCEService-SshAgent-Startup.ps1 } |
+			Should -Not -Throw
+
+		Assert-MockCalled -Exactly -Times 1 Get-Date
+		Assert-MockCalled -Exactly -Times 1 Start-Transcript
+		Assert-MockCalled -Exactly -Times 1 Import-PowerShellDataFile
+		Assert-MockCalled -Exactly -Times 1 Resolve-Path -ParameterFilter { $Path.EndsWith("DefaultBuildStepSettings.psd1") }
+		Assert-MockCalled -Exactly -Times 1 Resolve-Path
+		Assert-MockCalled -Exactly -Times 1 Get-GCESettings -ParameterFilter { $Settings.ContainsKey("PlasticConfigZip") }
+		Assert-MockCalled -Exactly -Times 1 Get-GCESettings
+		Assert-MockCalled -Exactly -Times 0 Deploy-PlasticClientConfig
+		Assert-MockCalled -Exactly -Times 1 Stop-Transcript
+	}
+
+	It "Passes parameters properly between functions" {
+
+		Mock Start-Transcript { }
+		Mock Get-Date { "some date" }
+		Mock Stop-Transcript { }
+
+		Mock Import-PowerShellDataFile { & (Get-Command Import-PowerShellDataFile -CommandType Function) -Path $Path }
+		Mock Resolve-Path -ParameterFilter { $Path.EndsWith("DefaultBuildStepSettings.psd1") } { & (Get-Command Resolve-Path -CommandType Cmdlet) -Path $Path }
+		Mock Resolve-Path { throw "Invalid invocation of Resolve-Path" }
+		Mock Write-Host { }
+		Mock Get-GCESettings -ParameterFilter { $Settings.ContainsKey("PlasticConfigZip") } { $OptionalSettingsResponse }
+		Mock Get-GCESettings { throw "Invalid invocation of Get-GCESettings" }
+		Mock Deploy-PlasticClientConfig {
+			(Compare-Object -ReferenceObject $PlasticConfigZipRef -DifferenceObject $ZipContent) | Should -Be $null
 		}
 
 		{ & ${PSScriptRoot}\GCEService-SshAgent-Startup.ps1 } |
@@ -124,11 +142,10 @@ Describe 'GCEService-SshAgent-Startup' {
 
 		Assert-MockCalled -Exactly -Times 1 Get-Date
 		Assert-MockCalled -Exactly -Times 1 Start-Transcript
-		Assert-MockCalled -Exactly -Times 1 Resize-PartitionToMaxSize
+		Assert-MockCalled -Exactly -Times 1 Import-PowerShellDataFile
+		Assert-MockCalled -Exactly -Times 1 Resolve-Path
 		Assert-MockCalled -Exactly -Times 1 Get-GCESettings
-		Assert-MockCalled -Exactly -Times 1 Set-Content
-		Assert-MockCalled -Exactly -Times 1 Start-Service
-		Assert-MockCalled -Exactly -Times 1 Get-Service
+		Assert-MockCalled -Exactly -Times 1 Deploy-PlasticClientConfig
 		Assert-MockCalled -Exactly -Times 1 Stop-Transcript
 	}
 }

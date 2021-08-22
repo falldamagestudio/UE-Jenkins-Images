@@ -5,22 +5,12 @@ Start-Transcript -LiteralPath "C:\Logs\GCEService-InboundAgent-$(Get-Date -Forma
 
 try {
 
-    . ${PSScriptRoot}\..\..\SystemConfiguration\Resize-PartitionToMaxSize.ps1
     . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESettings.ps1
     . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCEInstanceHostname.ps1
     . ${PSScriptRoot}\..\..\Applications\Deploy-PlasticClientConfig.ps1
     . ${PSScriptRoot}\..\Run\Run-InboundAgent.ps1
 
     $DefaultFolders = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\BuildSteps\DefaultBuildStepSettings.psd1" -ErrorAction Stop
-
-    Write-Host "Ensuring that the boot partition uses the entire boot disk..."
-
-    # If the instance has been created with a boot disk that is larger than the original machine image,
-    #  then the boot partition remains the original size; we must manually expand it
-    #
-    # This should ideally be done on instance start (as opposed to on service start) as this adds another
-    #  ~5 seconds to each service start. We are doing it here to keep things simple.
-     Resize-PartitionToMaxSize -DriveLetter "C"
 
     $AgentName = (Get-GCEInstanceHostname).Split(".")[0]
 

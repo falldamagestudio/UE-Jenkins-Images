@@ -6,11 +6,11 @@
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\BuildSteps\BuildStep-InstallBuildTools-Host.ps1
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\BuildSteps\BuildStep-InstallBuildTools-Container.ps1
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\BuildSteps\BuildStep-InstallSCMTools.ps1
+. ${PSScriptRoot}\..\..\..\..\Scripts\Windows\BuildSteps\BuildStep-InstallOpenSSHServer.ps1
+. ${PSScriptRoot}\..\..\..\..\Scripts\Windows\BuildSteps\BuildStep-RegisterServices.ps1
 
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Applications\Install-AdoptiumOpenJDK.ps1
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Applications\Install-JenkinsSwarmAgent.ps1
-
-. ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Agents\Services\Register-AutoStartService-JenkinsAgent.ps1
 
 $DefaultFolders = Import-PowerShellDataFile "${PSScriptRoot}\..\..\..\..\Scripts\Windows\BuildSteps\DefaultBuildStepSettings.psd1"
 
@@ -25,7 +25,9 @@ BuildStep-CreateAgentHostFolders
 BuildStep-InstallGCELoggingAgent
 BuildStep-InstallBuildTools-Host
 BuildStep-InstallBuildTools-Container
+BuildStep-InstallOpenSSHServer
 BuildStep-InstallSCMTools -UserProfilePath "C:\Users\$($ServiceUserCredential.GetNetworkCredential().UserName)"
+BuildStep-RegisterServices -ScriptLocation $ScriptLocation -Credential $ServiceUserCredential
 
 Write-Host "Installing Adoptium OpenJDK..."
 
@@ -34,9 +36,5 @@ Install-AdoptiumOpenJDK
 Write-Host "Installing Jenkins Swarm Agent..."
 
 Install-JenkinsSwarmAgent -Path $DefaultFolders.JenkinsAgentFolder
-
-Write-Host "Registering Jenkins Agent script as autostarting..."
-
-Register-AutoStartService-JenkinsAgent -ScriptLocation $ScriptLocation -Credential $ServiceUserCredential
 
 Write-Host "Done."
