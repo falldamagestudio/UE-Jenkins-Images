@@ -1,5 +1,6 @@
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\SystemConfiguration\Enable-Win32LongPaths.ps1
 
+. ${PSScriptRoot}\..\..\..\..\Scripts\Windows\BuildSteps\BuildStep-CreateServiceUser.ps1
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\BuildSteps\BuildStep-CreateAgentHostFolders.ps1
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\BuildSteps\BuildStep-InstallGCELoggingAgent.ps1
 
@@ -11,11 +12,12 @@ Write-Host "Enabling Win32 Long Paths..."
 
 Enable-Win32LongPaths
 
+$ServiceUserCredential = BuildStep-CreateServiceUser
 BuildStep-CreateAgentHostFolders
 BuildStep-InstallGCELoggingAgent
 
 Write-Host "Registering Jenkins Agent script as autostarting..."
 
-Register-AutoStartService-JenkinsAgent -ScriptLocation $ScriptLocation
+Register-AutoStartService-JenkinsAgent -ScriptLocation $ScriptLocation -Credential $ServiceUserCredential
 
 Write-Host "Done."

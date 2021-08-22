@@ -2,7 +2,7 @@
 
 function BuildStep-CreateAgentHostFolders {
 
-    $DefaultFolders = Import-PowerShellDataFile "${PSScriptRoot}\DefaultFolders.psd1"
+    $DefaultFolders = Import-PowerShellDataFile "${PSScriptRoot}\DefaultBuildStepSettings.psd1"
 
     Write-Host "Creating folders for logs..."
 

@@ -14,12 +14,13 @@ function Register-AutoStartService-JenkinsAgent {
 	#>
 
 	param (
-		[Parameter(Mandatory)] [string] $ScriptLocation
+		[Parameter(Mandatory)] [string] $ScriptLocation,
+		[Parameter(Mandatory)] [PSCredential] $Credential
 	)
 
 	if (!(Test-Path $ScriptLocation)) {
 		throw [RegisterAutoStartServiceJenkinsAgentException]::new($ScriptLocation)
 	}
 
-    Register-AutoStartService -ServiceName "JenkinsAgent" -Program "powershell" -ArgumentList @($ScriptLocation)
+    Register-AutoStartService -ServiceName "JenkinsAgent" -Program "powershell" -ArgumentList @($ScriptLocation) -Credential $Credential
 }

@@ -15,6 +15,6 @@ Write-Host "Installing Google Cloud SDK..."
 
 Install-GoogleCloudSDK
 
-BuildStep-InstallSCMTools
+BuildStep-InstallSCMTools -UserProfilePath $env:USERPROFILE
 
 Write-Host "Done."

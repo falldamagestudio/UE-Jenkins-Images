@@ -16,7 +16,7 @@ try {
     . ${PSScriptRoot}\..\..\Applications\Authenticate-DockerForGoogleArtifactRegistry.ps1
     . ${PSScriptRoot}\..\Run\Run-DockerSshAgent.ps1
 
-    $DefaultFolders = Import-PowerShellDataFile "${PSScriptRoot}\..\..\BuildSteps\DefaultFolders.psd1" -ErrorAction Stop
+    $DefaultFolders = Import-PowerShellDataFile "${PSScriptRoot}\..\..\BuildSteps\DefaultBuildStepSettings.psd1" -ErrorAction Stop
 
     # Respond to version query; the GCE plugin does this to verify that the java executable is present, and doesn't care about the actual version number
     if ($fullversion) {

@@ -6,4 +6,6 @@
     JenkinsWorkspaceFolder = "C:\W"
 
     PlasticConfigFolder = "C:\PlasticConfig"
+
+    ServiceUserName = "Jenkins"
 }

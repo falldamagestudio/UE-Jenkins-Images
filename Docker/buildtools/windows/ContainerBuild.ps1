@@ -10,7 +10,7 @@ Write-Host "Enabling Win32 Long Paths..."
 Enable-Win32LongPaths
 
 BuildStep-InstallBuildTools-Container
-BuildStep-InstallSCMTools
+BuildStep-InstallSCMTools -UserProfilePath $env:USERPROFILE
 
 Write-Host "Installing additional system DLLs..."
     

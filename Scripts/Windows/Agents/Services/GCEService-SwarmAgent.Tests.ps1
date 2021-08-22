@@ -103,7 +103,7 @@ Describe 'GCEService-SwarmAgent' {
 		Mock Stop-Transcript { }
 
 		Mock Import-PowerShellDataFile { & (Get-Command Import-PowerShellDataFile -CommandType Function) -Path $Path }
-		Mock Resolve-Path -ParameterFilter { $Path.EndsWith("DefaultFolders.psd1") } { & (Get-Command Resolve-Path -CommandType Cmdlet) -Path $Path }
+		Mock Resolve-Path -ParameterFilter { $Path.EndsWith("DefaultBuildStepSettings.psd1") } { & (Get-Command Resolve-Path -CommandType Cmdlet) -Path $Path }
 		Mock Resolve-Path { throw "Invalid invocation of Resolve-Path" }
 		Mock Write-Host { }
 		Mock Resize-PartitionToMaxSize { }
@@ -121,7 +121,7 @@ Describe 'GCEService-SwarmAgent' {
 		Assert-MockCalled -Exactly -Times 1 Get-Date
 		Assert-MockCalled -Exactly -Times 1 Start-Transcript
 		Assert-MockCalled -Exactly -Times 1 Import-PowerShellDataFile
-		Assert-MockCalled -Exactly -Times 1 Resolve-Path -ParameterFilter { $Path.EndsWith("DefaultFolders.psd1") }
+		Assert-MockCalled -Exactly -Times 1 Resolve-Path -ParameterFilter { $Path.EndsWith("DefaultBuildStepSettings.psd1") }
 		Assert-MockCalled -Exactly -Times 1 Resolve-Path
 		Assert-MockCalled -Exactly -Times 1 Resize-PartitionToMaxSize
 		Assert-MockCalled -Exactly -Times 1 Get-GCEInstanceHostname
@@ -140,7 +140,7 @@ Describe 'GCEService-SwarmAgent' {
 		Mock Stop-Transcript { }
 
 		Mock Import-PowerShellDataFile { & (Get-Command Import-PowerShellDataFile -CommandType Function) -Path $Path }
-		Mock Resolve-Path -ParameterFilter { $Path.EndsWith("DefaultFolders.psd1") } { & (Get-Command Resolve-Path -CommandType Cmdlet) -Path $Path }
+		Mock Resolve-Path -ParameterFilter { $Path.EndsWith("DefaultBuildStepSettings.psd1") } { & (Get-Command Resolve-Path -CommandType Cmdlet) -Path $Path }
 		Mock Resolve-Path { throw "Invalid invocation of Resolve-Path" }
 		Mock Write-Host { }
 		Mock Resize-PartitionToMaxSize { }
@@ -158,7 +158,7 @@ Describe 'GCEService-SwarmAgent' {
 		Assert-MockCalled -Exactly -Times 1 Get-Date
 		Assert-MockCalled -Exactly -Times 1 Start-Transcript
 		Assert-MockCalled -Exactly -Times 1 Import-PowerShellDataFile
-		Assert-MockCalled -Exactly -Times 1 Resolve-Path -ParameterFilter { $Path.EndsWith("DefaultFolders.psd1") }
+		Assert-MockCalled -Exactly -Times 1 Resolve-Path -ParameterFilter { $Path.EndsWith("DefaultBuildStepSettings.psd1") }
 		Assert-MockCalled -Exactly -Times 1 Resolve-Path
 		Assert-MockCalled -Exactly -Times 1 Resize-PartitionToMaxSize
 		Assert-MockCalled -Exactly -Times 1 Get-GCEInstanceHostname
@@ -177,7 +177,7 @@ Describe 'GCEService-SwarmAgent' {
 		Mock Stop-Transcript { }
 
 		Mock Import-PowerShellDataFile { & (Get-Command Import-PowerShellDataFile -CommandType Function) -Path $Path }
-		Mock Resolve-Path -ParameterFilter { $Path.EndsWith("DefaultFolders.psd1") } { & (Get-Command Resolve-Path -CommandType Cmdlet) -Path $Path }
+		Mock Resolve-Path -ParameterFilter { $Path.EndsWith("DefaultBuildStepSettings.psd1") } { & (Get-Command Resolve-Path -CommandType Cmdlet) -Path $Path }
 		Mock Resolve-Path { throw "Invalid invocation of Resolve-Path" }
 		Mock Write-Host { }
 		Mock Resize-PartitionToMaxSize { }

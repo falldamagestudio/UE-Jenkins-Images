@@ -4,7 +4,11 @@
 
 function BuildStep-InstallSCMTools {
 
-    $DefaultFolders = Import-PowerShellDataFile "${PSScriptRoot}\DefaultFolders.psd1"
+    param (
+        [Parameter(Mandatory)] [string] $UserProfilePath
+    )
+
+    $DefaultFolders = Import-PowerShellDataFile "${PSScriptRoot}\DefaultBuildStepSettings.psd1"
 
     Write-Host "Installing Git for Windows..."
 
@@ -14,7 +18,9 @@ function BuildStep-InstallSCMTools {
 
     Install-Plastic
 
-    Write-Host "Creating symlinks for plastic client config files..."
+    Write-Host "Creating user-specific symlinks for plastic client config files..."
 
-    Create-PlasticClientConfigLinks -Path $DefaultFolders.PlasticConfigFolder
+    $Plastic4SourceFolderLocation = "${UserProfilePath}\AppData\Local\plastic4"
+
+    Create-PlasticClientConfigLinks -SourceFolder $Plastic4SourceFolderLocation -TargetFolder $DefaultFolders.PlasticConfigFolder
 }

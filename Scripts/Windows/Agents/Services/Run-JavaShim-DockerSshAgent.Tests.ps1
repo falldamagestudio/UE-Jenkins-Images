@@ -68,7 +68,7 @@ Describe 'Run-JavaShim-DockerSshAgent' {
 		Mock Get-Date { "invalid date" }
 		Mock Write-Host { }
 		Mock Import-PowerShellDataFile { & (Get-Command Import-PowerShellDataFile -CommandType Function) -Path $Path }
-		Mock Resolve-Path -ParameterFilter { $Path.EndsWith("DefaultFolders.psd1") } { & (Get-Command Resolve-Path -CommandType Cmdlet) -Path $Path }
+		Mock Resolve-Path -ParameterFilter { $Path.EndsWith("DefaultBuildStepSettings.psd1") } { & (Get-Command Resolve-Path -CommandType Cmdlet) -Path $Path }
 		Mock Resolve-Path { throw "Invalid invocation of Resolve-Path" }
 		Mock Get-GCESettings -ParameterFilter { $Settings.ContainsKey("AgentKey") } {
 			$Settings.ContainsKey("AgentKey") | Should -BeTrue

@@ -16,7 +16,8 @@ function Create-PlasticClientConfigLinks {
     #>
 
     param (
-        [Parameter(Mandatory=$true)][string]$Path
+        [Parameter(Mandatory=$true)][string]$SourceFolder,
+        [Parameter(Mandatory=$true)][string]$TargetFolder
     )
 
     class CreateSymlinkException : Exception {
@@ -38,9 +39,6 @@ function Create-PlasticClientConfigLinks {
             throw [CreateSymlinkException]::new($SourceLocation, $TargetLocation, $ExitCode)
         }
     }
-
-    $SourceFolder = "${env:LOCALAPPDATA}\plastic4"
-    $TargetFolder = $Path
 
     # Create folder for config files
     New-Item -ItemType Directory -Path $SourceFolder | Out-Null
