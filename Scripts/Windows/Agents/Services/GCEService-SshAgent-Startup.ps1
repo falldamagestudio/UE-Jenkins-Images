@@ -5,24 +5,7 @@ Start-Transcript -LiteralPath "C:\Logs\GCEService-SshAgent-Startup-$(Get-Date -F
 
 try {
 
-    . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESettings.ps1
-    . ${PSScriptRoot}\..\..\Applications\Deploy-PlasticClientConfig.ps1
-
     $DefaultFolders = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\BuildSteps\DefaultBuildStepSettings.psd1" -ErrorAction Stop
-
-    Write-Host "Fetching optional settings from Secrets Manager / Instance Metadata..."
-
-    $OptionalSettingsSpec = @{
-        PlasticConfigZip = @{ Name = "plastic-config-zip"; Source = [GCESettingSource]::Secret; Binary = $true }
-    }
-
-    $OptionalSettings = Get-GCESettings $OptionalSettingsSpec -PrintProgress
-
-    if ($OptionalSettings.PlasticConfigZip) {
-        Write-Host "Deploying Plastic SCM client configuration..."
-
-        Deploy-PlasticClientConfig -ZipContent $OptionalSettings.PlasticConfigZip -ConfigFolder $DefaultFolders.PlasticConfigFolder
-    }
 
     Write-Host "Done."
 

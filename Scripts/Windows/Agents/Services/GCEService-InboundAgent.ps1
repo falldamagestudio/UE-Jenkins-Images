@@ -7,7 +7,6 @@ try {
 
     . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESettings.ps1
     . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCEInstanceHostname.ps1
-    . ${PSScriptRoot}\..\..\Applications\Deploy-PlasticClientConfig.ps1
     . ${PSScriptRoot}\..\Run\Run-InboundAgent.ps1
 
     $DefaultFolders = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\BuildSteps\DefaultBuildStepSettings.psd1" -ErrorAction Stop
@@ -23,19 +22,9 @@ try {
 
     $RequiredSettings = Get-GCESettings $RequiredSettingsSpec -Wait -PrintProgress
 
-    Write-Host "Fetching optional settings from Secrets Manager / Instance Metadata..."
+    Write-Host "Waiting for SSH Server to start..."
 
-    $OptionalSettingsSpec = @{
-        PlasticConfigZip = @{ Name = "plastic-config-zip"; Source = [GCESettingSource]::Secret; Binary = $true }
-    }
-
-    $OptionalSettings = Get-GCESettings $OptionalSettingsSpec -PrintProgress
-
-    if ($OptionalSettings.PlasticConfigZip) {
-        Write-Host "Deploying Plastic SCM client configuration..."
-
-        Deploy-PlasticClientConfig -ZipContent $OptionalSettings.PlasticConfigZip -ConfigFolder $DefaultFolders.PlasticConfigFolder
-    }
+    (Get-Service -Name "sshd").WaitForStatus("Running")
 
     Write-Host "Running Jenkins Agent..."
 

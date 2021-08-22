@@ -7,7 +7,6 @@ try {
 
     . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESettings.ps1
     . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCEInstanceHostname.ps1
-    . ${PSScriptRoot}\..\..\Applications\Deploy-PlasticClientConfig.ps1
     . ${PSScriptRoot}\..\Run\Run-SwarmAgent.ps1
 
     $DefaultFolders = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\BuildSteps\DefaultBuildStepSettings.psd1" -ErrorAction Stop
@@ -23,7 +22,15 @@ try {
         Labels = @{ Name = "jenkins-labels"; Source = [GCESettingSource]::InstanceMetadata }
     }
 
+    $RequiredSettings = Get-GCESettings $RequiredSettingsSpec -Wait -PrintProgress
+
+    Write-Host "Waiting for SSH Server to start..."
+
+    (Get-Service -Name "sshd").WaitForStatus("Running")
+
     Write-Host "Running Jenkins Agent..."
+
+    Write-Host $RequiredSettings
 
     $ServiceParams = @{
         JenkinsAgentFolder = $DefaultFolders.JenkinsAgentFolder

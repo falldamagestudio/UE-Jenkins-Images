@@ -1,8 +1,6 @@
 . ${PSScriptRoot}\..\..\Helpers\Ensure-TestToolVersions.ps1
 
 BeforeAll {
-	. ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESettings.ps1
-	. ${PSScriptRoot}\..\..\Applications\Deploy-PlasticClientConfig.ps1
 }
 
 Describe 'GCEService-DockerSshAgent-Startup' {

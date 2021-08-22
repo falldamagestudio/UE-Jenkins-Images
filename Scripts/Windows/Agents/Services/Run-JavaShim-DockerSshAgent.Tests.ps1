@@ -3,7 +3,6 @@
 
 BeforeAll {
 	. ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESettings.ps1
-	. ${PSScriptRoot}\..\..\Applications\Deploy-PlasticClientConfig.ps1
 	. ${PSScriptRoot}\..\Run\Run-DockerSshAgent.ps1
 	. ${PSScriptRoot}\..\..\Applications\Authenticate-DockerForGoogleArtifactRegistry.ps1
 }
@@ -16,15 +15,10 @@ Describe 'Run-JavaShim-DockerSshAgent' {
 		$RegionRef = "europe-west1"
 		$AgentImageURLRef = "${RegionRef}-docker.pkg.dev/someproject/somerepo/inbound-agent:latest"
 		$AgentKeyFileRef = "1234"
-		[byte[]] $PlasticConfigZipRef = 72, 101, 108, 108, 111 # "Hello"
 	
 		$RequiredSettingsResponse = @{
 			AgentKey = $AgentKeyFileRef
 			AgentImageURL = $AgentImageURLRef
-		}
-	
-		$OptionalSettingsResponse = @{
-			PlasticConfigZip = $PlasticConfigZipRef
 		}
 	}
 
@@ -35,7 +29,6 @@ Describe 'Run-JavaShim-DockerSshAgent' {
 		Mock Write-Host { }
 		Mock Import-PowerShellDataFile { & (Get-Command Import-PowerShellDataFile -CommandType Function) -Path $Path }
 		Mock Get-GCESettings { throw "Get-GCESettings should not be called" }
-		Mock Deploy-PlasticClientConfig { throw "Deploy-PlasticClientConfig should not be called" }
 		Mock Authenticate-DockerForGoogleArtifactRegistry { throw "Authenticate-DockerForGoogleArtifactRegistry should not be called" }
 		Mock Copy-Item { throw "Copy-Item should not be called" }
 		Mock Run-DockerSshAgent { throw "Run-DockerSshAgent should not be called" }
@@ -52,7 +45,6 @@ Describe 'Run-JavaShim-DockerSshAgent' {
 		Mock Write-Host { }
 		Mock Import-PowerShellDataFile { & (Get-Command Import-PowerShellDataFile -CommandType Function) -Path $Path }
 		Mock Get-GCESettings { throw "Get-GCESettings should not be called" }
-		Mock Deploy-PlasticClientConfig { throw "Deploy-PlasticClientConfig should not be called" }
 		Mock Authenticate-DockerForGoogleArtifactRegistry { throw "Authenticate-DockerForGoogleArtifactRegistry should not be called" }
 		Mock Copy-Item { throw "Copy-Item should not be called" }
 		Mock Run-DockerSshAgent { throw "Run-DockerSshAgent should not be called" }
@@ -75,14 +67,7 @@ Describe 'Run-JavaShim-DockerSshAgent' {
 			$Settings.ContainsKey("AgentImageURL") | Should -BeTrue
 			$RequiredSettingsResponse 
 		}
-		Mock Get-GCESettings -ParameterFilter { $Settings.ContainsKey("PlasticConfigZip") } {
-			$Settings.ContainsKey("PlasticConfigZip") | Should -BeTrue
-			$OptionalSettingsResponse
-		}
 		Mock Get-GCESettings { throw "Invalid invocation of Get-GCESettings" }
-		Mock Deploy-PlasticClientConfig {
-			(Compare-Object -ReferenceObject $PlasticConfigZipRef -DifferenceObject $ZipContent) | Should -Be $null
-		}
 		Mock Authenticate-DockerForGoogleArtifactRegistry {
 			$AgentKey | Should -Be $AgentKeyFileRef
 			$Region | Should -Be $RegionRef
@@ -100,8 +85,7 @@ Describe 'Run-JavaShim-DockerSshAgent' {
 		Assert-MockCalled -Exactly -Times 1 Start-Transcript
 		Assert-MockCalled -Exactly -Times 1 Import-PowerShellDataFile
 		Assert-MockCalled -Exactly -Times 1 Resolve-Path
-		Assert-MockCalled -Exactly -Times 2 Get-GCESettings
-		Assert-MockCalled -Exactly -Times 1 Deploy-PlasticClientConfig
+		Assert-MockCalled -Exactly -Times 1 Get-GCESettings
 		Assert-MockCalled -Exactly -Times 1 Authenticate-DockerForGoogleArtifactRegistry
 		Assert-MockCalled -Exactly -Times 1 Copy-Item
 		Assert-MockCalled -Exactly -Times 1 Run-DockerSshAgent

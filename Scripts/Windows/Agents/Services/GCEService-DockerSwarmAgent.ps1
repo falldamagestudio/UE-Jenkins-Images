@@ -7,7 +7,6 @@ try {
 
     . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESettings.ps1
     . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCEInstanceHostname.ps1
-    . ${PSScriptRoot}\..\..\Applications\Deploy-PlasticClientConfig.ps1
     . ${PSScriptRoot}\..\..\Applications\Authenticate-DockerForGoogleArtifactRegistry.ps1
     . ${PSScriptRoot}\..\Run\Run-DockerSwarmAgent.ps1
 
@@ -28,20 +27,6 @@ try {
 
     $RequiredSettings = Get-GCESettings $RequiredSettingsSpec -Wait -PrintProgress
 
-    Write-Host "Fetching optional settings from Secrets Manager / Instance Metadata..."
-
-    $OptionalSettingsSpec = @{
-        PlasticConfigZip = @{ Name = "plastic-config-zip"; Source = [GCESettingSource]::Secret; Binary = $true }
-    }
-
-    $OptionalSettings = Get-GCESettings $OptionalSettingsSpec -PrintProgress
-
-    if ($OptionalSettings.PlasticConfigZip) {
-        Write-Host "Deploying Plastic SCM client configuration..."
-
-        Deploy-PlasticClientConfig -ZipContent $OptionalSettings.PlasticConfigZip -ConfigFolder $DefaultFolders.PlasticConfigFolder
-    }
-
     # Extract region from docker image URL
     # Example: europe-west1-docker.pkg.dev/<projectname>/<reponame>/<imagename>:<tag> => europe-west1
     $Region = ($RequiredSettings.AgentImageURL -Split "-docker.pkg.dev")[0]
@@ -49,6 +34,10 @@ try {
     Write-Host "Authenticating Docker for Google Artifact Registry..."
 
     Authenticate-DockerForGoogleArtifactRegistry -AgentKey $RequiredSettings.AgentKey -Region $Region
+
+    Write-Host "Waiting for SSH Server to start..."
+
+    (Get-Service -Name "sshd").WaitForStatus("Running")
 
     Write-Host "Running Jenkins Agent..."
 

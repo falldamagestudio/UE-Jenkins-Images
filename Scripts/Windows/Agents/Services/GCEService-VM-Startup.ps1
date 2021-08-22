@@ -7,8 +7,9 @@ try {
 
     . ${PSScriptRoot}\..\..\SystemConfiguration\Resize-PartitionToMaxSize.ps1
     . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESettings.ps1
+    . ${PSScriptRoot}\..\..\Applications\Deploy-PlasticClientConfig.ps1
 
-    Write-Host "Waiting for required settings to be available in Secrets Manager / Instance Metadata..."
+    Write-Host "Waiting for SSH public key to be available in Secrets manager..."
 
     $RequiredSettingsSpec = @{
         SshPublicKey = @{ Name = "ssh-vm-public-key-windows"; Source = [GCESettingSource]::Secret }
@@ -26,6 +27,20 @@ try {
     icacls $env:PROGRAMDATA\ssh\administrators_authorized_keys /inheritance:r
     icacls $env:PROGRAMDATA\ssh\administrators_authorized_keys /grant SYSTEM:`(F`)
     icacls $env:PROGRAMDATA\ssh\administrators_authorized_keys /grant BUILTIN\Administrators:`(F`)
+
+    Write-Host "Fetching Plastic config from Secrets Manager..."
+
+    $OptionalSettingsSpec = @{
+        PlasticConfigZip = @{ Name = "plastic-config-zip"; Source = [GCESettingSource]::Secret; Binary = $true }
+    }
+
+    $OptionalSettings = Get-GCESettings $OptionalSettingsSpec -PrintProgress
+
+    if ($OptionalSettings.PlasticConfigZip) {
+        Write-Host "Deploying Plastic SCM client configuration..."
+
+        Deploy-PlasticClientConfig -ZipContent $OptionalSettings.PlasticConfigZip -ConfigFolder $DefaultFolders.PlasticConfigFolder
+    }
 
     Write-Host "Starting up SSH server..."
 
