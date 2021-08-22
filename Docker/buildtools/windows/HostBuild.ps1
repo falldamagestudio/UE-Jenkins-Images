@@ -8,9 +8,6 @@ param (
 
 . ${PSScriptRoot}\..\..\..\Scripts\Windows\SystemConfiguration\Resize-PartitionToMaxSize.ps1
 
-. ${PSScriptRoot}\..\..\..\Scripts\Windows\ImageBuilder\Host\Install-TestDependencies.ps1
-. ${PSScriptRoot}\..\..\..\Scripts\Windows\Helpers\Run-Tests.ps1
-
 . ${PSScriptRoot}\..\..\..\Scripts\Windows\ImageBuilder\Host\Setup-DockerRegistryAuthentication.ps1
 
 . ${PSScriptRoot}\..\..\..\Scripts\Windows\BuildSteps\BuildStep-InstallBuildTools-Host.ps1
@@ -22,14 +19,6 @@ param (
 Write-Host "Resizing C: partition to use all available disk space..."
 
 Resize-PartitionToMaxSize -DriveLetter C
-
-#Write-Host "Installing test dependencies..."
-#
-#Install-TestDependencies
-#
-#Write-Host "Running tests for Powershell scripts..."
-#
-#Run-Tests -Path "${PSScriptRoot}\..\..\..\Scripts"
 
 Write-Host "Setting up Docker authentication..."
 
