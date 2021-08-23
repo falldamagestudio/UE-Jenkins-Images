@@ -105,6 +105,8 @@ Describe 'GCEService-VM-Startup' {
 
 	It "Calls functions correctly and passes arguments appropriately" {
 
+		$DefaultFolders = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\BuildSteps\DefaultBuildStepSettings.psd1" -ErrorAction Stop
+
 		Mock Start-Transcript { }
 		Mock Get-Date { "some date" }
 		Mock Stop-Transcript { }
@@ -117,6 +119,7 @@ Describe 'GCEService-VM-Startup' {
 		}
 		Mock Deploy-PlasticClientConfig {
 			(Compare-Object -ReferenceObject $PlasticConfigZipRef -DifferenceObject $ZipContent) | Should -Be $null
+			$ConfigFolder | Should -Be $DefaultFolders.PlasticConfigFolder
 		}
 		Mock Start-Service {
 			$Name | Should -Be "sshd"

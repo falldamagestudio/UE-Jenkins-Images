@@ -123,6 +123,8 @@ Describe 'GCEService-SwarmAgent' {
 
 	It "Passes parameters properly between functions" {
 
+		$DefaultFolders = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\BuildSteps\DefaultBuildStepSettings.psd1" -ErrorAction Stop
+
 		Mock Start-Transcript { }
 		Mock Get-Date { "some date" }
 		Mock Stop-Transcript { }
@@ -143,6 +145,8 @@ Describe 'GCEService-SwarmAgent' {
 		Mock Get-Service { [ServiceMock]::new() }
 
 		Mock Run-SwarmAgent {
+			$JenkinsAgentFolder | Should -Be $DefaultFolders.JenkinsAgentFolder
+			$JenkinsWorkspaceFolder | SHould -Be $DefaultFolders.JenkinsWorkspaceFolder
 			$JenkinsUrl | Should -Be $JenkinsUrlRef
 			$AgentUsername | Should -Be $AgentUsernameRef
 			$AgentAPIToken | Should -Be $AgentAPITokenRef
