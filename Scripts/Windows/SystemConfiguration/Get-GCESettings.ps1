@@ -57,7 +57,7 @@ function Get-GCESettings {
 
         if ($PrintProgress) {
             foreach ($Setting in $Settings.GetEnumerator()) {
-                Write-Host "Setting type $($Setting.Value.Type), name $($Setting.Value.Source)  -> $($Setting.Value.Name): $(if ($Result[$Setting.Key]) { "found" } else { "not found" })"
+                Write-Host "Setting type $($Setting.Value.Source), name $($Setting.Value.Name)  -> $($Setting.Key): $(if ($Result[$Setting.Key]) { "found" } else { "not found" })"
             }
 
             if ($AllSettingsFound) {
