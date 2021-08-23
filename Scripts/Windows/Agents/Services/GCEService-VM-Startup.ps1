@@ -58,6 +58,14 @@ try {
 
     Write-Host "Done."
 
+    # Stop this service explicitly
+    # It keeps Windows from automatically restarting the service
+    # However, Windows will start it again at next boot
+
+    Stop-Service $DefaultFolders.JenkinsVMStartupServiceName
+
+    # After Stop-Service has run, The remainder of the script (including the 'finally' section) will not be run
+
 } finally {
 
     Stop-Transcript

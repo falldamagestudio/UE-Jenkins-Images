@@ -33,6 +33,7 @@ Describe 'GCEService-VM-Startup' {
 		Mock Deploy-PlasticClientConfig { throw "Deploy-PlasticClientConfig should not be called" }
 		Mock Start-Service { throw "Start-Service should not be called" }
 		Mock Resize-PartitionToMaxSize { throw "Resize-PartitionToMaxSize should not be called" }
+		Mock Stop-Service { throw "Stop-Service should not be called" }
 
 		{ & ${PSScriptRoot}\GCEService-VM-Startup.ps1 } |
 			Should -Throw "Start-Transcript failed"
@@ -45,6 +46,7 @@ Describe 'GCEService-VM-Startup' {
 		Assert-MockCalled -Exactly -Times 0 Deploy-PlasticClientConfig
 		Assert-MockCalled -Exactly -Times 0 Start-Service
 		Assert-MockCalled -Exactly -Times 0 Resize-PartitionToMaxSize
+		Assert-MockCalled -Exactly -Times 0 Stop-Service
 		Assert-MockCalled -Exactly -Times 0 Stop-Transcript
 	}
 
@@ -60,6 +62,7 @@ Describe 'GCEService-VM-Startup' {
 		Mock Deploy-PlasticClientConfig { throw "Deploy-PlasticClientConfig should not be called" }
 		Mock Start-Service { throw "Start-Service should not be called" }
 		Mock Resize-PartitionToMaxSize { throw "Resize-PartitionToMaxSize should not be called" }
+		Mock Stop-Service { throw "Stop-Service should not be called" }
 
 		{ & ${PSScriptRoot}\GCEService-VM-Startup.ps1 } |
 			Should -Throw "Get-GCESettings failed"
@@ -71,6 +74,7 @@ Describe 'GCEService-VM-Startup' {
 		Assert-MockCalled -Exactly -Times 0 Deploy-PlasticClientConfig
 		Assert-MockCalled -Exactly -Times 0 Start-Service
 		Assert-MockCalled -Exactly -Times 0 Resize-PartitionToMaxSize
+		Assert-MockCalled -Exactly -Times 0 Stop-Service
 		Assert-MockCalled -Exactly -Times 1 Stop-Transcript
 	}
 
@@ -87,6 +91,7 @@ Describe 'GCEService-VM-Startup' {
 		Mock Set-Content { }
 		Mock Start-Service { }
 		Mock Deploy-PlasticClientConfig { }
+		Mock Stop-Service { }
 
 		Mock Resize-PartitionToMaxSize { }
 
@@ -100,6 +105,7 @@ Describe 'GCEService-VM-Startup' {
 		Assert-MockCalled -Exactly -Times 1 Deploy-PlasticClientConfig
 		Assert-MockCalled -Exactly -Times 1 Start-Service
 		Assert-MockCalled -Exactly -Times 1 Resize-PartitionToMaxSize
+		Assert-MockCalled -Exactly -Times 1 Stop-Service
 		Assert-MockCalled -Exactly -Times 1 Stop-Transcript
 	}
 
@@ -127,6 +133,10 @@ Describe 'GCEService-VM-Startup' {
 
 		Mock Resize-PartitionToMaxSize { }
 
+		Mock Stop-Service {
+			$Name | Should -Be $DefaultFolders.JenkinsVMStartupServiceName
+		}
+
 		{ & ${PSScriptRoot}\GCEService-VM-Startup.ps1 } |
 			Should -Not -Throw
 
@@ -137,6 +147,7 @@ Describe 'GCEService-VM-Startup' {
 		Assert-MockCalled -Exactly -Times 1 Deploy-PlasticClientConfig
 		Assert-MockCalled -Exactly -Times 1 Start-Service
 		Assert-MockCalled -Exactly -Times 1 Resize-PartitionToMaxSize
+		Assert-MockCalled -Exactly -Times 1 Stop-Service
 		Assert-MockCalled -Exactly -Times 1 Stop-Transcript
 	}
 }
