@@ -9,6 +9,8 @@ try {
     . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESettings.ps1
     . ${PSScriptRoot}\..\..\Applications\Deploy-PlasticClientConfig.ps1
 
+    $DefaultFolders = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\BuildSteps\DefaultBuildStepSettings.psd1" -ErrorAction Stop
+
     Write-Host "Waiting for SSH public key to be available in Secrets manager..."
 
     $RequiredSettingsSpec = @{
