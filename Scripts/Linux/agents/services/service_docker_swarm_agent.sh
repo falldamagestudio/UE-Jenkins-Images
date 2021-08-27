@@ -1,6 +1,4 @@
 #!/bin/bash
 
-SCRIPTS_DIR="${BASH_SOURCE%/*}"
-
-. "${SCRIPTS_DIR}/../run/run_docker_swarm_agent.sh"
+. "${BASH_SOURCE%/*}/../run/run_docker_swarm_agent.sh"
 
