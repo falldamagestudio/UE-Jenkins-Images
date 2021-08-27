@@ -1,4 +1,9 @@
 {
-    "docker_image_builder_host_image": "windows-cloud/global/images/windows-server-2019-dc-for-containers-v20210212",
-    "vm_image_builder_source_image": "windows-server-2019-dc-for-containers-v20210212"
+    "linux" : {
+        "vm_image_builder_source_image": "debian-11-bullseye-v20210817"
+    },
+    "windows" : {
+        "docker_image_builder_host_image": "windows-cloud/global/images/windows-server-2019-dc-for-containers-v20210212",
+        "vm_image_builder_source_image": "windows-server-2019-dc-for-containers-v20210212"
+    }
 }

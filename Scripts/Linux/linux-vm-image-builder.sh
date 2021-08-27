@@ -9,15 +9,11 @@ ZONE="$3"
 IMAGE_NAME="$4"
 
 if [ $# -ne 4 ]; then
-	1>&2 echo "Usage: windows-vm-image-builder.sh <packer script> <project ID> <zone> <image name>"
+	1>&2 echo "Usage: linux-vm-image-builder.sh <packer script> <project ID> <zone> <image name>"
 	exit 1
 fi
 
-SOURCE_IMAGE=$(jq -r ".windows.vm_image_builder_source_image" "${SCRIPTS_DIR}/tools-and-versions.json")
-
-(mkdir "${ROOT_DIR}/builder-files" \
-	&& cd "${ROOT_DIR}" \
-	&& zip -r builder-files/builder-files.zip . -i "Scripts/*" -i "VMs/*")
+SOURCE_IMAGE=$(jq -r ".linux.vm_image_builder_source_image" "${SCRIPTS_DIR}/tools-and-versions.json")
 
 packer init "${PACKER_SCRIPT}"
 
@@ -30,9 +26,3 @@ packer build \
     -var "source_image=${SOURCE_IMAGE}" \
     -var "image_name=${IMAGE_NAME}" \
     "${PACKER_SCRIPT}"
-
-EXITCODE=$?
-
-rm -r "${ROOT_DIR}/builder-files"
-
-exit $EXITCODE
