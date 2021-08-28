@@ -64,7 +64,7 @@ build {
 
   provisioner "shell" {
     inline = [
-      "sudo ~/VMs/agents/linux/swarm-agent/install.sh"
+      "~/VMs/agents/linux/swarm-agent/install.sh"
     ]
   }
 

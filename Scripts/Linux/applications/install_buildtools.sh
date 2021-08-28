@@ -2,8 +2,8 @@
 
 function install_buildtools () {
 
-    apt-get update || return
-    apt-get install -y --no-install-recommends \
+    sudo apt-get update || return
+    sudo apt-get install -y --no-install-recommends \
         build-essential \
         ca-certificates \
         curl \
@@ -19,7 +19,7 @@ function install_buildtools () {
         xdg-user-dirs \
         zip || return
 
-    apt-get clean || return
-    rm -rf /var/lib/apt/lists/*
+    sudo apt-get clean || return
+    sudo rm -rf /var/lib/apt/lists/*
 }
 
