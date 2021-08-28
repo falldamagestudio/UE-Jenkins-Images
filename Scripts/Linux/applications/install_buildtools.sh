@@ -3,7 +3,7 @@
 function install_buildtools () {
 
     sudo apt-get update || return
-    sudo apt-get install -y --no-install-recommends \
+    sudo --preserve-env=DEBIAN_FRONTEND apt-get install -y --no-install-recommends \
         build-essential \
         ca-certificates \
         curl \
