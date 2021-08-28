@@ -1,7 +1,6 @@
 #!/bin/bash
 
 SCRIPTS_DIR="${BASH_SOURCE%/*}"
-ROOT_DIR="${SCRIPTS_DIR}/../.."
 
 PACKER_SCRIPT="$1"
 PROJECT_ID="$2"
