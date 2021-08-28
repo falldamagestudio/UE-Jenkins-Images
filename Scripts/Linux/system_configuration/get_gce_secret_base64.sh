@@ -10,7 +10,7 @@ get_gce_secret_base64 () {
 
     # Fetch access token for google APIs
     local ACCESS_TOKEN
-    ACCESS_TOKEN=$(curl -H 'Metadata-Flavor: Google' "${METADATA}/instance/service-accounts/default/token" | cut -d '"' -f 4) || return
+    ACCESS_TOKEN=$({ curl --silent -H 'Metadata-Flavor: Google' "${METADATA}/instance/service-accounts/default/token" || return ; } | { cut -d '"' -f 4 || return ; }) || return
     #Typical response format from curl call:
     #   {
     #     "name": "projects/<id>/secrets/<name>/versions/1",
@@ -20,10 +20,10 @@ get_gce_secret_base64 () {
     #   }
 
     local PROJECT
-    PROJECT=$(curl -H 'Metadata-Flavor: Google' ${METADATA}/project/project-id) || return
+    PROJECT=$(curl --silent -H 'Metadata-Flavor: Google' "${METADATA}/project/project-id") || return
 
     local SECRET_RESPONSE
-    SECRET_RESPONSE=$(curl https://secretmanager.googleapis.com/v1/projects/${PROJECT}/secrets/${SECRET_NAME}/versions/latest:access -H "Authorization: Bearer ${ACCESS_TOKEN}") || return
+    SECRET_RESPONSE=$(curl --silent -H "Authorization: Bearer ${ACCESS_TOKEN}" "https://secretmanager.googleapis.com/v1/projects/${PROJECT}/secrets/${SECRET_NAME}/versions/latest:access") || return
 
     if [ "$(echo "${SECRET_RESPONSE}" | awk -F "\"" '{print $2}')" != 'error' ]; then
         local SECRET
