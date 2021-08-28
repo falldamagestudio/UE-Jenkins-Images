@@ -2,7 +2,7 @@
 
 function install_buildtools () {
 
-    apt-get update
+    apt-get update || return
     apt-get install -y --no-install-recommends \
         build-essential \
         ca-certificates \
@@ -17,9 +17,9 @@ function install_buildtools () {
         tzdata \
         unzip \
         xdg-user-dirs \
-        zip
+        zip || return
 
-    apt-get clean
+    apt-get clean || return
     rm -rf /var/lib/apt/lists/*
 }
 

@@ -13,5 +13,5 @@ function authenticate_docker_for_google_artifact_registry () {
     LOCATION=$1
     ACCESS_KEY=$2
 
-    echo "${ACCESS_KEY}" | docker login -u _json_key --password-stdin "https://${LOCATION}-docker.pkg.dev"
+    { echo "${ACCESS_KEY}" || return ; } | { docker login -u _json_key --password-stdin "https://${LOCATION}-docker.pkg.dev" || return ; }
 }
