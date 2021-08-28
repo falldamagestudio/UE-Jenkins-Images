@@ -7,7 +7,7 @@ function install_adoptium_openjdk () {
     local ARCHIVE_FILE=~/adoptium_openjdk.tar.gz
     local INSTALL_ROOT_DIR=~
 
-    wget --progress=dot:giga -O "${ARCHIVE_FILE}" "$DOWNLOAD_URL" || return
+    wget --progress=dot:giga -O "${ARCHIVE_FILE}" "$DOWNLOAD_URL" 2>&1 || return
 
     tar --directory "${INSTALL_ROOT_DIR}" -xzf "${ARCHIVE_FILE}" || return
 
