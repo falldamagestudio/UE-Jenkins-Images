@@ -25,9 +25,9 @@ get_gce_secret_base64 () {
     local SECRET_RESPONSE
     SECRET_RESPONSE=$(curl --silent -H "Authorization: Bearer ${ACCESS_TOKEN}" "https://secretmanager.googleapis.com/v1/projects/${PROJECT}/secrets/${SECRET_NAME}/versions/latest:access") || return
 
-    if [ "$(echo "${SECRET_RESPONSE}" | awk -F "\"" '{print $2}')" != 'error' ]; then
+    if ! echo "${SECRET_RESPONSE}" | jq -e 'has("error")' > /dev/null; then
         local SECRET
-        SECRET=$(echo "${SECRET_RESPONSE}" | awk -F "\"" '{print $10}') || return
+        SECRET=$(echo "${SECRET_RESPONSE}" | jq -r ".payload.data") || return
         echo "${SECRET}"
     fi
 }
