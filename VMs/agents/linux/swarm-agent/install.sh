@@ -18,4 +18,4 @@ buildstep_install_buildtools || exit 1
 buildstep_install_scm_tools || exit 1
 install_adoptium_openjdk || exit 1
 install_jenkins_swarm_agent || exit 1
-buildstep_install_services || exit 1
+buildstep_install_services "${BASH_SOURCE%/*}/../../../../Scripts/Linux/agents/services/gce_service_swarm_agent.service" || exit 1

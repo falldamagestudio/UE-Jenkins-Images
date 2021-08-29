@@ -2,7 +2,8 @@
 
 function install_service () {
 
-    SYSTEMD_UNIT_FILE=$1
+    SOURCE_SYSTEMD_UNIT_FILE=$1
+    TARGET_FILENAME=$2
 
-    sudo cp "${SYSTEMD_UNIT_FILE}" /etc/systemd/system
+    sudo cp "${SOURCE_SYSTEMD_UNIT_FILE}" "/etc/systemd/system/${TARGET_FILENAME}"
 }

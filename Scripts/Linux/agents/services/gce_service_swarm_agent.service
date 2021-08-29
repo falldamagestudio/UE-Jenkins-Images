@@ -1,0 +1,13 @@
+[Unit]
+Description=Jenkins Agent
+After=network.target vm_startup.service
+
+[Service]
+Type=simple
+User=jenkins
+ExecStart=/home/jenkins/Scripts/Linux/agents/services/gce_service_swarm_agent.sh
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target
