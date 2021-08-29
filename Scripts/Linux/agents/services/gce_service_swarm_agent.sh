@@ -5,7 +5,9 @@
 
 echo "Swarm Agent starting..."
 
-AGENT_JAR_LOCATION=${HOME}/swarm-client.jar
+JENKINS_AGENT_FOLDER=${HOME}/agent
+JENKINS_FSROOT_FOLDER=${HOME}        # Per-job workspaces will be created under ${JENKINS_WORKSPACE_FOLDER}/workspace/
+AGENT_JAR_LOCATION=${JENKINS_AGENT_FOLDER}/swarm-agent.jar
 AGENT_NAME=$(hostname)
 
 echo "Waiting for required settings to be available in Secrets Manager / Instance Metadata..."
@@ -25,6 +27,6 @@ LABELS=${RESULT[3]}
 
 echo "Running Jenkins Agent..."
 
-run_swarm_agent "${AGENT_JAR_LOCATION}" "${JENKINS_URL}" "${AGENT_USERNAME}" "${AGENT_API_TOKEN}" "${LABELS}" "${AGENT_NAME}"
+run_swarm_agent "${JENKINS_AGENT_FOLDER}" "${JENKINS_FSROOT_FOLDER}" "${AGENT_JAR_LOCATION}" "${JENKINS_URL}" "${AGENT_USERNAME}" "${AGENT_API_TOKEN}" "${LABELS}" "${AGENT_NAME}" || exit
 
-echo "VM Startup script done."
+echo "Jenkins Startup script done."
