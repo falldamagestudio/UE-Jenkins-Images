@@ -1,6 +1,7 @@
 [Unit]
 Description=Jenkins Agent
-After=network.target vm_startup.service
+After=network.target
+After=vm_startup.service
 
 [Service]
 Type=simple
