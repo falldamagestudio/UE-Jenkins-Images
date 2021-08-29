@@ -8,6 +8,7 @@
 # Input should come as three arrays:
 # SETTINGS_KEYS=("secret-name-1" "secret-name-2" "metadata-name-1")
 # SETTINGS_SOURCES=("secret" "secret" "instance-metadata")
+# SETTINGS_BINARY=("false" "true" "false")          <==== binary settings will be returned as base64 srings
 # SETTINGS_RESULT=()   <=== this will receive the result afterward
 #
 # If WAIT is set to "true", this will sleep and retry until all results are available.
@@ -19,9 +20,10 @@ function get_gce_settings () {
 
     local -n SETTINGS_KEYS=$1
     local -n SETTINGS_SOURCES=$2
-    local -n SETTINGS_RESULT=$3
-    local WAIT=$4
-    local PRINT_PROGRESS=$5
+    local -n SETTINGS_BINARY=$3
+    local -n SETTINGS_RESULT=$4
+    local WAIT=$5
+    local PRINT_PROGRESS=$6
 
     local DELAY=10
 
@@ -35,10 +37,14 @@ function get_gce_settings () {
         for ((INDEX = 0; INDEX < ${#SETTINGS_KEYS[@]}; INDEX++)); do
             local KEY=${SETTINGS_KEYS[INDEX]}
             local SOURCE=${SETTINGS_SOURCES[INDEX]}
+            local BINARY=${SETTINGS_BINARY[INDEX]}
 
             local VALUE
             if [ "${SOURCE}" = "secret" ]; then
-                VALUE=$({ get_gce_secret_base64 "${KEY}" || return; } | { base64 --decode || return; }) || return
+                VALUE=$(get_gce_secret_base64 "${KEY}")
+                if [ "${BINARY}" != "true" ]; then
+                    VALUE=$(echo "${VALUE}" | base64 --decode)
+                fi
             elif [ "${SOURCE}" = "instance-metadata" ]; then
                 VALUE=$(get_gce_instance_metadata "${KEY}") || return
             else
