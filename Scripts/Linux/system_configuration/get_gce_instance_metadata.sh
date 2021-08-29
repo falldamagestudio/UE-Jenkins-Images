@@ -7,7 +7,7 @@ get_gce_instance_metadata () {
 
     local METADATA=http://metadata.google.internal/computeMetadata/v1
     local VALUE
-    VALUE=$(curl --silent -H 'Metadata-Flavor: Google' "${METADATA}/instance/attributes/${KEY}") || return
+    VALUE=$(curl --silent --fail -H 'Metadata-Flavor: Google' "${METADATA}/instance/attributes/${KEY}") || return 0
 
     echo "${VALUE}"
 }
