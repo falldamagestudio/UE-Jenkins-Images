@@ -6,6 +6,7 @@ After=network.target
 Type=oneshot
 User=jenkins
 ExecStart=/home/jenkins/Scripts/Linux/agents/services/gce_service_vm_startup.sh
+RemainAfterExit=yes
 
 [Install]
 WantedBy=multi-user.target
