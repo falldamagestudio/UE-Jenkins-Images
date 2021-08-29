@@ -1,0 +1,11 @@
+[Unit]
+Description=VM Startup
+After=network.target
+
+[Service]
+Type=oneshot
+User=jenkins
+ExecStart=/home/jenkins/Scripts/Linux/agents/services/vm_startup.sh
+
+[Install]
+WantedBy=multi-user.target
