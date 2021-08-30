@@ -10,7 +10,7 @@ on:
 jobs:
 
   build-linux:
-    name: Windows - swarm-agent-vm
+    name: Linux - swarm-agent-vm
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

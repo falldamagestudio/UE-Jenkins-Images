@@ -10,7 +10,7 @@ on:
 jobs:
 
   build-linux:
-    name: Windows - ssh-agent-vm
+    name: Linux - ssh-agent-vm
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
