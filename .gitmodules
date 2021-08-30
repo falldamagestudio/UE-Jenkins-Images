@@ -1,0 +1,3 @@
+[submodule "Docker/controller/google-compute-engine-plugin"]
+	path = Docker/controller/google-compute-engine-plugin
+	url = https://github.com/falldamagestudio/google-compute-engine-plugin
