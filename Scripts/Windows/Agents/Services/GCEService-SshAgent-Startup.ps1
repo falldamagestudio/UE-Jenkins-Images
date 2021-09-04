@@ -7,7 +7,13 @@ try {
 
     $DefaultFolders = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\BuildSteps\DefaultBuildStepSettings.psd1" -ErrorAction Stop
 
-    Write-Host "Done."
+    # Stop this service explicitly
+    # It keeps Windows from automatically restarting the service
+    # However, Windows will start it again at next boot
+
+    Stop-Service $DefaultFolders.JenkinsAgentServiceName
+
+    # After Stop-Service has run, The remainder of the script (including the 'finally' section) will not be run
 
 } finally {
 
