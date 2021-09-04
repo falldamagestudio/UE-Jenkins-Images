@@ -9,7 +9,7 @@ try {
     . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESettings.ps1
     . ${PSScriptRoot}\..\..\Applications\Deploy-PlasticClientConfig.ps1
 
-    $VMSettings = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\..\VMSettings.psd1" -ErrorAction Stop
+    $VMSettings = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\VMSettings.psd1" -ErrorAction Stop
 
     Write-Host "Waiting for SSH public key to be available in Secrets manager..."
 

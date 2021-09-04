@@ -9,7 +9,7 @@ try {
     . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCEInstanceHostname.ps1
     . ${PSScriptRoot}\..\Run\Run-SwarmAgent.ps1
 
-    $VMSettings = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\..\VMSettings.psd1" -ErrorAction Stop
+    $VMSettings = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\VMSettings.psd1" -ErrorAction Stop
 
     $AgentName = (Get-GCEInstanceHostname).Split(".")[0]
 

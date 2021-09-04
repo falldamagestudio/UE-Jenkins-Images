@@ -10,7 +10,7 @@ try {
     . ${PSScriptRoot}\..\..\Applications\Authenticate-DockerForGoogleArtifactRegistry.ps1
     . ${PSScriptRoot}\..\Run\Run-DockerInboundAgent.ps1
 
-    $VMSettings = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\..\VMSettings.psd1" -ErrorAction Stop
+    $VMSettings = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\VMSettings.psd1" -ErrorAction Stop
 
     $AgentName = (Get-GCEInstanceHostname).Split(".")[0]
 

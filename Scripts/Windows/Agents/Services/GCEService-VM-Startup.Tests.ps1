@@ -111,7 +111,7 @@ Describe 'GCEService-VM-Startup' {
 
 	It "Calls functions correctly and passes arguments appropriately" {
 
-		$VMSettings = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\..\VMSettings.psd1" -ErrorAction Stop
+		$VMSettings = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\VMSettings.psd1" -ErrorAction Stop
 
 		Mock Start-Transcript { }
 		Mock Get-Date { "some date" }

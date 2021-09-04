@@ -120,7 +120,7 @@ Describe 'GCEService-InboundAgent' {
 
 	It "Passes parameters properly between functions" {
 
-		$VMSettings = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\..\VMSettings.psd1" -ErrorAction Stop
+		$VMSettings = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\VMSettings.psd1" -ErrorAction Stop
 
 		Mock Start-Transcript { }
 		Mock Get-Date { "some date" }
