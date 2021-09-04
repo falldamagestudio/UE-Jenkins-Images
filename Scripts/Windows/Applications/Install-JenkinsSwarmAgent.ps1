@@ -9,5 +9,5 @@ function Install-JenkinsSwarmAgent {
     $TargetFile = "${Path}\swarm-agent.jar"
 
     #Download Jenkins Swarm agent jar, and place it in a default location
-    Invoke-WebRequest -UseBasicParsing -Uri $ToolsAndVersions.JenkinsSwarmAgentDownloadUrl -OutFile $TargetFile
+    Invoke-WebRequest -UseBasicParsing -Uri $ToolsAndVersions.JenkinsSwarmAgentDownloadUrl -OutFile $TargetFile -ErrorAction Stop
 }

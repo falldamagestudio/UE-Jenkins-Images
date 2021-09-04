@@ -16,11 +16,11 @@ function Install-JenkinsRemotingAgent {
     $TargetFile = "${Path}\agent.jar"
 
     # Download Jenkins remoting agent jar, and place it in a default location
-    Invoke-WebRequest -UseBasicParsing -Uri $ToolsAndVersions.JenkinsRemotingAgentDownloadUrl -OutFile $TargetFile
+    Invoke-WebRequest -UseBasicParsing -Uri $ToolsAndVersions.JenkinsRemotingAgentDownloadUrl -OutFile $TargetFile -ErrorAction Stop
 
     # Validate content hash for remoting agent jar
-    $ExpectedHash = Invoke-RestMethod -Uri "$($ToolsAndVersions.JenkinsRemotingAgentDownloadUrl).sha1"
-    $ActualHash = (Get-FileHash $TargetFile -Algorithm SHA1).Hash
+    $ExpectedHash = Invoke-RestMethod -Uri "$($ToolsAndVersions.JenkinsRemotingAgentDownloadUrl).sha1" -ErrorAction Stop
+    $ActualHash = (Get-FileHash $TargetFile -Algorithm SHA1 -ErrorAction Stop).Hash
 
     if ($ExpectedHash -ne $ActualHash) {
         throw [JenkinsRemotingAgentContentHashException]::new($ExpectedHash, $ActualHash)
