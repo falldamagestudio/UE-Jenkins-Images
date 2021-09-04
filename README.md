@@ -8,16 +8,18 @@ This repository contains the logic necessary to build all Docker images and GCE 
 |--------------------------------------|-----------------------------------------------------|
 | controller-\<sha1>                    | Allows running the Jenkins controller on Kubernetes |
 | inbound-agent-\<sha1>-\<platform>      | Allows running Jenkins jobs on Kubernetes           |
-| buildtools-\<sha1>-\<platform>         | Allows building UE code on Kubernetes, and on Docker VMs |
-| ssh-agent-\<sha1>-\<platform>          | Allows running Jenkins jobs on dynamically-provisioned Docker VMs |
-| swarm-agent-\<sha1>-\<platform>        | Allows running Jenkins jobs on statically-provisioned Docker VMs |
+| buildtools-\<sha1>-\<platform>         | Allows building UE applications on Kubernetes, and in Docker containers on VMs |
+| ssh-agent-\<sha1>-\<platform>          | Allows running Jenkins jobs in Docker containers on dynamically-provisioned VMs |
+| swarm-agent-\<sha1>-\<platform>        | Allows running Jenkins jobs in Docker containers on statically-provisioned VMs |
 
 ## VM images
 
 | name                                 | Purpose                                             |
 |--------------------------------------|-----------------------------------------------------|
-| ssh-agent-\<sha1>-\<platform>          | Allows running Jenkins jobs on dynamically-provisioned VMs |
-| swarm-agent-\<sha1>-\<platform>        | Allows running Jenkins jobs on statically-provisioned VMs |
+| ssh-agent-\<sha1>-\<platform>          | Allows running Jenkins jobs & building UE applications on dynamically-provisioned VMs |
+| swarm-agent-\<sha1>-\<platform>        | Allows running Jenkins jobs & building UE applications on statically-provisioned VMs |
+| docker-ssh-agent-\<sha1>-\<platform>   | Allows running Jenkins jobs in Docker containers on dynamically-provisioned VMs |
+| docker-swarm-agent-\<sha1>-\<platform> | Allows running Jenkins jobs in Docker containers on statically-provisioned VMs |
 
 # Folder structure
 
