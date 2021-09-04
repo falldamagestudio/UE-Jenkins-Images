@@ -54,7 +54,7 @@ Describe 'GCEService-SshAgent-Startup' {
 		Mock Stop-Transcript { }
 
 		Mock Import-PowerShellDataFile { & (Get-Command Import-PowerShellDataFile -CommandType Function) -Path $Path }
-		Mock Resolve-Path -ParameterFilter { $Path.EndsWith("DefaultBuildStepSettings.psd1") } { & (Get-Command Resolve-Path -CommandType Cmdlet) -Path $Path }
+		Mock Resolve-Path -ParameterFilter { $Path.EndsWith("VMSettings.psd1") } { & (Get-Command Resolve-Path -CommandType Cmdlet) -Path $Path }
 		Mock Resolve-Path { throw "Invalid invocation of Resolve-Path" }
 		Mock Write-Host { }
 
@@ -64,7 +64,7 @@ Describe 'GCEService-SshAgent-Startup' {
 		Assert-MockCalled -Exactly -Times 1 Get-Date
 		Assert-MockCalled -Exactly -Times 1 Start-Transcript
 		Assert-MockCalled -Exactly -Times 1 Import-PowerShellDataFile
-		Assert-MockCalled -Exactly -Times 1 Resolve-Path -ParameterFilter { $Path.EndsWith("DefaultBuildStepSettings.psd1") }
+		Assert-MockCalled -Exactly -Times 1 Resolve-Path -ParameterFilter { $Path.EndsWith("VMSettings.psd1") }
 		Assert-MockCalled -Exactly -Times 1 Resolve-Path
 		Assert-MockCalled -Exactly -Times 1 Stop-Transcript
 	}

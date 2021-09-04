@@ -8,7 +8,7 @@ function BuildStep-InstallSCMTools {
         [Parameter(Mandatory)] [string] $UserProfilePath
     )
 
-    $DefaultFolders = Import-PowerShellDataFile "${PSScriptRoot}\DefaultBuildStepSettings.psd1"
+    $DefaultFolders = Import-PowerShellDataFile "${PSScriptRoot}\..\VMSettings.psd1"
 
     Write-Host "Installing Git for Windows..."
 

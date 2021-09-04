@@ -2,7 +2,7 @@
 
 function BuildStep-CreateServiceUser {
 
-    $DefaultFolders = Import-PowerShellDataFile "${PSScriptRoot}\DefaultBuildStepSettings.psd1" -ErrorAction Stop
+    $DefaultFolders = Import-PowerShellDataFile "${PSScriptRoot}\..\VMSettings.psd1" -ErrorAction Stop
 
     Write-Host "Creating service user..."
 

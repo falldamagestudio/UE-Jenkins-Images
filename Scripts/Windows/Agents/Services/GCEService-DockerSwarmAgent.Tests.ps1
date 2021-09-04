@@ -105,7 +105,7 @@ Describe 'GCEService-DockerSwarmAgent' {
 		Mock Stop-Transcript { }
 
 		Mock Import-PowerShellDataFile { & (Get-Command Import-PowerShellDataFile -CommandType Function) -Path $Path }
-		Mock Resolve-Path -ParameterFilter { $Path.EndsWith("DefaultBuildStepSettings.psd1") } { & (Get-Command Resolve-Path -CommandType Cmdlet) -Path $Path }
+		Mock Resolve-Path -ParameterFilter { $Path.EndsWith("VMSettings.psd1") } { & (Get-Command Resolve-Path -CommandType Cmdlet) -Path $Path }
 		Mock Resolve-Path { throw "Invalid invocation of Resolve-Path" }
 		Mock Write-Host { }
 		Mock Get-GCEInstanceHostname { $AgentHostNameRef }
@@ -122,7 +122,7 @@ Describe 'GCEService-DockerSwarmAgent' {
 		Assert-MockCalled -Exactly -Times 1 Get-Date
 		Assert-MockCalled -Exactly -Times 1 Start-Transcript
 		Assert-MockCalled -Exactly -Times 1 Import-PowerShellDataFile
-		Assert-MockCalled -Exactly -Times 1 Resolve-Path -ParameterFilter { $Path.EndsWith("DefaultBuildStepSettings.psd1") }
+		Assert-MockCalled -Exactly -Times 1 Resolve-Path -ParameterFilter { $Path.EndsWith("VMSettings.psd1") }
 		Assert-MockCalled -Exactly -Times 1 Resolve-Path
 		Assert-MockCalled -Exactly -Times 1 Get-GCEInstanceHostname
 		Assert-MockCalled -Exactly -Times 1 Get-GCESettings -ParameterFilter { $Settings.ContainsKey("JenkinsURL") }
@@ -135,14 +135,14 @@ Describe 'GCEService-DockerSwarmAgent' {
 
 	It "Passes parameters properly between functions" {
 
-		$DefaultFolders = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\BuildSteps\DefaultBuildStepSettings.psd1" -ErrorAction Stop
+		$DefaultFolders = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\..\VMSettings.psd1" -ErrorAction Stop
 
 		Mock Start-Transcript { }
 		Mock Get-Date { "some date" }
 		Mock Stop-Transcript { }
 
 		Mock Import-PowerShellDataFile { & (Get-Command Import-PowerShellDataFile -CommandType Function) -Path $Path }
-		Mock Resolve-Path -ParameterFilter { $Path.EndsWith("DefaultBuildStepSettings.psd1") } { & (Get-Command Resolve-Path -CommandType Cmdlet) -Path $Path }
+		Mock Resolve-Path -ParameterFilter { $Path.EndsWith("VMSettings.psd1") } { & (Get-Command Resolve-Path -CommandType Cmdlet) -Path $Path }
 		Mock Resolve-Path { throw "Invalid invocation of Resolve-Path" }
 		Mock Write-Host { }
 		Mock Get-GCEInstanceHostname { $AgentHostNameRef }

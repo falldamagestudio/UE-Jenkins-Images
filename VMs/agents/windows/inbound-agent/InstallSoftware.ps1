@@ -12,7 +12,7 @@
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Applications\Install-AdoptiumOpenJDK.ps1
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Applications\Install-JenkinsRemotingAgent.ps1
 
-$DefaultFolders = Import-PowerShellDataFile "${PSScriptRoot}\..\..\..\..\Scripts\Windows\BuildSteps\DefaultBuildStepSettings.psd1"
+$DefaultFolders = Import-PowerShellDataFile "${PSScriptRoot}\..\..\..\..\Scripts\Windows\VMSettings.psd1"
 
 $ScriptLocation = "${PSScriptRoot}\..\..\..\..\Scripts\Windows\Agents\Services\GCEService-InboundAgent.ps1"
 
