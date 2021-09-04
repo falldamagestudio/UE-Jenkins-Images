@@ -7,7 +7,7 @@ function BuildStep-RegisterServices {
 		[Parameter(Mandatory)] [PSCredential] $Credential
 	)
 
-    $VMSettings = Import-PowerShellDataFile "${PSScriptRoot}\VMSettings.psd1" -ErrorAction Stop
+    $VMSettings = Import-PowerShellDataFile "${PSScriptRoot}\..\VMSettings.psd1" -ErrorAction Stop
 
     $VMStartupScriptLocation = "${PSScriptRoot}\..\Agents\Services\GCEService-VM-Startup.ps1"
 

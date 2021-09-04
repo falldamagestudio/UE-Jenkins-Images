@@ -4,7 +4,7 @@
 
 function BuildStep-InstallGCELoggingAgent {
 
-    $VMSettings = Import-PowerShellDataFile "${PSScriptRoot}\VMSettings.psd1"
+    $VMSettings = Import-PowerShellDataFile "${PSScriptRoot}\..\VMSettings.psd1"
 
     Write-Host "Installing GCE Logging Agent..."
 
