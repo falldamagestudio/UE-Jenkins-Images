@@ -8,10 +8,10 @@ function buildstep_create_agent_host_folders () {
 
     echo "Creating folders for Jenkins..."
 
-    mkdir -p "${JENKINS_AGENT_FOLDER}"
+    mkdir -p "${JENKINS_AGENT_FOLDER}" || return
 
     # The Swarm agent requires that the remoting folder exists
-    mkdir -p "${JENKINS_REMOTING_FOLDER}"
+    mkdir -p "${JENKINS_REMOTING_FOLDER}" || return
 
     mkdir -p "${JENKINS_WORKSPACE_FOLDER}"
 }
