@@ -12,7 +12,7 @@
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Applications\Install-AdoptiumOpenJDK.ps1
 . ${PSScriptRoot}\..\..\..\..\Scripts\Windows\Applications\Install-JenkinsSwarmAgent.ps1
 
-$DefaultFolders = Import-PowerShellDataFile "${PSScriptRoot}\..\..\..\..\Scripts\Windows\VMSettings.psd1"
+$VMSettings = Import-PowerShellDataFile "${PSScriptRoot}\..\..\..\..\Scripts\Windows\VMSettings.psd1"
 
 $ScriptLocation = "${PSScriptRoot}\..\..\..\..\Scripts\Windows\Agents\Services\GCEService-SwarmAgent.ps1"
 
@@ -35,6 +35,6 @@ Install-AdoptiumOpenJDK
 
 Write-Host "Installing Jenkins Swarm Agent..."
 
-Install-JenkinsSwarmAgent -Path $DefaultFolders.JenkinsAgentFolder
+Install-JenkinsSwarmAgent -Path $VMSettings.JenkinsAgentFolder
 
 Write-Host "Done."

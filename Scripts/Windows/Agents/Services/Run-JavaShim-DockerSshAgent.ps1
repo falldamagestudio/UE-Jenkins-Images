@@ -15,7 +15,7 @@ try {
     . ${PSScriptRoot}\..\..\Applications\Authenticate-DockerForGoogleArtifactRegistry.ps1
     . ${PSScriptRoot}\..\Run\Run-DockerSshAgent.ps1
 
-    $DefaultFolders = Import-PowerShellDataFile "${PSScriptRoot}\..\..\..\VMSettings.psd1" -ErrorAction Stop
+    $VMSettings = Import-PowerShellDataFile "${PSScriptRoot}\..\..\..\VMSettings.psd1" -ErrorAction Stop
 
     # Respond to version query; the GCE plugin does this to verify that the java executable is present, and doesn't care about the actual version number
     if ($fullversion) {
@@ -31,7 +31,7 @@ try {
 
     # Ensure agent file is placed within a folder that will be host-mounted
     #  into the agent container
-    $AgentJarFolder = $DefaultFolders.JenkinsAgentFolder
+    $AgentJarFolder = $VMSettings.JenkinsAgentFolder
     $AgentJarFile = "${AgentJarFolder}\agent.jar"
 
 
@@ -59,9 +59,9 @@ try {
     Write-Host "Running Jenkins Agent..."
 
     $ServiceParams = @{
-        JenkinsAgentFolder = $DefaultFolders.JenkinsAgentFolder
-        JenkinsWorkspaceFolder = $DefaultFolders.JenkinsWorkspaceFolder
-        PlasticConfigFolder = $DefaultFolders.PlasticConfigFolder
+        JenkinsAgentFolder = $VMSettings.JenkinsAgentFolder
+        JenkinsWorkspaceFolder = $VMSettings.JenkinsWorkspaceFolder
+        PlasticConfigFolder = $VMSettings.PlasticConfigFolder
         AgentImageURL = $RequiredSettings.AgentImageURL
         AgentJarFile = $AgentJarFile
     }

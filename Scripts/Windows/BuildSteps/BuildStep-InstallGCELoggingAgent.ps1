@@ -4,7 +4,7 @@
 
 function BuildStep-InstallGCELoggingAgent {
 
-    $DefaultFolders = Import-PowerShellDataFile "${PSScriptRoot}\..\VMSettings.psd1"
+    $VMSettings = Import-PowerShellDataFile "${PSScriptRoot}\..\VMSettings.psd1"
 
     Write-Host "Installing GCE Logging Agent..."
 
@@ -13,9 +13,9 @@ function BuildStep-InstallGCELoggingAgent {
     
     Write-Host "Installing forwarding of service wrapper logs to GCP Logging..."
     
-    Install-GCELoggingAgentSource-ServiceWrapper -ServiceWrapperLogsFolder $DefaultFolders.ServiceWrapperLogsFolder
+    Install-GCELoggingAgentSource-ServiceWrapper -ServiceWrapperLogsFolder $VMSettings.ServiceWrapperLogsFolder
     
     Write-Host "Installing forwarding of Jenkins Agent remoting logs to GCP Logging..."
     
-    Install-GCELoggingAgentSource-JenkinsAgentRemoting -JenkinsAgentFolder $DefaultFolders.JenkinsAgentFolder
+    Install-GCELoggingAgentSource-JenkinsAgentRemoting -JenkinsAgentFolder $VMSettings.JenkinsAgentFolder
 }

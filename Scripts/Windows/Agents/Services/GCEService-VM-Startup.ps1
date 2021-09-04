@@ -9,7 +9,7 @@ try {
     . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCESettings.ps1
     . ${PSScriptRoot}\..\..\Applications\Deploy-PlasticClientConfig.ps1
 
-    $DefaultFolders = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\..\VMSettings.psd1" -ErrorAction Stop
+    $VMSettings = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\..\VMSettings.psd1" -ErrorAction Stop
 
     Write-Host "Waiting for SSH public key to be available in Secrets manager..."
 
@@ -41,7 +41,7 @@ try {
     if ($OptionalSettings.PlasticConfigZip) {
         Write-Host "Deploying Plastic SCM client configuration..."
 
-        Deploy-PlasticClientConfig -ZipContent $OptionalSettings.PlasticConfigZip -ConfigFolder $DefaultFolders.PlasticConfigFolder
+        Deploy-PlasticClientConfig -ZipContent $OptionalSettings.PlasticConfigZip -ConfigFolder $VMSettings.PlasticConfigFolder
     }
 
     Write-Host "Starting up SSH server..."
@@ -62,7 +62,7 @@ try {
     # It keeps Windows from automatically restarting the service
     # However, Windows will start it again at next boot
 
-    Stop-Service $DefaultFolders.JenkinsVMStartupServiceName
+    Stop-Service $VMSettings.JenkinsVMStartupServiceName
 
     # After Stop-Service has run, The remainder of the script (including the 'finally' section) will not be run
 

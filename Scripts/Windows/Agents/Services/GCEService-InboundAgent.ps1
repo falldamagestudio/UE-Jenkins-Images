@@ -9,7 +9,7 @@ try {
     . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCEInstanceHostname.ps1
     . ${PSScriptRoot}\..\Run\Run-InboundAgent.ps1
 
-    $DefaultFolders = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\..\VMSettings.psd1" -ErrorAction Stop
+    $VMSettings = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\..\VMSettings.psd1" -ErrorAction Stop
 
     $AgentName = (Get-GCEInstanceHostname).Split(".")[0]
 
@@ -29,8 +29,8 @@ try {
     Write-Host "Running Jenkins Agent..."
 
     $ServiceParams = @{
-        JenkinsAgentFolder = $DefaultFolders.JenkinsAgentFolder
-        JenkinsWorkspaceFolder = $DefaultFolders.JenkinsWorkspaceFolder
+        JenkinsAgentFolder = $VMSettings.JenkinsAgentFolder
+        JenkinsWorkspaceFolder = $VMSettings.JenkinsWorkspaceFolder
         JenkinsURL = $RequiredSettings.JenkinsURL
         JenkinsSecret = $RequiredSettings.JenkinsSecret
         AgentName = $AgentName

@@ -120,7 +120,7 @@ Describe 'GCEService-InboundAgent' {
 
 	It "Passes parameters properly between functions" {
 
-		$DefaultFolders = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\..\VMSettings.psd1" -ErrorAction Stop
+		$VMSettings = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\..\VMSettings.psd1" -ErrorAction Stop
 
 		Mock Start-Transcript { }
 		Mock Get-Date { "some date" }
@@ -140,8 +140,8 @@ Describe 'GCEService-InboundAgent' {
 		Mock Get-Service { [ServiceMock]::new() }
 
 		Mock Run-InboundAgent {
-			$JenkinsAgentFolder | Should -Be $DefaultFolders.JenkinsAgentFolder
-			$JenkinsWorkspaceFolder | Should -Be $DefaultFolders.JenkinsWorkspaceFolder
+			$JenkinsAgentFolder | Should -Be $VMSettings.JenkinsAgentFolder
+			$JenkinsWorkspaceFolder | Should -Be $VMSettings.JenkinsWorkspaceFolder
 			$JenkinsUrl | Should -Be $JenkinsUrlRef
 			$JenkinsSecret | Should -Be $JenkinsSecretRef
 			$AgentName | Should -Be $AgentNameRef

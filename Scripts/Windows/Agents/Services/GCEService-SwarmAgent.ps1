@@ -9,7 +9,7 @@ try {
     . ${PSScriptRoot}\..\..\SystemConfiguration\Get-GCEInstanceHostname.ps1
     . ${PSScriptRoot}\..\Run\Run-SwarmAgent.ps1
 
-    $DefaultFolders = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\..\VMSettings.psd1" -ErrorAction Stop
+    $VMSettings = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\..\VMSettings.psd1" -ErrorAction Stop
 
     $AgentName = (Get-GCEInstanceHostname).Split(".")[0]
 
@@ -33,8 +33,8 @@ try {
     Write-Host $RequiredSettings
 
     $ServiceParams = @{
-        JenkinsAgentFolder = $DefaultFolders.JenkinsAgentFolder
-        JenkinsWorkspaceFolder = $DefaultFolders.JenkinsWorkspaceFolder
+        JenkinsAgentFolder = $VMSettings.JenkinsAgentFolder
+        JenkinsWorkspaceFolder = $VMSettings.JenkinsWorkspaceFolder
         JenkinsURL = $RequiredSettings.JenkinsURL
         AgentUsername = $RequiredSettings.AgentUsername
         AgentAPIToken = $RequiredSettings.AgentAPIToken

@@ -111,7 +111,7 @@ Describe 'GCEService-VM-Startup' {
 
 	It "Calls functions correctly and passes arguments appropriately" {
 
-		$DefaultFolders = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\..\VMSettings.psd1" -ErrorAction Stop
+		$VMSettings = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\..\VMSettings.psd1" -ErrorAction Stop
 
 		Mock Start-Transcript { }
 		Mock Get-Date { "some date" }
@@ -125,7 +125,7 @@ Describe 'GCEService-VM-Startup' {
 		}
 		Mock Deploy-PlasticClientConfig {
 			(Compare-Object -ReferenceObject $PlasticConfigZipRef -DifferenceObject $ZipContent) | Should -Be $null
-			$ConfigFolder | Should -Be $DefaultFolders.PlasticConfigFolder
+			$ConfigFolder | Should -Be $VMSettings.PlasticConfigFolder
 		}
 		Mock Start-Service {
 			$Name | Should -Be "sshd"
@@ -134,7 +134,7 @@ Describe 'GCEService-VM-Startup' {
 		Mock Resize-PartitionToMaxSize { }
 
 		Mock Stop-Service {
-			$Name | Should -Be $DefaultFolders.JenkinsVMStartupServiceName
+			$Name | Should -Be $VMSettings.JenkinsVMStartupServiceName
 		}
 
 		{ & ${PSScriptRoot}\GCEService-VM-Startup.ps1 } |

@@ -5,13 +5,13 @@ Start-Transcript -LiteralPath "C:\Logs\GCEService-SshAgent-Startup-$(Get-Date -F
 
 try {
 
-    $DefaultFolders = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\..\VMSettings.psd1" -ErrorAction Stop
+    $VMSettings = Import-PowerShellDataFile -Path "${PSScriptRoot}\..\..\..\VMSettings.psd1" -ErrorAction Stop
 
     # Stop this service explicitly
     # It keeps Windows from automatically restarting the service
     # However, Windows will start it again at next boot
 
-    Stop-Service $DefaultFolders.JenkinsAgentServiceName
+    Stop-Service $VMSettings.JenkinsAgentServiceName
 
     # After Stop-Service has run, The remainder of the script (including the 'finally' section) will not be run
 

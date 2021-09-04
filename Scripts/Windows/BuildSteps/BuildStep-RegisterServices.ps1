@@ -7,15 +7,15 @@ function BuildStep-RegisterServices {
 		[Parameter(Mandatory)] [PSCredential] $Credential
 	)
 
-    $DefaultFolders = Import-PowerShellDataFile "${PSScriptRoot}\..\VMSettings.psd1" -ErrorAction Stop
+    $VMSettings = Import-PowerShellDataFile "${PSScriptRoot}\..\VMSettings.psd1" -ErrorAction Stop
 
     $VMStartupScriptLocation = "${PSScriptRoot}\..\Agents\Services\GCEService-VM-Startup.ps1"
 
     Write-Host "Registering VM setup script as autostarting..."
 
-    Register-AutoStartService-PowerShell -ServiceName $DefaultFolders.JenkinsVMStartupServiceName -ScriptLocation $VMStartupScriptLocation -Credential $Credential
+    Register-AutoStartService-PowerShell -ServiceName $VMSettings.JenkinsVMStartupServiceName -ScriptLocation $VMStartupScriptLocation -Credential $Credential
 
     Write-Host "Registering Jenkins Agent script as autostarting..."
 
-    Register-AutoStartService-PowerShell -ServiceName $DefaultFolders.JenkinsAgentServiceName -ScriptLocation $ScriptLocation -Credential $Credential
+    Register-AutoStartService-PowerShell -ServiceName $VMSettings.JenkinsAgentServiceName -ScriptLocation $ScriptLocation -Credential $Credential
 }

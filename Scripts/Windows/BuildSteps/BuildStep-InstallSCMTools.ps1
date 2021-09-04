@@ -8,7 +8,7 @@ function BuildStep-InstallSCMTools {
         [Parameter(Mandatory)] [string] $UserProfilePath
     )
 
-    $DefaultFolders = Import-PowerShellDataFile "${PSScriptRoot}\..\VMSettings.psd1"
+    $VMSettings = Import-PowerShellDataFile "${PSScriptRoot}\..\VMSettings.psd1"
 
     Write-Host "Installing Git for Windows..."
 
@@ -22,5 +22,5 @@ function BuildStep-InstallSCMTools {
 
     $Plastic4SourceFolderLocation = "${UserProfilePath}\AppData\Local\plastic4"
 
-    Create-PlasticClientConfigLinks -SourceFolder $Plastic4SourceFolderLocation -TargetFolder $DefaultFolders.PlasticConfigFolder
+    Create-PlasticClientConfigLinks -SourceFolder $Plastic4SourceFolderLocation -TargetFolder $VMSettings.PlasticConfigFolder
 }
