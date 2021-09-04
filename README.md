@@ -1,6 +1,53 @@
 # UE-Jenkins-Images
 
-This repository contains the logic necessary to build all Docker images used by UE-Jenkins-BuildSystem.
+This repository contains the logic necessary to build all Docker images and GCE machine images used by UE-Jenkins-BuildSystem.
+
+## Docker images
+
+| name                                 | Purpose                                             |
+|--------------------------------------|-----------------------------------------------------|
+| controller-\<sha1>                    | Allows running the Jenkins controller on Kubernetes |
+| inbound-agent-\<sha1>-\<platform>      | Allows running Jenkins jobs on Kubernetes           |
+| buildtools-\<sha1>-\<platform>         | Allows building UE code on Kubernetes, and on Docker VMs |
+| ssh-agent-\<sha1>-\<platform>          | Allows running Jenkins jobs on dynamically-provisioned Docker VMs |
+| swarm-agent-\<sha1>-\<platform>        | Allows running Jenkins jobs on statically-provisioned Docker VMs |
+
+## VM images
+
+| name                                 | Purpose                                             |
+|--------------------------------------|-----------------------------------------------------|
+| ssh-agent-\<sha1>-\<platform>          | Allows running Jenkins jobs on dynamically-provisioned VMs |
+| swarm-agent-\<sha1>-\<platform>        | Allows running Jenkins jobs on statically-provisioned VMs |
+
+# Folder structure
+
+[Docker](Docker) contains Dockerfiles + top-level build scripts for all Docker images + additional files necessary for creating specific Docker images. These files will not remain within the final Docker images.
+
+[Scripts](Scripts) contains many reusable scripts. These files will remain within the final Docker / VM images.
+
+[VMs](VMs) contains Packer build scripts + top-level build scripts for all VM images + additional files necessary when creating specific VM images. These files will not remain within the final VM images.
+
+[windows-docker-image-builder](windows-docker-image-builder) is a helper tool for launching a Windows VM in GCE, and building a Docker image via that VM.
+
+# Important configuration files
+
+## Controller
+
+The core Jenkins version is specified via [the controller's Dockerfile](Docker/controller/Dockerfile).
+
+The Jenkins controller has its plugin list in [plugins.txt](Docker/controller/plugins.txt). After changing that file, run [update-plugins-with-dependencies.sh](Docker/controller/update-plugins-with-dependencies.sh). That will freeze all dependency versions into [plugins-with-dependencies.txt](Docker/controller/plugins-with-dependencies.txt) and makes rebuilding of the Jenkins image at a later time possible.
+
+## Agents
+
+The Windows images have tools & versions for all applications in [ToolsAndVersions.psd1](Scripts/Windows/Applications/ToolsAndVersions.psd1), and overall VM settings (paths and such) in [VMSettings.psd1](Scripts/Windows/VMSettings.psd1).
+
+Source VM images for Linux/Windows agent building are specified in [tools-and-versions.json](Scripts/Linux/tools-and-versions.json).
+
+Source Docker image versions are embedded within configuration files.
+
+Linux applications are not version locked; most will just install the latest version from APT.
+
+# Configuring GitHub Actions
 
 Repository secrets that need to be set for the GitHub Actions workflows to function:
 
