@@ -46,6 +46,7 @@ function Run-DockerSwarmAgent {
 		"-password",$AgentAPIToken
 		"-disableClientsUniqueId"
 		"-deleteExistingClients"
+		"-failIfWorkDirIsMissing"
 		"-name",$AgentName
 
 	)

@@ -43,5 +43,6 @@ function run_docker_swarm_agent () {
         -password "${AGENT_API_TOKEN}" \
         -disableClientsUniqueId \
         -deleteExistingClients \
+        -failIfWorkDirIsMissing \
         -name "${AGENT_NAME}"
 }

@@ -31,6 +31,7 @@ function Run-SwarmAgent {
 		"-labels","""${Labels}"""
 		"-webSocket"
 		"-disableClientsUniqueId"
+		"-failIfWorkDirIsMissing"
 		"-deleteExistingClients"
 		"-name",$AgentName)
 

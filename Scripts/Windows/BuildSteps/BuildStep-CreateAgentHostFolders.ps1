@@ -11,6 +11,8 @@ function BuildStep-CreateAgentHostFolders {
     Write-Host "Creating folders for Jenkins..."
     
     New-Item -ItemType Directory -Path $VMSettings.JenkinsAgentFolder -ErrorAction Stop | Out-Null
+    # Swarm agent requires the remoting folder to exist
+    New-Item -ItemType Directory -Path "$($VMSettings.JenkinsAgentFolder)\remoting" -ErrorAction Stop | Out-Null
     New-Item -ItemType Directory -Path $VMSettings.JenkinsWorkspaceFolder -ErrorAction Stop | Out-Null
 
     Write-Host "Creating config folder for Plastic SCM..."
