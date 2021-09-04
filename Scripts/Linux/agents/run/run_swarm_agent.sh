@@ -22,6 +22,7 @@ function run_swarm_agent () {
         -labels "${LABELS}" \
         -webSocket \
         -disableClientsUniqueId \
+        -deleteExistingClients \
         -failIfWorkDirIsMissing \
         -fsroot "${JENKINS_FSROOT_FOLDER}" \
         -name "${AGENT_NAME}"

@@ -31,6 +31,7 @@ function Run-SwarmAgent {
 		"-labels","""${Labels}"""
 		"-webSocket"
 		"-disableClientsUniqueId"
+		"-deleteExistingClients"
 		"-name",$AgentName)
 
 	$JavaHome = $env:JAVA_HOME

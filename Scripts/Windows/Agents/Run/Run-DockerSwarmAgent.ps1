@@ -45,6 +45,7 @@ function Run-DockerSwarmAgent {
 		"-username",$AgentUsername
 		"-password",$AgentAPIToken
 		"-disableClientsUniqueId"
+		"-deleteExistingClients"
 		"-name",$AgentName
 
 	)
