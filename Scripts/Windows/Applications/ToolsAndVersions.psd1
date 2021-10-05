@@ -18,8 +18,6 @@
 
     GoogleCloudSDKInstallerUrl = "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-336.0.0-windows-x86_64-bundled-python.zip"
 
-    JenkinsRemotingAgentDownloadUrl = "https://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/4.7/remoting-4.7.jar"
-    
     # The official download URL is on the format,
     # https://repo.jenkins-ci.org/native/releases/org/jenkins-ci/plugins/swarm-client/<version>/swarm-client-<version>.jar
     # but when we hit that directly we get 404 back
