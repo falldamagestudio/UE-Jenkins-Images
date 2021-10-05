@@ -4,6 +4,7 @@ set -o nounset
 set -o pipefail
 shopt -s inherit_errexit
 
+. "${BASH_SOURCE%/*}/../../../../Scripts/Linux/system_configuration/add_debian_10_repos.sh"
 . "${BASH_SOURCE%/*}/../../../../Scripts/Linux/buildsteps/buildstep_create_agent_host_folders.sh"
 . "${BASH_SOURCE%/*}/../../../../Scripts/Linux/buildsteps/buildstep_install_buildtools.sh"
 . "${BASH_SOURCE%/*}/../../../../Scripts/Linux/buildsteps/buildstep_install_scm_tools.sh"
@@ -15,6 +16,7 @@ shopt -s inherit_errexit
 #   debconf: unable to initialize frontend: Dialog
 export DEBIAN_FRONTEND=noninteractive
 
+add_debian_10_repos || exit 1
 buildstep_create_agent_host_folders || exit 1
 buildstep_install_buildtools || exit 1
 buildstep_install_scm_tools || exit 1
