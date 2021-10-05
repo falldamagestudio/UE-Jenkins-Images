@@ -1,6 +1,6 @@
 FROM openjdk:11-jdk-buster
 
-ARG VERSION=3.25
+ARG VERSION=3.28
 
 ARG user=jenkins
 ARG group=jenkins

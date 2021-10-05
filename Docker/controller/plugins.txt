@@ -32,7 +32,7 @@ timestamper:1.13
 
 # The Swarm plugin enables nodes to join a nearby Jenkins controller, thereby forming an ad-hoc cluster.
 # https://plugins.jenkins.io/swarm/
-swarm:3.25
+swarm:3.28
 
 # Jenkins plugin which allows building, testing, and using Docker images from Jenkins Pipeline projects.
 # https://plugins.jenkins.io/docker-workflow/

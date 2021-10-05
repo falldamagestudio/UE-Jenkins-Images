@@ -1,4 +1,4 @@
-FROM jenkins/inbound-agent:4.7-1-jdk11@sha256:1e787fd53c4d24ae69656b548ece42dcd7c4deb4580cfd00d72cc521ac1ddef7
+FROM jenkins/inbound-agent:4.10-3@sha256:ed980b3451b9a3ee47047d55fe5926ee48a28d5b343b7c0af3d80c252df1c701
 
 USER root
 

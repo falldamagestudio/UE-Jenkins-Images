@@ -1,6 +1,6 @@
 # escape=`
 
-FROM jenkins/agent:4.7-1-jdk11-windowsservercore-ltsc2019@sha256:ab08be256ad3f63839ed76eee4f6040f6227f1606d568200c9877f96ff7677d5
+FROM jenkins/agent:4.10-6-jdk11-windowsservercore-ltsc2019@sha256:2a5e0ba4cd814fca141fe87fc5576f893683101cd9309e06096c4ba9357fa7ea
 
 COPY Scripts C:\Scripts
 

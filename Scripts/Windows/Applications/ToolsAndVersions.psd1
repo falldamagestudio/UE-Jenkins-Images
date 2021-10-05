@@ -22,7 +22,7 @@
     # https://repo.jenkins-ci.org/native/releases/org/jenkins-ci/plugins/swarm-client/<version>/swarm-client-<version>.jar
     # but when we hit that directly we get 404 back
     # Therefore we use an artifactory-related URL instead - it appears to work better
-    JenkinsSwarmAgentDownloadUrl = "https://repo.jenkins-ci.org/artifactory/releases/org/jenkins-ci/plugins/swarm-client/3.25/swarm-client-3.25.jar"
+    JenkinsSwarmAgentDownloadUrl = "https://repo.jenkins-ci.org/artifactory/releases/org/jenkins-ci/plugins/swarm-client/3.28/swarm-client-3.28.jar"
 
     OpenSSHVersion = "8.6.0-beta1"
 

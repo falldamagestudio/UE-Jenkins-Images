@@ -1,4 +1,4 @@
-FROM jenkins/jenkins:2.289.2-lts-jdk11@sha256:049ed8206529c5c6736741bdcb3c8f8c53ffec72eb84dfb8dc7a84c9bcaa1624
+FROM jenkins/jenkins:2.303.1@sha256:0431426de0e4e32c6e681e62f7c3a7f57a7d49d30c97cbbd9260da74ae201b65
 
 ENV JAVA_OPTS -Djenkins.install.runSetupWizard=false
 
@@ -6,6 +6,10 @@ COPY plugins-with-dependencies.txt /usr/share/jenkins/ref/plugins-with-dependenc
 RUN jenkins-plugin-cli --plugin-file /usr/share/jenkins/ref/plugins-with-dependencies.txt --latest false --verbose
 
 USER root
+
+# In order to install Plastic SCM client on debian 11 we need to add debian 10 repositories using workaround
+# provided here https://plasticscmsupport.zendesk.com/hc/en-us/articles/360013103159-How-to-Install-Plastic-GUI-in-Ubuntu-19-10-and-later-
+RUN echo deb http://deb.debian.org/debian/ buster main>/etc/apt/sources.list.d/buster-oldlibs.list
 
 # Install Plastic SCM client
 

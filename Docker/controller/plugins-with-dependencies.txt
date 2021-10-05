@@ -62,7 +62,7 @@ snakeyaml-api:1.29.1
 ssh-credentials:1.19
 sshd:3.1.0
 structs:1.23
-swarm:3.25
+swarm:3.28
 timestamper:1.13
 trilead-api:1.0.13
 variant:1.4

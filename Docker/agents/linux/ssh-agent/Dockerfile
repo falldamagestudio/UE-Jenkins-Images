@@ -1,4 +1,4 @@
-FROM jenkins/agent:4.7-1-jdk11@sha256:9002ea40a146f033ee2fa96460c2538bb1513f2e8784ab2296518cac88c518da
+FROM jenkins/agent:4.10-6-jdk11@sha256:5aa33cf1d81624157e45276a93548497ce2a92ce253a3a006d55bcf16d3e0964
 
 ARG user=jenkins
 

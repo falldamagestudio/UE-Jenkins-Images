@@ -2,7 +2,7 @@
 
 FROM jenkins/openjdk:11-jdk-hotspot-windowsservercore-ltsc2019
 
-ARG VERSION=3.25
+ARG VERSION=3.28
 ARG user=jenkins
 
 ARG SWARM_CLIENT_FILENAME=swarm-client.jar
