@@ -2,6 +2,8 @@
 
 function install_adoptium_openjdk () {
 
+    local SCRIPTS_DIR="${BASH_SOURCE%/*}"
+
     # Install prerequisites
     sudo apt-get update || return
     sudo --preserve-env=DEBIAN_FRONTEND apt-get install -y apt-transport-https ca-certificates jq wget tar --no-install-recommends || return

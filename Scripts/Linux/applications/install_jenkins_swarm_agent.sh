@@ -2,6 +2,8 @@
 
 function install_jenkins_swarm_agent () {
 
+    local SCRIPTS_DIR="${BASH_SOURCE%/*}"
+
     # Install prerequisites
     sudo apt-get update || return
     sudo --preserve-env=DEBIAN_FRONTEND apt-get install -y apt-transport-https ca-certificates jq wget --no-install-recommends || return
