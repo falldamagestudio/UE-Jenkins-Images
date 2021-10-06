@@ -12,7 +12,7 @@ if [ $# -ne 4 ]; then
 	exit 1
 fi
 
-SOURCE_IMAGE=$(jq -r ".linux.vm_image_builder_source_image" "${SCRIPTS_DIR}/tools-and-versions.json")
+SOURCE_IMAGE=$(jq -r ".linux_builder.vm_image_builder_source_image" "${SCRIPTS_DIR}/tools-and-versions.json")
 
 packer init "${PACKER_SCRIPT}"
 

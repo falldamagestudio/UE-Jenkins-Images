@@ -13,7 +13,7 @@ if [ $# -ne 4 ]; then
 	exit 1
 fi
 
-SOURCE_IMAGE=$(jq -r ".windows.vm_image_builder_source_image" "${SCRIPTS_DIR}/tools-and-versions.json")
+SOURCE_IMAGE=$(jq -r ".windows_builder.vm_image_builder_source_image" "${SCRIPTS_DIR}/tools-and-versions.json")
 
 (mkdir "${ROOT_DIR}/builder-files" \
 	&& cd "${ROOT_DIR}" \

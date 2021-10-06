@@ -2,7 +2,14 @@
 
 function install_adoptium_openjdk () {
 
-    local DOWNLOAD_URL="https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.12%2B7/OpenJDK11U-jdk_x64_linux_hotspot_11.0.12_7.tar.gz"
+    # Install prerequisites
+    sudo apt-get update || return
+    sudo --preserve-env=DEBIAN_FRONTEND apt-get install -y apt-transport-https ca-certificates jq wget tar --no-install-recommends || return
+    sudo apt-get clean || return
+    sudo rm -rf /var/lib/apt/lists/* || return
+
+    local DOWNLOAD_URL
+    DOWNLOAD_URL=$(jq -r ".adoptium_openjdk_download_url" "${SCRIPTS_DIR}/../tools-and-versions.json") || return
 
     # Temp archive location
     local ARCHIVE_FILE="${HOME}/adoptium_openjdk.tar.gz"

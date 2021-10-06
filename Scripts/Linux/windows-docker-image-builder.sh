@@ -18,7 +18,7 @@ if [ $# -ne 9 ]; then
 	exit 1
 fi
 
-HOST_IMAGE=$(jq -r ".windows.docker_image_builder_host_image" "${SCRIPTS_DIR}/tools-and-versions.json")
+HOST_IMAGE=$(jq -r ".windows_builder.docker_image_builder_host_image" "${SCRIPTS_DIR}/tools-and-versions.json")
 
 SERVICE_ACCOUNT="build-artifact-uploader@${PROJECT_ID}.iam.gserviceaccount.com"
 

@@ -5,6 +5,7 @@ function install_buildtools () {
     sudo apt-get update || return
     sudo --preserve-env=DEBIAN_FRONTEND apt-get install -y --no-install-recommends \
         build-essential \
+        apt-transport-https \
         ca-certificates \
         curl \
         git \
