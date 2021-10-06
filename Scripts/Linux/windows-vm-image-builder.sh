@@ -15,11 +15,11 @@ fi
 
 SOURCE_IMAGE=$(jq -r ".windows_builder.vm_image_builder_source_image" "${SCRIPTS_DIR}/tools-and-versions.json")
 
-(mkdir "${ROOT_DIR}/builder-files" \
-	&& cd "${ROOT_DIR}" \
-	&& zip -r builder-files/builder-files.zip . -i "Scripts/*" -i "VMs/*")
+({ mkdir "${ROOT_DIR}/builder-files" || exit; } \
+	&& { cd "${ROOT_DIR}" || exit; } \
+	&& { zip -r builder-files/builder-files.zip . -i "Scripts/*" -i "VMs/*" || exit; })
 
-packer init "${PACKER_SCRIPT}"
+packer init "${PACKER_SCRIPT}" || exit
 
 packer build \
     -var "project_id=${PROJECT_ID}" \

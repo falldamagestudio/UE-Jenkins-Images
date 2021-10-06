@@ -28,6 +28,6 @@ get_gce_secret_base64 () {
     if ! echo "${SECRET_RESPONSE}" | jq -e 'has("error")' > /dev/null; then
         local SECRET
         SECRET=$(echo "${SECRET_RESPONSE}" | jq -r ".payload.data") || return
-        echo "${SECRET}"
+        echo "${SECRET}" || return
     fi
 }

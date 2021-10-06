@@ -21,6 +21,6 @@ function install_buildtools () {
         zip || return
 
     sudo apt-get clean || return
-    sudo rm -rf /var/lib/apt/lists/*
+    sudo rm -rf /var/lib/apt/lists/* || return
 }
 

@@ -6,7 +6,7 @@
 
 function buildstep_install_scm_tools () {
 
-    install_docker_cli
-    install_git
-    install_plastic_scm
+    install_docker_cli || return
+    install_git || return
+    install_plastic_scm || return
 }

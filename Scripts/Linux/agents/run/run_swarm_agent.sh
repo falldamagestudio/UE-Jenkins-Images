@@ -25,5 +25,6 @@ function run_swarm_agent () {
         -deleteExistingClients \
         -failIfWorkDirIsMissing \
         -fsroot "${JENKINS_FSROOT_FOLDER}" \
-        -name "${AGENT_NAME}"
+        -name "${AGENT_NAME}" \
+        || return
 }

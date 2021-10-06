@@ -7,6 +7,6 @@ get_gce_instance_hostname () {
     local HOSTNAME
     HOSTNAME=$(curl --silent -H 'Metadata-Flavor: Google' "${METADATA}/instance/hostname") || return
 
-    echo "${HOSTNAME}"
+    echo "${HOSTNAME}" || return
 }
 

@@ -22,10 +22,10 @@ HOST_IMAGE=$(jq -r ".windows_builder.docker_image_builder_host_image" "${SCRIPTS
 
 SERVICE_ACCOUNT="build-artifact-uploader@${PROJECT_ID}.iam.gserviceaccount.com"
 
-(mkdir "${ROOT_DIR}/builder-files" \
-	&& cd "${ROOT_DIR}" \
-	&& zip -r builder-files/builder-files.zip . -i "Scripts/*" -i "Docker/*" \
-	&& echo "${ARTIFACT_UPLOADER_SERVICE_ACCOUNT_KEY}" > "${ROOT_DIR}/builder-files/service-account-key.json")
+({ mkdir "${ROOT_DIR}/builder-files" || exit; } \
+	&& { cd "${ROOT_DIR}" || exit; } \
+	&& { zip -r builder-files/builder-files.zip . -i "Scripts/*" -i "Docker/*" || exit; } \
+	&& { echo "${ARTIFACT_UPLOADER_SERVICE_ACCOUNT_KEY}" > "${ROOT_DIR}/builder-files/service-account-key.json" || exit; })
 
 # This command is executed on the builder VM, in CMD, like this:
 #  'cd c:\workspace & <COMMAND>'
@@ -66,7 +66,7 @@ COMMAND="powershell \
    -image "${HOST_IMAGE}" \
    -workspace-path "${ROOT_DIR}/builder-files" \
    -serviceAccount "${SERVICE_ACCOUNT}" \
-   -command "${COMMAND}"
+   -command "${COMMAND}" \
 
 EXITCODE=$?
 

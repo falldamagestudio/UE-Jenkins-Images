@@ -17,5 +17,5 @@ function install_jenkins_swarm_agent () {
     local TARGET_FILE=${JENKINS_AGENT_FOLDER}/swarm-agent.jar
 
     # Download swarm agent and place into default location
-    wget --progress=dot:giga -O "$TARGET_FILE" "$DOWNLOAD_URL" 2>&1
+    wget --progress=dot:giga -O "$TARGET_FILE" "$DOWNLOAD_URL" 2>&1 || return
 }

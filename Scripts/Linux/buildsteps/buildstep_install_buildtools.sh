@@ -4,5 +4,5 @@
 
 function buildstep_install_buildtools () {
 
-    install_buildtools
+    install_buildtools || return
 }

@@ -14,7 +14,7 @@ fi
 
 SOURCE_IMAGE=$(jq -r ".linux_builder.vm_image_builder_source_image" "${SCRIPTS_DIR}/tools-and-versions.json")
 
-packer init "${PACKER_SCRIPT}"
+packer init "${PACKER_SCRIPT}" || exit
 
 packer build \
     -var "project_id=${PROJECT_ID}" \
@@ -24,4 +24,5 @@ packer build \
     -var "machine_type=n1-standard-2" \
     -var "source_image=${SOURCE_IMAGE}" \
     -var "image_name=${IMAGE_NAME}" \
-    "${PACKER_SCRIPT}"
+    "${PACKER_SCRIPT}" \
+    || exit

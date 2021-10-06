@@ -16,10 +16,10 @@ shopt -s inherit_errexit
 #   debconf: unable to initialize frontend: Dialog
 export DEBIAN_FRONTEND=noninteractive
 
-add_debian_10_repos || exit 1
-buildstep_create_agent_host_folders || exit 1
-buildstep_install_buildtools || exit 1
-buildstep_install_scm_tools || exit 1
-install_adoptium_openjdk || exit 1
-install_jenkins_swarm_agent || exit 1
-buildstep_install_services "${BASH_SOURCE%/*}/../../../../Scripts/Linux/agents/services/gce_service_swarm_agent.service" || exit 1
+add_debian_10_repos || exit
+buildstep_create_agent_host_folders || exit
+buildstep_install_buildtools || exit
+buildstep_install_scm_tools || exit
+install_adoptium_openjdk || exit
+install_jenkins_swarm_agent || exit
+buildstep_install_services "${BASH_SOURCE%/*}/../../../../Scripts/Linux/agents/services/gce_service_swarm_agent.service" || exit
