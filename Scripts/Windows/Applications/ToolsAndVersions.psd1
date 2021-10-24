@@ -34,12 +34,28 @@
         InstallerUrl = "https://aka.ms/vs/16/release/vs_buildtools.exe"
 
         WorkloadsAndComponents = @(
-			"Microsoft.VisualStudio.Workload.VCTools"
-			"Microsoft.VisualStudio.Component.VC.Tools.x86.x64"
-			"Microsoft.VisualStudio.Workload.ManagedDesktopBuildTools"	# Required to get PDBCOPY.EXE, which in turn is applied to all PDB files
-			"Microsoft.VisualStudio.Component.Windows10SDK.18362"
-			"Microsoft.Net.Component.4.6.2.TargetingPack"	# Required when building AutomationTool
-			"Microsoft.Net.Component.4.5.TargetingPack"	# Required when building SwarmCoordinator
+
+            # Required to build AutomationTool
+
+            "Microsoft.Component.MSBuild"                                   # MSBuild
+            "Microsoft.Net.Component.4.6.2.TargetingPack"                   # .NET Framework 4.6.2 targeting pack
+            "Microsoft.VisualStudio.Component.Windows10SDK.18362"           # Windows 10 SDK (10.0.18362.0)
+
+            # Required to build UnrealHeaderTool, as well as other C++ code
+
+            # We lock the compiler version to a slightly older version of the VS 2019 C++ compiler
+            # This ensures that the lib files produced when building the engine can be used by
+            #  individual developers, as long as they have the same or a newer version of the
+            #  toolchain installed on their machines
+            "Microsoft.VisualStudio.Component.VC.14.28.16.9.x86.x64"        # MSVC v142 - VS 2019 C++ x64/x86 build tools (v14.28-16.9)
+            # UnrealHeaderTool needs NetFxSdk.
+            # This is included as part of any .NET SDK >= 4.6.0.
+            # The easiest way to get hold of it is by installing the default .NET SDK for VS 2019.
+            "Microsoft.Net.Component.4.8.SDK"                               # .NET Framework 4.8 SDK
+
+            # Required to build SwarmCoordinator
+
+            "Microsoft.Net.Component.4.5.TargetingPack"                     # .NET Framework 4.5 targeting pack
 		)
     }
 
