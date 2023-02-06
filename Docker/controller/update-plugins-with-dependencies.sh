@@ -37,12 +37,10 @@ else
 
   # Success; stdout will contain a list of all plugins including dependencies on the following format:
   #
-  # ...
   # Resulting plugin list:
   # durable-task 1.35
   # git 4.4.5
   # ...
-  # Done
   #
   # so transform that into:
   #
@@ -50,7 +48,7 @@ else
   # git-4.4.5
   # ...
 
-  PLUGINS_WITH_DEPENDENCIES=$(echo "$LIST_STDOUT" | sed -n '1,/Resulting plugin list:/d;/Done/q;s/ /:/g;p')
+  PLUGINS_WITH_DEPENDENCIES=$(echo "$LIST_STDOUT" | sed -n '/Resulting plugin list:/d;s/ /:/g;p')
 
   # Write plugin list including dependencies to text file
 
