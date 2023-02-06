@@ -10,7 +10,7 @@ export JENKINS_AGENT_FOLDER=./agent
 # export AGENT_API_TOKEN=$3
 # export LABELS=$4
 export JENKINS_FSROOT_FOLDER=.
-export AGENT_NAME=$(hostname)
+#export AGENT_NAME=$5
 java \
     -jar "${AGENT_JAR_LOCATION}" \
     -workDir "${JENKINS_AGENT_FOLDER}" \
