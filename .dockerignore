@@ -1,5 +1,4 @@
 /.git
 /.github
 /Docker/controller
-/VMs
 /windows-docker-image-builder

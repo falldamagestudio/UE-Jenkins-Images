@@ -2,8 +2,8 @@
 
 function install_buildtools () {
 
-    sudo apt-get update || return
-    sudo --preserve-env=DEBIAN_FRONTEND apt-get install -y --no-install-recommends \
+    apt-get update || return
+    apt-get install -y --no-install-recommends \
         build-essential \
         apt-transport-https \
         ca-certificates \
@@ -20,7 +20,7 @@ function install_buildtools () {
         xdg-user-dirs \
         zip || return
 
-    sudo apt-get clean || return
-    sudo rm -rf /var/lib/apt/lists/* || return
+    apt-get clean || return
+    rm -rf /var/lib/apt/lists/* || return
 }
 

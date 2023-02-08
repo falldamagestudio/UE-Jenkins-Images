@@ -1,30 +1,50 @@
-FROM jenkins/agent:3085.vc4c6977c075a-4@sha256:a99d4873742f340661dba59b86e0f89209b0e49236206f9d437ede3546547cb5
+FROM debian:11.6-slim@sha256:d51d5c391d202d5e2e0294a9df6ff077ed40583b11831d347d418690da496c50
+
+# Create user/group for jenkins user
+ARG user=jenkins
+ARG group=jenkins
+ARG uid=1000
+ARG gid=1000
+
+RUN groupadd -g ${gid} ${group} \
+    && useradd -c "Jenkins user" -d /home/${user} -u ${uid} -g ${gid} -m ${user} -l
+
+# Ensure Jenkins user can switch to root using 'sudo'
+
+#RUN apt-get update \
+#    && apt-get -y install sudo
+
+# Bring all scripts into container
+
+RUN mkdir /Docker \
+    && mkdir /Scripts
+
+COPY --chown=jenkins:jenkins Docker /Docker
+COPY --chown=jenkins:jenkins Scripts /Scripts
+
+# Allow sudo without password
+
+#RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+#RUN sudo echo blah
+
+# Remainder of script runs using jenkins user
 
 USER root
 
-# In order to install Plastic SCM client on debian 11 we need to add debian 10 repositories using workaround
-# provided here https://plasticscmsupport.zendesk.com/hc/en-us/articles/360013103159-How-to-Install-Plastic-GUI-in-Ubuntu-19-10-and-later-
-RUN echo deb http://deb.debian.org/debian/ buster main>/etc/apt/sources.list.d/buster-oldlibs.list
+# Install software
 
-# Install Plastic SCM client
-
-RUN apt-get update \
-    && apt-get install -y apt-transport-https ca-certificates wget gnupg --no-install-recommends \
-    && echo "deb https://www.plasticscm.com/plasticrepo/stable/debian/ ./" | tee /etc/apt/sources.list.d/plasticscm-stable.list \
-    && wget https://www.plasticscm.com/plasticrepo/stable/debian/Release.key --quiet -O - | apt-key add - \
-    && apt-get update \
-    && apt-get install -y plasticscm-client-core --no-install-recommends \
-    && apt-get clean \
-	&& rm -rf /var/lib/apt/lists/*
+RUN /Docker/agents/linux/swarm-agent/install_root.sh
 
 USER jenkins
 
-RUN wget https://repo.jenkins-ci.org/artifactory/releases/org/jenkins-ci/plugins/swarm-client/3.39/swarm-client-3.39.jar -O swarm-client.jar
+RUN /Docker/agents/linux/swarm-agent/install_user.sh
 
-COPY --chown=jenkins:jenkins ./run_swarm_agent.sh /home/jenkins/run_swarm_agent.sh
+# COPY --chown=jenkins:jenkins ./run_swarm_agent.sh /home/jenkins/run_swarm_agent.sh
+#
+# RUN chmod ugo+x /home/jenkins/run_swarm_agent.sh
+#
+# RUN mkdir /home/jenkins/agent/remoting
+#
+# ENTRYPOINT [ "/home/jenkins/run_swarm_agent.sh" ]
 
-RUN chmod ugo+x /home/jenkins/run_swarm_agent.sh
-
-RUN mkdir /home/jenkins/agent/remoting
-
-ENTRYPOINT [ "/home/jenkins/run_swarm_agent.sh" ]
+ENTRYPOINT [ "/Scripts/Linux/agents/docker_entrypoints/swarm_agent.sh" ]
