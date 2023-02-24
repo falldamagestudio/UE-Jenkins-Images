@@ -42,3 +42,8 @@ USER jenkins
 # Replace the offical google-compute-engine plugin with a locally-built version
 
 COPY google-compute-engine-plugin/target/google-compute-engine.hpi /usr/share/jenkins/ref/plugins/google-compute-engine.jpi
+
+# Replace the official gcp-secrets-manager-credentials-provider plugin with a locally-built version
+
+COPY gcp-secrets-manager-credentials-provider-plugin/target/gcp-secrets-manager-credentials-provider.hpi /usr/share/jenkins/ref/plugins/gcp-secrets-manager-credentials-provider.jpi
+

@@ -1,3 +1,6 @@
 [submodule "Docker/controller/google-compute-engine-plugin"]
 	path = Docker/controller/google-compute-engine-plugin
 	url = https://github.com/falldamagestudio/google-compute-engine-plugin
+[submodule "Docker/controller/gcp-secrets-manager-credentials-provider-plugin"]
+	path = Docker/controller/gcp-secrets-manager-credentials-provider-plugin
+	url = https://github.com/falldamagestudio/gcp-secrets-manager-credentials-provider-plugin

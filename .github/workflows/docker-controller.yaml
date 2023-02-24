@@ -55,7 +55,12 @@ jobs:
       - name: Build custom google-compute-engine plugin
         if: ${{ ! steps.image_exists.outputs.image_exists }}
         run: |
-          cd Docker/controller/google-compute-engine-plugin && mvn install --no-transfer-progress
+          make build-controller-google-compute-engine-plugin
+
+      - name: Build custom build-controller-gcp-secrets-manager-credentials-provider plugin
+        if: ${{ ! steps.image_exists.outputs.image_exists }}
+        run: |
+          make build-controller-gcp-secrets-manager-credentials-provider-plugin
 
       - name: Build image and push to GCR
         if: ${{ ! steps.image_exists.outputs.image_exists }}

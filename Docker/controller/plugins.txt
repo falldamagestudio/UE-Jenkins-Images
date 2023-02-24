@@ -20,6 +20,8 @@ workflow-aggregator:590.v6a_d052e5a_a_b_5
 
 # Access credentials from Google Cloud Secrets Manager in your Jenkins jobs.
 # https://plugins.jenkins.io/gcp-secrets-manager-credentials-provider/
+# In the Docker image, the plugin will be replaced with a locally modified version that supports
+#   accessing secrets in JCasC files.
 gcp-secrets-manager-credentials-provider:0.3.1
 
 # The Job DSL plugin allows jobs to be defined in a programmatic form in a human readable file.
