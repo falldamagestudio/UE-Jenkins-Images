@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set parameters
         id: parameters
@@ -23,12 +23,14 @@ jobs:
           IMAGE_NAME=swarm-agent-${SHORT_SHA}-linux
           echo "::set-output name=image_name::${IMAGE_NAME}"
 
-      - name: Setup gcloud CLI
-        uses: google-github-actions/setup-gcloud@v0
+      - name: Authenticate against Google Cloud
+        uses: google-github-actions/auth@v1
         with:
-          project_id: ${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}
-          service_account_key: ${{ secrets.GOOGLE_CLOUD_IMAGE_BUILDER_INSTANCE_CONTROLLER_SERVICE_ACCOUNT_KEY }}
-          export_default_credentials: true
+          credentials_json: ${{ secrets.GOOGLE_CLOUD_IMAGE_BUILDER_INSTANCE_CONTROLLER_SERVICE_ACCOUNT_KEY }}
+          export_environment_variables: true
+
+      - name: Setup gcloud CLI
+        uses: google-github-actions/setup-gcloud@v1
 
       - name: Test if image already exists
         id: image_exists
@@ -52,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set parameters
         id: parameters
@@ -61,12 +63,14 @@ jobs:
           IMAGE_NAME=swarm-agent-${SHORT_SHA}-windows
           echo "::set-output name=image_name::${IMAGE_NAME}"
 
-      - name: Setup gcloud CLI
-        uses: google-github-actions/setup-gcloud@v0
+      - name: Authenticate against Google Cloud
+        uses: google-github-actions/auth@v1
         with:
-          project_id: ${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}
-          service_account_key: ${{ secrets.GOOGLE_CLOUD_IMAGE_BUILDER_INSTANCE_CONTROLLER_SERVICE_ACCOUNT_KEY }}
-          export_default_credentials: true
+          credentials_json: ${{ secrets.GOOGLE_CLOUD_IMAGE_BUILDER_INSTANCE_CONTROLLER_SERVICE_ACCOUNT_KEY }}
+          export_environment_variables: true
+
+      - name: Setup gcloud CLI
+        uses: google-github-actions/setup-gcloud@v1
 
       - name: Test if image already exists
         id: image_exists

@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set parameters
         id: parameters
@@ -24,10 +24,13 @@ jobs:
           IMAGE_URL=${IMAGE_NAME}:${IMAGE_TAG}
           echo "::set-output name=image_url::${IMAGE_URL}"
 
-      - name: Setup gcloud CLI
-        uses: google-github-actions/setup-gcloud@v0
+      - name: Authenticate against Google Cloud
+        uses: google-github-actions/auth@v1
         with:
-          service_account_key: ${{ secrets.GOOGLE_CLOUD_BUILD_ARTIFACT_UPLOADER_SERVICE_ACCOUNT_KEY }}
+          credentials_json: ${{ secrets.GOOGLE_CLOUD_BUILD_ARTIFACT_UPLOADER_SERVICE_ACCOUNT_KEY }}
+
+      - name: Setup gcloud CLI
+        uses: google-github-actions/setup-gcloud@v1
 
       - name: Test if image already exists
         id: image_exists
@@ -39,11 +42,11 @@ jobs:
 
       - name: Set up QEMU
         if: ${{ ! steps.image_exists.outputs.image_exists }}
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v2
 
       - name: Set up Docker Buildx
         if: ${{ ! steps.image_exists.outputs.image_exists }}
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
 
       - name: Configure docker to use gcloud as credential helper
         if: ${{ ! steps.image_exists.outputs.image_exists }}
@@ -63,7 +66,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set parameters
         id: parameters
@@ -76,12 +79,14 @@ jobs:
           echo "::set-output name=image_tag::${IMAGE_TAG}"
           echo "::set-output name=image_url::${IMAGE_URL}"
 
-      - name: Setup gcloud CLI
-        uses: google-github-actions/setup-gcloud@v0
+      - name: Authenticate against Google Cloud
+        uses: google-github-actions/auth@v1
         with:
-          project_id: ${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}
-          service_account_key: ${{ secrets.GOOGLE_CLOUD_IMAGE_BUILDER_INSTANCE_CONTROLLER_SERVICE_ACCOUNT_KEY }}
-          export_default_credentials: true
+          credentials_json: ${{ secrets.GOOGLE_CLOUD_IMAGE_BUILDER_INSTANCE_CONTROLLER_SERVICE_ACCOUNT_KEY }}
+          export_environment_variables: true
+
+      - name: Setup gcloud CLI
+        uses: google-github-actions/setup-gcloud@v1
 
       - name: Test if image already exists
         id: image_exists
@@ -93,7 +98,7 @@ jobs:
 
       - name: Setup Go
         if: ${{ ! steps.image_exists.outputs.image_exists }}
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
           go-version: "1.14.0"
 
