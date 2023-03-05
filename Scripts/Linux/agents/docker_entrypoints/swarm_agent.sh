@@ -2,12 +2,10 @@
 
 # Expected environment variables:
 # JENKINS_URL
-# AGENT_USERNAME
-# AGENT_API_TOKEN
 # AGENT_NAME
 # LABELS
 
-#. "${BASH_SOURCE%/*}/../../system_configuration/get_gce_settings.sh"
+. "${BASH_SOURCE%/*}/../../system_configuration/get_gce_settings.sh"
 . "${BASH_SOURCE%/*}/../run/run_swarm_agent.sh"
 
 echo "Swarm Agent starting..."
@@ -17,18 +15,18 @@ JENKINS_FSROOT_FOLDER=${HOME}        # Per-job workspaces will be created under 
 AGENT_JAR_LOCATION=/jenkins_agent/swarm-agent.jar
 #AGENT_NAME=$(hostname)
 
-#echo "Waiting for required settings to be available in Secrets Manager..."
-#
-##shellcheck disable=SC2034 # shellcheck doesn't understand that KEYS is being passed by reference to get_gce_settings
-#KEYS=("swarm-agent-username" "swarm-agent-api-token")
-##shellcheck disable=SC2034 # shellcheck doesn't understand that SOURCES is being passed by reference to get_gce_settings
-#SOURCES=("secret" "secret")
-##shellcheck disable=SC2034 # shellcheck doesn't understand that BINARY is being passed by reference to get_gce_settings
-#BINARY=("false" "false")
-#RESULT=()
-#get_gce_settings KEYS SOURCES BINARY RESULT "true" "true" || exit
-#AGENT_USERNAME=${RESULT[0]}
-#AGENT_API_TOKEN=${RESULT[1]}
+echo "Waiting for required settings to be available in Secrets Manager..."
+
+#shellcheck disable=SC2034 # shellcheck doesn't understand that KEYS is being passed by reference to get_gce_settings
+KEYS=("swarm-agent-username" "swarm-agent-api-token")
+#shellcheck disable=SC2034 # shellcheck doesn't understand that SOURCES is being passed by reference to get_gce_settings
+SOURCES=("secret" "secret")
+#shellcheck disable=SC2034 # shellcheck doesn't understand that BINARY is being passed by reference to get_gce_settings
+BINARY=("false" "false")
+RESULT=()
+get_gce_settings KEYS SOURCES BINARY RESULT "true" "true" || exit
+AGENT_USERNAME=${RESULT[0]}
+AGENT_API_TOKEN=${RESULT[1]}
 #JENKINS_URL=${RESULT[0]}
 #LABELS=${RESULT[3]}
 
