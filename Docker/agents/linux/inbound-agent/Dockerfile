@@ -23,8 +23,8 @@ RUN echo deb http://deb.debian.org/debian/ buster main>/etc/apt/sources.list.d/b
 
 RUN apt-get update \
     && apt-get install -y apt-transport-https ca-certificates wget gnupg --no-install-recommends \
-    && echo "deb https://www.plasticscm.com/plasticrepo/stable/debian/ ./" | tee /etc/apt/sources.list.d/plasticscm-stable.list \
-    && wget https://www.plasticscm.com/plasticrepo/stable/debian/Release.key --quiet -O - | apt-key add - \
+    && curl -fsSL https://www.plasticscm.com/plasticrepo/stable/debian/Release.key | gpg --dearmor --yes -o /usr/share/keyrings/plasticscm.gpg \
+    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/plasticscm.gpg] https://www.plasticscm.com/plasticrepo/stable/debian/ ./" | tee /etc/apt/sources.list.d/plasticscm-stable.list \
     && apt-get update \
     && apt-get install -y plasticscm-client-core --no-install-recommends \
     && apt-get clean \

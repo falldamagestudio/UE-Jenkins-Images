@@ -38,8 +38,8 @@ USER root
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends apt-transport-https wget gnupg \
-    && echo "deb https://www.plasticscm.com/plasticrepo/stable/debian/ ./" | tee /etc/apt/sources.list.d/plasticscm-stable.list \
-    && wget --progress=dot https://www.plasticscm.com/plasticrepo/stable/debian/Release.key -O - | apt-key add - \
+    && curl -fsSL https://www.plasticscm.com/plasticrepo/stable/debian/Release.key | gpg --dearmor --yes -o /usr/share/keyrings/plasticscm.gpg \
+    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/plasticscm.gpg] https://www.plasticscm.com/plasticrepo/stable/debian/ ./" | tee /etc/apt/sources.list.d/plasticscm-stable.list \
     && apt-get update \
     && apt-get install -y --no-install-recommends plasticscm-client-core \
 	&& apt-get clean \
