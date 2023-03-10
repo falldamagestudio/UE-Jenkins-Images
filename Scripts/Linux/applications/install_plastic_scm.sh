@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# In order to install Plastic SCM client on debian 11 we need to add debian 10 repositories using workaround
-# Call add_debian_10_repos beforehand on that OS
-
 function install_plastic_scm () {
 
     apt-get update || return
