@@ -4,10 +4,10 @@
     "swarm_agent_download_url": "https://repo.jenkins-ci.org/artifactory/releases/org/jenkins-ci/plugins/swarm-client/3.39/swarm-client-3.39.jar",
 
     "linux_builder" : {
-        "vm_image_builder_source_image": "debian-11-bullseye-v20210916"
+        "vm_image_builder_source_image": "debian-11-bullseye-v20230306"
     },
     "windows_builder" : {
-        "docker_image_builder_host_image": "windows-cloud/global/images/windows-server-2019-dc-for-containers-v20210914",
-        "vm_image_builder_source_image": "windows-server-2019-dc-for-containers-v20210914"
+        "docker_image_builder_host_image": "windows-cloud/global/images/windows-server-2022-dc-core-v20230216",
+        "vm_image_builder_source_image": "windows-server-2022-dc-core-v20230216"
     }
 }
