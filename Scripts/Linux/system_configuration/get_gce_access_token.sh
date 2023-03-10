@@ -59,8 +59,8 @@ get_gce_access_token () {
                 \"iss\": \"${ACCESS_TOKEN_ISSUER}\",
                 \"scope\": \"${ACCESS_TOKEN_SCOPE}\",
                 \"aud\": \"https://www.googleapis.com/oauth2/v4/token\",
-                \"exp\": \""${ACCESS_TOKEN_END_DATE}"\",
-                \"iat\": \""${ACCESS_TOKEN_START_DATE}"\"
+                \"exp\": \"${ACCESS_TOKEN_END_DATE}\",
+                \"iat\": \"${ACCESS_TOKEN_START_DATE}\"
             }
             " | jq -c .) || return
 
