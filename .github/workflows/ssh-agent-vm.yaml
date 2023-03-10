@@ -43,11 +43,10 @@ jobs:
       - name: "Build image"
         if: ${{ ! steps.image_exists.outputs.image_exists }}
         run: |
-          ./Scripts/Linux/linux-vm-image-builder.sh \
-            VMs/agents/linux/ssh-agent/build.pkr.hcl \
-            ${{ secrets.GOOGLE_CLOUD_PROJECT_ID }} \
-            ${{ secrets.GOOGLE_CLOUD_ZONE }} \
-            ${{ steps.parameters.outputs.image_name }}
+            GOOGLE_CLOUD_PROJECT_ID=${{ secrets.GOOGLE_CLOUD_PROJECT_ID }} \
+            GOOGLE_CLOUD_ZONE=${{ secrets.GOOGLE_CLOUD_ZONE }} \
+            LINUX_SSH_AGENT_VM_IMAGE_NAME=${{ steps.parameters.outputs.image_name }} \
+            make build-ssh-agent-vm-linux
 
   build-windows:
     name: Windows - ssh-agent-vm

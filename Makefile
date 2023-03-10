@@ -23,6 +23,12 @@ build-controller-docker-image:
 
 build-controller: build-controller-google-compute-engine-plugin build-controller-gcp-secrets-manager-credentials-provider-plugin build-controller-docker-image
 
-build-linux-swarm-agent:
+build-swarm-agent-linux:
 	docker build -f Docker/agents/linux/swarm-agent/Dockerfile -t "$(LINUX_SWARM_AGENT_IMAGE_AND_TAG)" .
 
+build-ssh-agent-vm-linux:
+	./Scripts/Linux/linux-vm-image-builder.sh \
+	VMs/agents/linux/ssh-agent/build.pkr.hcl \
+	"$(GOOGLE_CLOUD_PROJECT_ID)" \
+	"$(GOOGLE_CLOUD_ZONE)" \
+	"$(LINUX_SSH_AGENT_VM_IMAGE_NAME)"
