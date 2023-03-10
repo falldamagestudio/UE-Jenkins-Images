@@ -15,6 +15,9 @@ shopt -s inherit_errexit
 #   debconf: unable to initialize frontend: Dialog
 export DEBIAN_FRONTEND=noninteractive
 
+# All install scripts should use `sudo` when performing actions that require root privileges
+export SUDO="sudo --preserve-env=DEBIAN_FRONTEND"
+
 buildstep_create_agent_host_folders || exit
 buildstep_install_buildtools || exit
 buildstep_install_scm_tools || exit

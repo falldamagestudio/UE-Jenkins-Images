@@ -2,10 +2,10 @@
 
 function install_git () {
 
-    apt-get update || return
-    apt-get install -y git --no-install-recommends || return
+    ${SUDO} apt-get update || return
+    ${SUDO} apt-get install -y git --no-install-recommends || return
 
-    apt-get clean || return
-    rm -rf /var/lib/apt/lists/* || return
+    ${SUDO} apt-get clean || return
+    ${SUDO} rm -rf /var/lib/apt/lists/* || return
 }
 
