@@ -21,7 +21,7 @@ jobs:
         run: |
           SHORT_SHA=$(git rev-parse --short ${{ github.sha }})
           IMAGE_NAME=ssh-agent-${SHORT_SHA}-linux
-          echo "::set-output name=image_name::${IMAGE_NAME}"
+          echo "image_name=${IMAGE_NAME}" >> ${GITHUB_OUTPUT}
 
       - name: Authenticate against Google Cloud
         uses: google-github-actions/auth@v1
@@ -38,7 +38,7 @@ jobs:
           # Detect whether the image already exists
           # If it does exist, it sets the 'image_exists' output
           # It it doesn't exist, it leaves the 'image_exists' output unset
-          gcloud compute images describe ${{ steps.parameters.outputs.image_name }} > /dev/null 2>&1 && echo "::set-output name=image_exists::true" || true
+          gcloud compute images describe ${{ steps.parameters.outputs.image_name }} > /dev/null 2>&1 && echo "image_exists=true" >> ${GITHUB_OUTPUT} || true
 
       - name: "Build image"
         if: ${{ ! steps.image_exists.outputs.image_exists }}
@@ -61,7 +61,7 @@ jobs:
         run: |
           SHORT_SHA=$(git rev-parse --short ${{ github.sha }})
           IMAGE_NAME=ssh-agent-${SHORT_SHA}-windows
-          echo "::set-output name=image_name::${IMAGE_NAME}"
+          echo "image_name=${IMAGE_NAME}" >> ${GITHUB_OUTPUT}
 
       - name: Authenticate against Google Cloud
         uses: google-github-actions/auth@v1
@@ -78,7 +78,7 @@ jobs:
           # Detect whether the image already exists
           # If it does exist, it sets the 'image_exists' output
           # It it doesn't exist, it leaves the 'image_exists' output unset
-          gcloud compute images describe ${{ steps.parameters.outputs.image_name }} > /dev/null 2>&1 && echo "::set-output name=image_exists::true" || true
+          gcloud compute images describe ${{ steps.parameters.outputs.image_name }} > /dev/null 2>&1 && echo "image_exists=true" >> ${GITHUB_OUTPUT} || true
 
       - name: "Build image"
         if: ${{ ! steps.image_exists.outputs.image_exists }}

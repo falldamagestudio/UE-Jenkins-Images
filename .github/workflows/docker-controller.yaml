@@ -24,7 +24,7 @@ jobs:
           IMAGE_NAME=${{ secrets.ARTIFACT_REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}/docker-build-artifacts/controller
           IMAGE_TAG=commit-${SHORT_SHA}
           IMAGE_URL=${IMAGE_NAME}:${IMAGE_TAG}
-          echo "::set-output name=image_url::${IMAGE_URL}"
+          echo "image_url=${IMAGE_URL}" >> ${GITHUB_OUTPUT}
 
       - name: Authenticate against Google Cloud
         uses: google-github-actions/auth@v1
@@ -40,7 +40,7 @@ jobs:
           # Detect whether the image already exists
           # If it does exist, it sets the 'image_exists' output
           # It it doesn't exist, it leaves the 'image_exists' output unset
-          gcloud artifacts docker images describe ${{ steps.parameters.outputs.image_url }} > /dev/null 2>&1 && echo "::set-output name=image_exists::true" || true
+          gcloud artifacts docker images describe ${{ steps.parameters.outputs.image_url }} > /dev/null 2>&1 && echo "image_exists=true" >> ${GITHUB_OUTPUT} || true
 
       - name: Set up QEMU
         if: ${{ ! steps.image_exists.outputs.image_exists }}
