@@ -7,7 +7,7 @@
         "vm_image_builder_source_image": "debian-11-bullseye-v20230306"
     },
     "windows_builder" : {
-        "docker_image_builder_host_image": "windows-cloud/global/images/windows-server-2022-dc-core-v20230216",
-        "vm_image_builder_source_image": "windows-server-2022-dc-core-v20230216"
+        "docker_image_builder_host_image": "windows-cloud/global/images/windows-server-2022-dc-v20230216",
+        "vm_image_builder_source_image": "windows-server-2022-dc-v20230216"
     }
 }
