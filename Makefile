@@ -1,7 +1,8 @@
-
-.PHONY: build-linux-swarm-agent
-
 .PHONY: build-controller-google-compute-engine-plugin build-controller-gcp-secrets-manager-credentials-provider-plugin build-controller-docker-image build-controller
+
+.PHONY: build-swarm-agent-linux
+
+.PHONY: build-ssh-agent-vm-linux
 
 ifndef CONTROLLER_IMAGE_AND_TAG
 CONTROLLER_IMAGE_AND_TAG:=controller:local
