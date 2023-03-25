@@ -1,4 +1,11 @@
 /.git
 /.github
-/Docker/controller
+/.vscode
+
+# Exclude Jenkins controller plugins, but keep the .hpi files
+/Docker/controller/*-plugin
+!/Docker/controller/google-compute-engine-plugin/target/*.hpi
+!/Docker/controller/gcp-secrets-manager-credentials-provider-plugin/target/*.hpi
+
+/VMs
 /windows-docker-image-builder

@@ -20,7 +20,7 @@ build-controller-gcp-secrets-manager-credentials-provider-plugin:
 	cd Docker/controller/gcp-secrets-manager-credentials-provider-plugin && mvn clean install --no-transfer-progress
 
 build-controller-docker-image:
-	cd Docker/controller && docker build -f Dockerfile -t "$(CONTROLLER_IMAGE_AND_TAG)" .
+	docker build -f Docker/controller/Dockerfile -t "$(CONTROLLER_IMAGE_AND_TAG)" .
 
 build-controller: build-controller-google-compute-engine-plugin build-controller-gcp-secrets-manager-credentials-provider-plugin build-controller-docker-image
 
