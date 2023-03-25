@@ -9,11 +9,6 @@ ARG gid=1000
 RUN groupadd -g ${gid} ${group} \
     && useradd -c "Jenkins user" -d /home/${user} -u ${uid} -g ${gid} -m ${user} -l
 
-# Ensure Jenkins user can switch to root using 'sudo'
-
-#RUN apt-get update \
-#    && apt-get -y install sudo
-
 # Bring all scripts into container
 
 RUN mkdir /Docker \
@@ -22,29 +17,14 @@ RUN mkdir /Docker \
 COPY --chown=jenkins:jenkins Docker /Docker
 COPY --chown=jenkins:jenkins Scripts /Scripts
 
-# Allow sudo without password
-
-#RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-#RUN sudo echo blah
-
-# Remainder of script runs using jenkins user
+# Install software
 
 USER root
-
-# Install software
 
 RUN /Docker/agents/linux/swarm-agent/install_root.sh
 
 USER jenkins
 
 RUN /Docker/agents/linux/swarm-agent/install_user.sh
-
-# COPY --chown=jenkins:jenkins ./run_swarm_agent.sh /home/jenkins/run_swarm_agent.sh
-#
-# RUN chmod ugo+x /home/jenkins/run_swarm_agent.sh
-#
-# RUN mkdir /home/jenkins/agent/remoting
-#
-# ENTRYPOINT [ "/home/jenkins/run_swarm_agent.sh" ]
 
 ENTRYPOINT [ "/Scripts/Linux/agents/docker_entrypoints/swarm_agent.sh" ]
