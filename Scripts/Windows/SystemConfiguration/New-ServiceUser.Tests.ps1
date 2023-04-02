@@ -4,6 +4,7 @@ BeforeAll {
 
 	. ${PSScriptRoot}\New-ServiceUser.ps1
 
+	Import-Module -Name "${PSScriptRoot}\CreateProfile\CreateProfile\CreateProfile.psm1" -ErrorAction Stop
 }
 
 Describe 'New-ServiceUser' {

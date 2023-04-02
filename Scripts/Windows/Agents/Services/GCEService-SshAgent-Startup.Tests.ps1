@@ -9,11 +9,14 @@ Describe 'GCEService-SshAgent-Startup' {
 
 		Mock Get-Date { "some date" }
 		Mock Start-Transcript { throw "Start-Transcript failed" }
-		Mock Stop-Transcript { throw "Stop-Transcript should not be called" }
 
 		Mock Import-PowerShellDataFile { throw "Import-PowerShellDataFile should not be called" }
 		Mock Resolve-Path { throw "Resolve-Path should not be called" }
 		Mock Write-Host { throw "Write-Host should not be called" }
+
+		Mock Stop-Service { throw "Stop-Service should not be called" }
+
+		Mock Stop-Transcript { throw "Stop-Transcript should not be called" }
 
 		{ & ${PSScriptRoot}\GCEService-SshAgent-Startup.ps1 } |
 			Should -Throw "Start-Transcript failed"
@@ -23,6 +26,7 @@ Describe 'GCEService-SshAgent-Startup' {
 		Assert-MockCalled -Exactly -Times 0 Import-PowerShellDataFile
 		Assert-MockCalled -Exactly -Times 0 Resolve-Path
 		Assert-MockCalled -Exactly -Times 0 Write-Host
+		Assert-MockCalled -Exactly -Times 0 Stop-Service
 		Assert-MockCalled -Exactly -Times 0 Stop-Transcript
 	}
 
@@ -30,11 +34,14 @@ Describe 'GCEService-SshAgent-Startup' {
 
 		Mock Start-Transcript { }
 		Mock Get-Date { "some date" }
-		Mock Stop-Transcript { }
 
 		Mock Import-PowerShellDataFile { throw "Import-PowerShellDataFile failed" }
 		Mock Resolve-Path { throw "Resolve-Path should not be called" }
 		Mock Write-Host { throw "Write-Host should not be called" }
+
+		Mock Stop-Service { throw "Stop-Service should not be called" }
+
+		Mock Stop-Transcript { }
 
 		{ & ${PSScriptRoot}\GCEService-SshAgent-Startup.ps1 } |
 			Should -Throw "Import-PowerShellDataFile failed"
@@ -44,6 +51,7 @@ Describe 'GCEService-SshAgent-Startup' {
 		Assert-MockCalled -Exactly -Times 1 Import-PowerShellDataFile
 		Assert-MockCalled -Exactly -Times 0 Resolve-Path
 		Assert-MockCalled -Exactly -Times 0 Write-Host
+		Assert-MockCalled -Exactly -Times 0 Stop-Service
 		Assert-MockCalled -Exactly -Times 1 Stop-Transcript
 	}
 
@@ -51,12 +59,15 @@ Describe 'GCEService-SshAgent-Startup' {
 
 		Mock Start-Transcript { }
 		Mock Get-Date { "some date" }
-		Mock Stop-Transcript { }
 
 		Mock Import-PowerShellDataFile { & (Get-Command Import-PowerShellDataFile -CommandType Function) -Path $Path }
 		Mock Resolve-Path -ParameterFilter { $Path.EndsWith("VMSettings.psd1") } { & (Get-Command Resolve-Path -CommandType Cmdlet) -Path $Path }
 		Mock Resolve-Path { throw "Invalid invocation of Resolve-Path" }
 		Mock Write-Host { }
+
+		Mock Stop-Service { }
+
+		Mock Stop-Transcript { }
 
 		{ & ${PSScriptRoot}\GCEService-SshAgent-Startup.ps1 } |
 			Should -Not -Throw
@@ -66,6 +77,7 @@ Describe 'GCEService-SshAgent-Startup' {
 		Assert-MockCalled -Exactly -Times 1 Import-PowerShellDataFile
 		Assert-MockCalled -Exactly -Times 1 Resolve-Path -ParameterFilter { $Path.EndsWith("VMSettings.psd1") }
 		Assert-MockCalled -Exactly -Times 1 Resolve-Path
+		Assert-MockCalled -Exactly -Times 1 Stop-Service
 		Assert-MockCalled -Exactly -Times 1 Stop-Transcript
 	}
 }
