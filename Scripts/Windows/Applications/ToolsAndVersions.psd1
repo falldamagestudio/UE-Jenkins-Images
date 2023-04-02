@@ -30,6 +30,9 @@
     # Reference: https://console.cloud.google.com/storage/browser/cloud-sdk-release
     GoogleCloudSDKInstallerUrl = "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-336.0.0-windows-x86_64-bundled-python.zip"
 
+    # Reference: https://cloud.google.com/stackdriver/docs/solutions/agents/ops-agent/installation#install-latest-version
+    GoogleCloudOpsAgentInstallScriptUrl = "https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.ps1"
+
     # The official download URL is on the format,
     # https://repo.jenkins-ci.org/native/releases/org/jenkins-ci/plugins/swarm-client/<version>/swarm-client-<version>.jar
     # but when we hit that directly we get 404 back
