@@ -5,6 +5,7 @@ set -o pipefail
 shopt -s inherit_errexit
 
 . "${BASH_SOURCE%/*}/../../../../Scripts/Linux/buildsteps/buildstep_create_agent_host_folders.sh"
+. "${BASH_SOURCE%/*}/../../../../Scripts/Linux/buildsteps/buildstep_install_google_cloud_ops_agent.sh"
 . "${BASH_SOURCE%/*}/../../../../Scripts/Linux/buildsteps/buildstep_install_buildtools.sh"
 . "${BASH_SOURCE%/*}/../../../../Scripts/Linux/buildsteps/buildstep_install_scm_tools.sh"
 . "${BASH_SOURCE%/*}/../../../../Scripts/Linux/applications/install_adoptium_openjdk.sh"
@@ -18,6 +19,7 @@ export DEBIAN_FRONTEND=noninteractive
 export SUDO="sudo --preserve-env=DEBIAN_FRONTEND"
 
 buildstep_create_agent_host_folders || exit
+buildstep_install_google_cloud_ops_agent || exit
 buildstep_install_buildtools || exit
 buildstep_install_scm_tools || exit
 install_adoptium_openjdk || exit

@@ -3,6 +3,8 @@
 
     "swarm_agent_download_url": "https://repo.jenkins-ci.org/artifactory/releases/org/jenkins-ci/plugins/swarm-client/3.39/swarm-client-3.39.jar",
 
+    "google_cloud_ops_agent_install_script_url": "https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh",
+
     "linux_builder" : {
         "vm_image_builder_source_image": "debian-11-bullseye-v20230306"
     },
