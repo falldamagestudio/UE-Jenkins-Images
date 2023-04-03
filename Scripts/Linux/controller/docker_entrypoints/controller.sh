@@ -27,7 +27,7 @@ PLASTIC_CONFIG_TGZ_BASE64=${RESULT[0]}
 
 echo "Decompressing Plastic config..."
 
-echo -n "${PLASTIC_CONFIG_TGZ_BASE64}" | { base64 --decode || exit; } | tar --directory "${PLASTIC_CONFIG_FOLDER}" -xzvf -
+echo -n "${PLASTIC_CONFIG_TGZ_BASE64}" | { base64 --decode || exit; } | tar --directory "${PLASTIC_CONFIG_FOLDER}" --overwrite -xzvf -
 
 echo "Running controller..."
 
