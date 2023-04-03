@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# This function is intended to be run as the user that will use the Plastic SCM tools
+
 function deploy_plastic_client_config () {
 
     local PLASTIC_CONFIG_BASE64=$1

@@ -5,10 +5,10 @@ function install_jenkins_swarm_agent () {
     local SCRIPTS_DIR="${BASH_SOURCE%/*}"
 
     # Install prerequisites
-    ${SUDO} apt-get update || return
-    ${SUDO} apt-get install -y apt-transport-https ca-certificates jq wget --no-install-recommends || return
-    ${SUDO} apt-get clean || return
-    ${SUDO} rm -rf /var/lib/apt/lists/* || return
+    apt-get update || return
+    apt-get install -y apt-transport-https ca-certificates jq wget --no-install-recommends || return
+    apt-get clean || return
+    rm -rf /var/lib/apt/lists/* || return
 
     local DOWNLOAD_URL
     DOWNLOAD_URL=$(jq -r ".swarm_agent_download_url" "${SCRIPTS_DIR}/../tools-and-versions.json") || return

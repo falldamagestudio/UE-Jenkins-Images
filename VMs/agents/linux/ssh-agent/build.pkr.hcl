@@ -64,7 +64,8 @@ build {
 
   provisioner "shell" {
     inline = [
-      "~/VMs/agents/linux/ssh-agent/install.sh"
+      "sudo ~/VMs/agents/linux/ssh-agent/install_root.sh",
+      "~/VMs/agents/linux/ssh-agent/install_user.sh"
     ]
   }
 

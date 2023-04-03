@@ -2,8 +2,8 @@
 
 function install_buildtools () {
 
-    ${SUDO} apt-get update || return
-    ${SUDO} apt-get install -y --no-install-recommends \
+    apt-get update || return
+    apt-get install -y --no-install-recommends \
         build-essential \
         apt-transport-https \
         ca-certificates \
@@ -20,7 +20,7 @@ function install_buildtools () {
         xdg-user-dirs \
         zip || return
 
-    ${SUDO} apt-get clean || return
-    ${SUDO} rm -rf /var/lib/apt/lists/* || return
+    apt-get clean || return
+    rm -rf /var/lib/apt/lists/* || return
 }
 

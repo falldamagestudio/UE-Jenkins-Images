@@ -13,9 +13,6 @@ shopt -s inherit_errexit
 #   debconf: unable to initialize frontend: Dialog
 export DEBIAN_FRONTEND=noninteractive
 
-# All install scripts should ignore sudo; assume user is root already
-export SUDO=
-
 buildstep_install_buildtools || exit
 buildstep_install_scm_tools || exit
 install_adoptium_openjdk || exit

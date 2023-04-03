@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# This function is intended to be run as the user that will run the Jenkins agent
+
 function buildstep_create_agent_host_folders () {
 
     JENKINS_AGENT_FOLDER=${HOME}/agent
